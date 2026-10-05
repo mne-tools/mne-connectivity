@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_connectivity.wsmi &#8212; MNE-Connectivity 0.10.0.dev29+g70c8fa7c5 documentation</title>
+    <title>mne_connectivity.wsmi &#8212; MNE-Connectivity 0.10.0.dev30+gf92a4ebc1 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0" />
 
-    <script src="../../_static/documentation_options.js?v=f4d53200"></script>
+    <script src="../../_static/documentation_options.js?v=f391eccf"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -132,7 +132,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.10.0.dev29+g70c8fa7c5 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.10.0.dev30+gf92a4ebc1 documentation</p>
   
 </a></div>
     
@@ -458,7 +458,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.signal</span><span class="w"> </span><span class="kn">import</span> <span class="n">butter</span><span class="p">,</span> <span class="n">filtfilt</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">Connectivity</span><span class="p">,</span> <span class="n">EpochConnectivity</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">check_indices</span><span class="p">,</span> <span class="n">fill_doc</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_check_indices</span><span class="p">,</span> <span class="n">fill_doc</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_define_symbols</span><span class="p">(</span><span class="n">kernel</span><span class="p">):</span>
@@ -962,7 +962,7 @@
                 <span class="n">indices_use</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tril_indices</span><span class="p">(</span><span class="n">n_channels</span><span class="p">,</span> <span class="n">k</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># User provided explicit indices</span>
-        <span class="n">indices_use</span> <span class="o">=</span> <span class="n">check_indices</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
+        <span class="n">indices_use</span> <span class="o">=</span> <span class="n">_check_indices</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
 
         <span class="c1"># Check that we have at least one valid connection</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices_use</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
@@ -1119,7 +1119,7 @@
 
   <p class="copyright">
     
-      © Copyright 2021-2026, MNE Developers. Last updated on 2026-10-04.
+      © Copyright 2021-2026, MNE Developers. Last updated on 2026-10-05.
       <br/>
     
   </p>
