@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Compute connectivity using weighted symbolic mutual information (wSMI) &#8212; MNE-Connectivity 0.10.0.dev30+gf92a4ebc1 documentation</title>
+    <title>Compute connectivity using weighted symbolic mutual information (wSMI) &#8212; MNE-Connectivity 0.10.0.dev31+gd04f05ae3 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0" />
 
-    <script src="../_static/documentation_options.js?v=f391eccf"></script>
+    <script src="../_static/documentation_options.js?v=99fd5ed3"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -135,7 +135,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.10.0.dev30+gf92a4ebc1 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.10.0.dev31+gd04f05ae3 documentation</p>
   
 </a></div>
     
@@ -639,10 +639,10 @@ Computing connections for lower-triangular matrix
 Auto anti-aliasing: Existing lowpass (250.00 Hz) &gt; required (166.67 Hz). Applying filter.
 Applying anti-aliasing filter at 166.67 Hz
 Performing symbolic transformation...
-Computing wSMI for 6 unique symbols...
-wSMI computation finished.
+Computing wsmi for 6 unique symbols...
+wsmi computation finished.
 wSMI connectivity shape: (50, 4, 4) (n_epochs, n_channels, n_channels)
-Method: wSMI
+Method: wsmi
 Number of unique connections: 6
 
 Example connectivity values (showing epoch-to-epoch variability):
@@ -658,13 +658,13 @@ Nonlinear Coupled ↔ Linear Coupled: Epoch 1: -0.0019, Epoch 2: 0.0230
 </span><a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../generated/mne_connectivity.Connectivity.html#mne_connectivity.Connectivity" title="mne_connectivity.Connectivity"><span class="n">conn_ave</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function reference internal" href="../generated/mne_connectivity.wsmi.html#mne_connectivity.wsmi" title="mne_connectivity.wsmi"><span class="n">wsmi</span></a><span class="p">(</span><a class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://mne.tools/dev/generated/mne.EpochsArray.html#mne.EpochsArray" title="mne.EpochsArray"><span class="n">epochs</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">kernel</span></a><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">tau</span></a><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="w">
 </span><a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function reference internal" href="../generated/mne_connectivity.viz.plot_connectivity.html#mne_connectivity.viz.plot_connectivity" title="mne_connectivity.plot_connectivity"><span class="n">plot_connectivity</span></a><span class="p">(</span><a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../generated/mne_connectivity.Connectivity.html#mne_connectivity.Connectivity" title="mne_connectivity.Connectivity"><span class="n">conn_ave</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info"><span class="n">info</span></a><span class="o">=</span><a class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info"><span class="n">epochs</span><span class="o">.</span><span class="n">info</span></a><span class="p">,</span> <span class="n">node_labels</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">names</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<img src="../_images/sphx_glr_wsmi_002.png" srcset="../_images/sphx_glr_wsmi_002.png" alt="EEG ~ EEG | wSMI" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Processing 50 epochs, 4 channels (['Source', 'Linear Coupled', 'Nonlinear Coupled', 'Independent']), 1000 time points per epoch.
+<img src="../_images/sphx_glr_wsmi_002.png" srcset="../_images/sphx_glr_wsmi_002.png" alt="EEG ~ EEG | wsmi" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Processing 50 epochs, 4 channels (['Source', 'Linear Coupled', 'Nonlinear Coupled', 'Independent']), 1000 time points per epoch.
 Computing connections for lower-triangular matrix
 Auto anti-aliasing: Existing lowpass (250.00 Hz) &gt; required (166.67 Hz). Applying filter.
 Applying anti-aliasing filter at 166.67 Hz
 Performing symbolic transformation...
-Computing wSMI for 6 unique symbols...
-wSMI computation finished.
+Computing wsmi for 6 unique symbols...
+wsmi computation finished.
 
 &lt;Figure size 600x600 with 2 Axes&gt;
 </pre></div>
@@ -854,7 +854,7 @@ pre-filtered data and do minimal preprocessing.</p>
 </span><span class="c1"># Plot connectivity matrix</span><span class="w">
 </span><a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function reference internal" href="../generated/mne_connectivity.viz.plot_connectivity.html#mne_connectivity.viz.plot_connectivity" title="mne_connectivity.plot_connectivity"><span class="n">plot_connectivity</span></a><span class="p">(</span><a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../generated/mne_connectivity.Connectivity.html#mne_connectivity.Connectivity" title="mne_connectivity.Connectivity"><span class="n">conn_real</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info"><span class="n">info</span></a><span class="o">=</span><a class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info"><span class="n">epochs_real</span><span class="o">.</span><span class="n">info</span></a><span class="p">,</span> <span class="n">node_labels</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">names</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<img src="../_images/sphx_glr_wsmi_004.png" srcset="../_images/sphx_glr_wsmi_004.png" alt="EEG ~ EEG | wSMI" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Real EEG data: &lt;Epochs | 73 events (all good), -0.1 – 0.4 s (baseline off), ~3.6 MiB, data loaded,
+<img src="../_images/sphx_glr_wsmi_004.png" srcset="../_images/sphx_glr_wsmi_004.png" alt="EEG ~ EEG | wsmi" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Real EEG data: &lt;Epochs | 73 events (all good), -0.1 – 0.4 s (baseline off), ~3.6 MiB, data loaded,
  '3': 73&gt;
 Channels: ['EEG 001', 'EEG 002', 'EEG 003', 'EEG 004']
 
@@ -916,7 +916,7 @@ focus the analysis on slower dynamics</p></li>
 </aside>
 </aside>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 26.777 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 28.166 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-wsmi-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/3b850de0d7bcb2eb0a546a31ad8a5f37/wsmi.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">wsmi.ipynb</span></code></a></p>

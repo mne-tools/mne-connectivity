@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_connectivity.io &#8212; MNE-Connectivity 0.10.0.dev30+gf92a4ebc1 documentation</title>
+    <title>mne_connectivity.io &#8212; MNE-Connectivity 0.10.0.dev31+gd04f05ae3 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0" />
 
-    <script src="../../_static/documentation_options.js?v=f391eccf"></script>
+    <script src="../../_static/documentation_options.js?v=99fd5ed3"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -132,7 +132,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.10.0.dev30+gf92a4ebc1 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.10.0.dev31+gd04f05ae3 documentation</p>
   
 </a></div>
     
@@ -436,7 +436,7 @@
   <h1>Source code for mne_connectivity.io</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">mne.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_prepare_read_metadata</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_prepare_read_metadata</span><span class="p">,</span> <span class="n">warn</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.base</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">Connectivity</span><span class="p">,</span>
@@ -544,6 +544,37 @@
         <span class="s2">"EpochSpectroTemporalConnectivity"</span><span class="p">:</span> <span class="n">EpochSpectroTemporalConnectivity</span><span class="p">,</span>
     <span class="p">}</span>
     <span class="n">cls_func</span> <span class="o">=</span> <span class="n">conn_cls</span><span class="p">[</span><span class="n">data_structure_name</span><span class="p">]</span>
+
+    <span class="c1"># map deprecated method names to their current names</span>
+    <span class="n">method_map</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">"phase-slope-index"</span><span class="p">:</span> <span class="s2">"psi"</span><span class="p">,</span>
+        <span class="s2">"envelope correlation"</span><span class="p">:</span> <span class="s2">"env_corr_orth"</span><span class="p">,</span>  <span class="c1"># orth is default option</span>
+        <span class="s2">"SMI"</span><span class="p">:</span> <span class="s2">"smi"</span><span class="p">,</span>
+        <span class="s2">"wSMI"</span><span class="p">:</span> <span class="s2">"wsmi"</span><span class="p">,</span>
+        <span class="s2">"VAR(p)"</span><span class="p">:</span> <span class="s2">"var"</span><span class="p">,</span>
+        <span class="s2">"VAR(1)"</span><span class="p">:</span> <span class="s2">"var"</span><span class="p">,</span>
+        <span class="s2">"Time-varying VAR(1)"</span><span class="p">:</span> <span class="s2">"var_dynamic"</span><span class="p">,</span>
+        <span class="s2">"Time-varying VAR(p)"</span><span class="p">:</span> <span class="s2">"var_dynamic"</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="n">conn_da</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">"method"</span><span class="p">]</span> <span class="ow">in</span> <span class="n">method_map</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">conn_da</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">"method"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"envelope correlation"</span><span class="p">:</span>
+            <span class="n">warn</span><span class="p">(</span>
+                <span class="s2">"The 'envelope correlation' method name was deprecated in v1.0 in "</span>
+                <span class="s2">"favour of 'env_corr' and 'env_corr_orth' to distinguish whether the "</span>
+                <span class="s2">"data was orthogonalized or not. Setting the method name to "</span>
+                <span class="s2">"'env_corr_orth' to reflect the default behavior of the envelope "</span>
+                <span class="s2">"correlation function. If the data was not orthogonalized, you should "</span>
+                <span class="s2">"consider renaming the method to 'env_corr' and saving the updated "</span>
+                <span class="s2">"container."</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">warn</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"The '</span><span class="si">{</span><span class="n">conn_da</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">'method'</span><span class="p">]</span><span class="si">}</span><span class="s2">' method name was deprecated in v1.0 "</span>
+                <span class="sa">f</span><span class="s2">"in favour of '</span><span class="si">{</span><span class="n">method_map</span><span class="p">[</span><span class="n">conn_da</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">'method'</span><span class="p">]]</span><span class="si">}</span><span class="s2">'. To avoid this "</span>
+                <span class="s2">"warning, consider saving this connectivity container with the updated "</span>
+                <span class="s2">"method name."</span>
+            <span class="p">)</span>
+        <span class="n">conn_da</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">"method"</span><span class="p">]</span> <span class="o">=</span> <span class="n">method_map</span><span class="p">[</span><span class="n">conn_da</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">"method"</span><span class="p">]]</span>
 
     <span class="c1"># get the data as a new connectivity container</span>
     <span class="n">conn</span> <span class="o">=</span> <span class="n">_xarray_to_conn</span><span class="p">(</span><span class="n">conn_da</span><span class="p">,</span> <span class="n">cls_func</span><span class="p">)</span>

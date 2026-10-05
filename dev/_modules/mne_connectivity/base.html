@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_connectivity.base &#8212; MNE-Connectivity 0.10.0.dev30+gf92a4ebc1 documentation</title>
+    <title>mne_connectivity.base &#8212; MNE-Connectivity 0.10.0.dev31+gd04f05ae3 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0" />
 
-    <script src="../../_static/documentation_options.js?v=f391eccf"></script>
+    <script src="../../_static/documentation_options.js?v=99fd5ed3"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -132,7 +132,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.10.0.dev30+gf92a4ebc1 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.10.0.dev31+gd04f05ae3 documentation</p>
   
 </a></div>
     
@@ -626,7 +626,7 @@
 
 <span class="k">class</span><span class="w"> </span><span class="nc">DynamicMixin</span><span class="p">:</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_check_is_var</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">"(Time-varying\s+)?VAR\([1p]\)"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">"^var(?:_dynamic)?$"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="p">):</span>
             <span class="n">warn</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">"The connectivity data comes from a method (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="si">}</span><span class="s2">) that is "</span>
                 <span class="s2">"not a recognised vector autoregressive (VAR) model. The output of "</span>

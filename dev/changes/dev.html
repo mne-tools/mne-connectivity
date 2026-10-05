@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Version 0.10.0.dev30+gf92a4ebc1 (development) (2026-10-05) &#8212; MNE-Connectivity 0.10.0.dev30+gf92a4ebc1 documentation</title>
+    <title>Version 0.10.0.dev31+gd04f05ae3 (development) (2026-10-05) &#8212; MNE-Connectivity 0.10.0.dev31+gd04f05ae3 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0" />
 
-    <script src="../_static/documentation_options.js?v=f391eccf"></script>
+    <script src="../_static/documentation_options.js?v=99fd5ed3"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -135,7 +135,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.10.0.dev30+gf92a4ebc1 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.10.0.dev31+gd04f05ae3 documentation</p>
   
 </a></div>
     
@@ -397,7 +397,7 @@
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active"><a aria-current="page" class="current reference internal" href="#">Version 0.10.0.dev30+gf92a4ebc1 (development) (2026-10-05)</a></li>
+<li class="toctree-l1 current active"><a aria-current="page" class="current reference internal" href="#">Version 0.10.0.dev31+gd04f05ae3 (development) (2026-10-05)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="v0.9.html">Version 0.9.0 (2026-08-24)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="v0.8.html">Version 0.8.1 (2026-04-11)</a></li>
 
@@ -451,7 +451,7 @@
     
     <li class="breadcrumb-item"><a href="../whats_new.html" class="nav-link">What’s new</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Version 0.10.0.dev30+gf92a4ebc1 (development) (2026-10-05)</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Version 0.10.0.dev31+gd04f05ae3 (development) (2026-10-05)</span></li>
   </ul>
 </nav>
 </div>
@@ -469,7 +469,7 @@
                 <article class="bd-article">
                   
   <section id="version-release-development-2026-10-05">
-<span id="current"></span><h1>Version 0.10.0.dev30+gf92a4ebc1 (development) (2026-10-05)<a class="headerlink" href="#version-release-development-2026-10-05" title="Link to this heading">#</a></h1>
+<span id="current"></span><h1>Version 0.10.0.dev31+gd04f05ae3 (development) (2026-10-05)<a class="headerlink" href="#version-release-development-2026-10-05" title="Link to this heading">#</a></h1>
 <section id="dependencies">
 <h2>Dependencies<a class="headerlink" href="#dependencies" title="Link to this heading">#</a></h2>
 <ul>
@@ -522,6 +522,22 @@
 <li><p>Add automatic filling of missing values in dense connectivity matrices from existing lower-/upper-triangular elements in the <a class="reference internal" href="../generated/mne_connectivity.Connectivity.html#mne_connectivity.Connectivity.get_data" title="mne_connectivity.Connectivity.get_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_data()</span></code></a> method of connectivity containers, for eligible connectivity methods, by <a class="reference external" href="https://github.com/tsbinns">Thomas Binns</a>. (<a class="reference external" href="https://github.com/mne-tools/mne-connectivity/pull/461">#461</a>)</p></li>
 <li><p>Plot multivariate components as separate figures in <a class="reference internal" href="../generated/mne_connectivity.viz.plot_connectivity.html#mne_connectivity.viz.plot_connectivity" title="mne_connectivity.viz.plot_connectivity"><code class="xref py py-func docutils literal notranslate"><span class="pre">plot_connectivity()</span></code></a>, by <a class="reference external" href="https://github.com/tsbinns">Thomas Binns</a>. (<a class="reference external" href="https://github.com/mne-tools/mne-connectivity/pull/467">#467</a>)</p></li>
 <li><p>Speed up <a class="reference internal" href="../generated/mne_connectivity.spectral_connectivity_epochs.html#mne_connectivity.spectral_connectivity_epochs" title="mne_connectivity.spectral_connectivity_epochs"><code class="xref py py-func docutils literal notranslate"><span class="pre">spectral_connectivity_epochs()</span></code></a> for Morlet wavelet (<code class="docutils literal notranslate"><span class="pre">cwt_morlet</span></code>) spectra by conjugating each signal once rather than for every connection, by <a class="reference external" href="https://github.com/larsoner">Eric Larson</a>. (<a class="reference external" href="https://github.com/mne-tools/mne-connectivity/pull/487">#487</a>)</p></li>
+</ul>
+</section>
+<section id="other-changes">
+<h2>Other changes<a class="headerlink" href="#other-changes" title="Link to this heading">#</a></h2>
+<ul>
+<li><p>Deprecate method names in favour of the following:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">phase-slope-index</span></code> → <code class="docutils literal notranslate"><span class="pre">psi</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">envelope</span> <span class="pre">correlation</span></code> → <code class="docutils literal notranslate"><span class="pre">env_corr</span></code> and <code class="docutils literal notranslate"><span class="pre">env_corr_orth</span></code> (depending on orthogonalization)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SMI</span></code> → <code class="docutils literal notranslate"><span class="pre">smi</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">wSMI</span></code> → <code class="docutils literal notranslate"><span class="pre">wsmi</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">VAR(1)</span></code> and <code class="docutils literal notranslate"><span class="pre">VAR(p)</span></code> → <code class="docutils literal notranslate"><span class="pre">var</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Time-varying</span> <span class="pre">VAR(1)</span></code> and <code class="docutils literal notranslate"><span class="pre">Time-varying</span> <span class="pre">VAR(p)</span></code> → <code class="docutils literal notranslate"><span class="pre">var_dynamic</span></code></p></li>
+</ul>
+<p>by <a class="reference external" href="https://github.com/tsbinns">Thomas Binns</a>. (<a class="reference external" href="https://github.com/mne-tools/mne-connectivity/pull/494">#494</a>)</p>
+</li>
 </ul>
 </section>
 </section>
@@ -577,6 +593,7 @@
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bugfixes">Bugfixes</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#api-changes-by-deprecation">API changes by deprecation</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#new-features">New features</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#other-changes">Other changes</a></li>
 </ul>
   </nav></div>
 
