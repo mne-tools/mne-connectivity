@@ -22,7 +22,7 @@ from mne.utils.check import _check_option, _validate_type
 from scipy.signal import butter, filtfilt
 
 from .base import Connectivity, EpochConnectivity
-from .utils import check_indices, fill_doc
+from .utils import _check_indices, fill_doc
 
 
 def _define_symbols(kernel):
@@ -524,7 +524,7 @@ def wsmi(
                 indices_use = np.tril_indices(n_channels, k=-1)
     else:
         # User provided explicit indices
-        indices_use = check_indices(indices)
+        indices_use = _check_indices(indices)
 
         # Check that we have at least one valid connection
         if len(indices_use[0]) == 0:
