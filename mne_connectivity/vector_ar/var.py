@@ -1,5 +1,3 @@
-import inspect
-
 import numpy as np
 import scipy
 from mne import BaseEpochs
@@ -30,7 +28,7 @@ def vector_auto_regression(
     n_jobs=1,
     verbose=None,
 ):
-    r"""Compute vector auto-regresssive (VAR) model.
+    r"""Compute vector auto-regressive (VAR) model.
 
     Parameters
     ----------
@@ -161,11 +159,7 @@ def vector_auto_regression(
         metadata = data.metadata
 
         # get the actual data in numpy
-        # XXX: remove logic once support for mne<1.6 is dropped
-        kwargs = dict()
-        if "copy" in inspect.getfullargspec(data.get_data).kwonlyargs:
-            kwargs["copy"] = False
-        data = data.get_data(**kwargs)
+        data = data.get_data()
     else:
         metadata = None
 
@@ -215,9 +209,10 @@ def vector_auto_regression(
                 times=list(range(lags)),
                 n_nodes=n_nodes,
                 names=names,
+                indices="all",
                 n_epochs_used=n_epochs,
                 times_used=times,
-                method="VAR(p)",
+                method="var",
                 metadata=metadata,
                 events=events,
                 event_id=event_id,
@@ -228,9 +223,10 @@ def vector_auto_regression(
                 data=coef[:, 0],  # take first and only lag
                 n_nodes=n_nodes,
                 names=names,
+                indices="all",
                 n_epochs_used=n_epochs,
                 times_used=times,
-                method="VAR(1)",
+                method="var",
                 metadata=metadata,
                 events=events,
                 event_id=event_id,
@@ -263,9 +259,10 @@ def vector_auto_regression(
                 times=list(range(lags)),
                 n_nodes=n_nodes,
                 names=names,
+                indices="all",
                 n_epochs_used=n_epochs,
                 times_used=times,
-                method="Time-varying VAR(p)",
+                method="var_dynamic",
                 metadata=metadata,
                 events=events,
                 event_id=event_id,
@@ -276,9 +273,10 @@ def vector_auto_regression(
                 data=A_mats[..., 0],  # take first and only lag
                 n_nodes=n_nodes,
                 names=names,
+                indices="all",
                 n_epochs_used=n_epochs,
                 times_used=times,
-                method="Time-varying VAR(1)",
+                method="var_dynamic",
                 metadata=metadata,
                 events=events,
                 event_id=event_id,

@@ -1,3 +1,4 @@
+import re
 from copy import copy, deepcopy
 
 import numpy as np
@@ -17,7 +18,13 @@ from mne.utils import (
     warn,
 )
 
-from mne_connectivity.utils import _prepare_xarray_mne_data_structures, fill_doc
+from mne_connectivity.utils import (
+    _check_if_multivariate_indices,
+    _get_full_connectivity,
+    _get_unique_multivariate_nodes_and_indices,
+    _prepare_xarray_mne_data_structures,
+    fill_doc,
+)
 from mne_connectivity.viz import plot_connectivity_circle
 
 
@@ -182,6 +189,15 @@ class EpochMixin:
 
 
 class DynamicMixin:
+    def _check_is_var(self):
+        if not re.match(r"^var(?:_dynamic)?$", self.method):
+            warn(
+                f"The connectivity data comes from a method ({self.method}) that is "
+                "not a recognised vector autoregressive (VAR) model. The output of "
+                "this may not be valid or interpretable.",
+                UserWarning,
+            )
+
     def is_stable(self):
         companion_mat = self.companion
         return np.abs(np.linalg.eigvals(companion_mat)).max() < 1.0
@@ -191,126 +207,168 @@ class DynamicMixin:
 
     @property
     def companion(self):
-        """Generate block companion matrix.
+        """Generate block companion matrix for a vector autoregressive (VAR) model.
 
-        Returns the data matrix if the model is VAR(1).
+        Returns the data matrix if the VAR model order (i.e., the number of lags) is 1.
         """
         from .vector_ar.utils import _block_companion
 
+        self._check_is_var()
+
+        if "components" in self.dims:
+            raise NotImplementedError(
+                "Companion matrix generation is not currently supported for VAR "
+                "models with multiple components."
+            )
+
         lags = self.attrs.get("lags")
-        data = self.get_data()
+        data = self.get_data("dense")
         if lags == 1:
             return data
 
+        if self.is_epoched:
+            n_epochs = self.n_epochs
+        else:
+            n_epochs = 1
+            data = data[np.newaxis, ...]
         arrs = []
-        for idx in range(self.n_epochs):
+        for idx in range(n_epochs):
             blocks = _block_companion([data[idx, ..., jdx] for jdx in range(lags)])
             arrs.append(blocks)
-        return arrs
+        if not self.is_epoched:
+            arrs = arrs[0]
+
+        return np.asarray(arrs)
 
     def predict(self, data):
-        """Predict samples on actual data.
+        """Predict samples on data using the vector autoregressive (VAR) model.
 
-        The result of this function is used for calculating the residuals.
+        The result of this method is used for calculating the residuals.
 
         Parameters
         ----------
         data : array, shape ([n_epochs,] n_signals, n_times)
-            Epoched or continuous data set.
+            Epoched or continuous data. If the VAR model is time-varying (i.e., there
+            are different models per epoch), then the data should also be epoched, with
+            one epoch per VAR model. ``n_signals`` should match the number of signals in
+            the VAR model.
 
         Returns
         -------
         predicted : array, shape ([n_epochs,] n_signals, n_times)
-            Data as predicted by the VAR model of shape same as ``data``.
+            Data as predicted by the VAR model, of the same shape as ``data``.
 
         Notes
         -----
-        Residuals are obtained by ``r = x - var.predict(x)``.
+        Residuals are obtained by ``residuals = x - var.predict(x)``.
 
-        To compute residual covariances::
+        To compute residual covariances from epoched data::
 
             # compute the covariance of the residuals
-            # row are observations, columns are variables
-            t = residuals.shape[0]
+            # rows are observations, columns are variables
+            t = residuals.shape[0]  # n_epochs
             sampled_residuals = np.concatenate(
                 np.split(residuals[:, :, lags:], t, 0), axis=2
             ).squeeze(0)
-            rescov = np.cov(sampled_residuals)
+            residuals_cov = np.cov(sampled_residuals)
         """
+        self._check_is_var()
+
         if data.ndim < 2 or data.ndim > 3:
             raise ValueError(
-                "Data passed in must be either 2D or 3D. The data you passed in has "
+                "`data` must be either 2D or 3D. The data you passed in has "
                 f"{data.ndim} dims."
             )
+
         if data.ndim == 2 and self.is_epoched:
-            raise RuntimeError(
-                "If there is a VAR model over epochs, one must pass in a 3D array."
-            )
-        if data.ndim == 3 and not self.is_epoched:
-            raise RuntimeError(
-                "If there is a single VAR model, one must pass in a 2D array."
+            raise ValueError("For a time-varying VAR model, `data` must be a 3D array.")
+
+        if "components" in self.dims:
+            raise NotImplementedError(
+                "Prediction is not currently supported from VAR models with multiple "
+                "components."
             )
 
-        # make the data 3D
+        n_var = self.n_epochs if self.is_epoched else 1
+        if self.is_epoched and data.shape[0] != n_var:
+            raise ValueError(
+                f"The number of epochs in `data` ({data.shape[0]}) does not match the "
+                f"number of VAR models ({n_var})."
+            )
+
         if data.ndim == 2:
+            data_ndim = data.ndim
             data = data[np.newaxis, ...]
+        else:
+            data_ndim = data.ndim
+        if data.shape[1] != self.n_nodes:
+            raise ValueError(
+                f"The number of signals in `data` ({data.shape[1]}) does not match the "
+                f"number of signals in the VAR model ({self.n_nodes})."
+            )
 
+        # prepare VAR model
         n_epochs, _, n_times = data.shape
         var_model = self.get_data(output="dense")
-
-        # get the model order
         lags = self.attrs.get("lags")
+
+        # reshape the coeffs for prediction (and add epochs dim if not present)
+        var_model = np.reshape(var_model, (n_var, self.n_nodes, self.n_nodes * lags))
 
         # predict the data by applying forward model
         predicted_data = np.zeros(data.shape)
-        # which takes less loop iterations
-        if n_epochs > n_times - lags:
-            for idx in range(1, lags + 1):
-                for jdx in range(lags, n_times):
-                    if self.is_epoched:
-                        bp = var_model[jdx, :, (idx - 1) :: lags]
-                    else:
-                        bp = var_model[:, (idx - 1) :: lags]
-                    predicted_data[:, :, jdx] += np.dot(data[:, :, jdx - idx], bp.T)
-        else:
-            for idx in range(1, lags + 1):
-                for jdx in range(n_epochs):
-                    if self.is_epoched:
-                        bp = var_model[jdx, :, (idx - 1) :: lags]
-                    else:
-                        bp = var_model[:, (idx - 1) :: lags]
-                    predicted_data[jdx, :, lags:] += np.dot(
-                        bp, data[jdx, :, (lags - idx) : (n_times - idx)]
-                    )
+        for lag_idx in range(1, lags + 1):
+            for epo_idx in range(n_epochs):
+                var_idx = epo_idx if self.is_epoched else 0
+                bp = var_model[var_idx, :, (lag_idx - 1) :: lags]
+                predicted_data[epo_idx, :, lags:] += np.dot(
+                    bp, data[epo_idx, :, (lags - lag_idx) : (n_times - lag_idx)]
+                )
+        if data_ndim == 2:  # remove unwanted epochs dim
+            predicted_data = predicted_data[0]
 
         return predicted_data
 
     @fill_doc
     def simulate(self, n_samples, noise_func=None, random_state=None):
-        """Simulate vector autoregressive (VAR) model.
-
-        This function generates data from the VAR model.
+        """Simulate data using the vector autoregressive (VAR) model.
 
         Parameters
         ----------
         n_samples : int
             Number of samples to generate.
         noise_func : callable | None
-            This function is used to create the generating noise process. If ``None``,
+            The function used to create the generating noise process. Each call to this
+            function should return an array of shape ``(n_nodes,)``. If ``None``,
             Gaussian white noise with zero mean and unit variance is used.
         %(random_state)s
 
         Returns
         -------
-        data : array, shape (n_samples, n_channels)
+        data : array, shape (n_nodes, n_samples)
             Generated data.
+
+        Notes
+        -----
+        If the VAR model is time-varying (i.e., there are different models per epoch),
+        the data is simulated from the average of these models.
         """
+        self._check_is_var()
+
+        if "components" in self.dims:
+            raise NotImplementedError(
+                "Simulation is not currently supported from VAR models with multiple "
+                "components."
+            )
+
         var_model = self.get_data(output="dense")
         if self.is_epoched:
             var_model = var_model.mean(axis=0)
 
+        # reshape the coeffs for simulation
         n_nodes = self.n_nodes
         lags = self.attrs.get("lags")
+        var_model = np.reshape(var_model, (n_nodes, n_nodes * lags))
 
         # set noise function
         if noise_func is None:
@@ -325,10 +383,6 @@ class DynamicMixin:
         data = np.zeros((n, n_nodes))
         res = np.zeros((n, n_nodes))
 
-        for jdx in range(lags):
-            e = noise_func()
-            res[jdx, :] = e
-            data[jdx, :] = e
         for jdx in range(lags, n):
             e = noise_func()
             res[jdx, :] = e
@@ -336,13 +390,11 @@ class DynamicMixin:
             for idx in range(1, lags + 1):
                 data[jdx, :] += var_model[:, (idx - 1) :: lags].dot(data[jdx - idx, :])
 
-        # self.residuals = res[10 * lags:, :, :].T
-        # self.rescov = sp.cov(cat_trials(self.residuals).T, rowvar=False)
         return data[10 * lags :, :].transpose()
 
 
 @fill_doc
-class BaseConnectivity(DynamicMixin, EpochMixin):
+class BaseConnectivity(EpochMixin):
     """Base class for connectivity data.
 
     This class should not be instantiated directly, but should be used to do
@@ -350,8 +402,10 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
     connectivity computing functions.
 
     Connectivity data is anything that represents "connections" between nodes as a
-    ``(N, N)`` array. It can be symmetric, or asymmetric (if it is symmetric, storage
-    optimization will occur).
+    ``(N, N)`` array. It can be symmetric, or asymmetric. If it is symmetric (or
+    asymmetric, but the missing (e.g., upper-triangular) elements can be determined
+    based on the existing (e.g., lower-triangular) elements), we can optimise memory
+    demand for storage.
 
     Parameters
     ----------
@@ -370,23 +424,26 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
     Notes
     -----
     Connectivity data can be generally represented as a square matrix with values
-    intending the connectivity function value between two nodes. We optimize storage of
-    symmetric connectivity data and allow support for computing connectivity data on a
-    subset of nodes. We store connectivity data as a raveled ``(n_estimated_nodes,
-    ...)`` where ``n_estimated_nodes`` can be ``n_nodes_in * n_nodes_out`` if a full
-    connectivity structure is computed, or a subset of the nodes (equal to the length of
-    the indices passed in).
+    intending the connectivity function value between two nodes. We store connectivity
+    data as a raveled ``(n_estimated_nodes, ...)`` array, where ``n_estimated_nodes``
+    can be ``n_nodes_in * n_nodes_out`` if a full connectivity structure is computed, or
+    a subset of the nodes (equal to the length of the indices passed in).
 
     Since we store connectivity data as a raveled array, one can easily optimize the
-    storage of "symmetric" connectivity data. One can use numpy to convert a full
-    all-to-all connectivity into an upper triangular portion, and set
-    ``indices='symmetric'``. This would reduce the RAM needed in half.
+    storage of "symmetric" connectivity data by storing only the lower-triangular (or
+    upper-triangular) elements, and filling these in when the user requests the full
+    connectivity matrix. How to fill in the missing values is determined based on the
+    ``method`` parameter.
 
     The underlying data structure is an :class:`xarray.DataArray`, with a similar API to
     ``xarray``. We provide support for storing connectivity data in a subset of nodes.
     Thus the underlying data structure instead of a ``(n_nodes_in, n_nodes_out)`` 2D
     array would be a ``(n_nodes_in * n_nodes_out,)`` raveled 1D array. This allows us to
-    optimize storage also for symmetric connectivity.
+    optimize storage also for "symmetric" connectivity.
+
+    Storage optimisation will not occur for multivariate connectivity, as computing
+    connectivity in the same lower-/upper-triangular manner for "symmetric" methods does
+    not transfer.
     """
 
     # whether or not the connectivity occurs over epochs
@@ -404,11 +461,9 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
         metadata=None,
         **kwargs,
     ):
-        if isinstance(indices, str) and indices not in ["all", "symmetric"]:
-            raise ValueError(
-                'Indices can only be "all", "symmetric", or a list of tuples. '
-                f"It cannot be {indices}."
-            )
+        _validate_type(indices, (str, tuple), "`indices`")
+        if isinstance(indices, str):
+            _check_option("indices", indices, ["all", "lower", "upper"], "as a string")
 
         # prepare metadata pandas dataframe and ensure metadata is a Pandas
         # DataFrame object
@@ -417,6 +472,19 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
         self.metadata = metadata
 
         # check the incoming data structure
+        if "components" in kwargs:
+            bad_indices = None
+            if not isinstance(indices, tuple):
+                bad_indices = f"'{indices}'"  # must be a str
+            elif not _check_if_multivariate_indices(indices):
+                bad_indices = "a tuple of non-nested arrays"  # must be non-nested
+            if bad_indices:
+                raise ValueError(
+                    "`components` are present in `kwargs`, which is a term reserved "
+                    "for multivariate connectivity methods. However, `indices` does "
+                    "not match the format for multivariate methods. Expected a tuple "
+                    f"of nested arrays, got {bad_indices}."
+                )
         self._check_data_consistency(data, indices=indices, n_nodes=n_nodes)
         self._prepare_xarray(
             data,
@@ -431,19 +499,26 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
 
     def __repr__(self) -> str:
         r = f"<{self.__class__.__name__} | "
+        r += f"{self.method if self.method is not None else 'Unknown method'} | "
 
-        if self.n_epochs is not None:
-            r += f"n_epochs : {self.n_epochs}, "
-        if "freqs" in self.dims:
-            r += f"freq : [{self.freqs[0]}, {self.freqs[-1]}], "  # type: ignore
-        if "times" in self.dims:
-            r += f"time : [{self.times[0]}, {self.times[-1]}], "  # type: ignore
-        r += f", nave : {self.n_epochs_used}"
-        r += f", nodes, n_estimated : {self.n_nodes}, {self.n_estimated_nodes}"
-        if "components" in self.dims:
-            r += f", n_components : {len(self.coords['components'])}, "
-        r += f", ~{sizeof_fmt(self._size)}"
-        r += ">"
+        dim_info = []
+        for dim in ("epochs", "connections", "components", "freqs", "times"):
+            if dim == "connections":
+                dim_info.append(f"{self.n_estimated_nodes} connections")
+            elif dim == "freqs" and dim in self.dims:
+                dim_info.append(f"{self.freqs[0]}-{self.freqs[-1]} Hz")
+            elif dim == "times" and dim in self.dims:
+                dim_info.append(f"{self.times[0]}-{self.times[-1]} s")
+            elif dim in self.dims:  # epochs or components
+                dim_info.append(f"{len(self.coords[dim])} {dim}")
+        dim_info = ", ".join(dim_info) + " | "
+        r += dim_info
+
+        if self.n_epochs_used is not None and not self.is_epoched:
+            r += f"nave: {self.n_epochs_used} | "
+
+        r += f"~{sizeof_fmt(self._size)}>"
+
         return r
 
     def _get_num_connections(self, data):
@@ -543,10 +618,6 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
 
         # get the number of estimated nodes
         self._get_num_connections(data)
-        if self.is_epoched:
-            data_len = data.shape[1]
-        else:
-            data_len = data.shape[0]
 
         if isinstance(indices, tuple):
             # check that the indices passed in are of the same length
@@ -556,20 +627,31 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
                     f"are right now {len(indices[0])} and {len(indices[1])}."
                 )
             # indices length should match the data length
-            if len(indices[0]) != data_len:
+            if len(indices[0]) != self.n_estimated_nodes:
                 raise ValueError(
                     f"The number of indices, {len(indices[0])} should match the "
-                    f"raveled data length passed in of {data_len}."
+                    f"raveled data length passed in of {self.n_estimated_nodes}."
                 )
 
-        elif indices == "symmetric":
-            expected_len = ((n_nodes + 1) * n_nodes) // 2
-            if data_len != expected_len:
+        elif indices in ["lower", "upper"]:
+            expected_len = n_nodes * (n_nodes - 1) // 2
+            if self.n_estimated_nodes != expected_len:
                 raise ValueError(
-                    'If "indices" is "symmetric", then '
-                    f"connectivity data should be the upper-triangular part of the "
-                    f"matrix. There are {data_len} estimated connections. But there "
-                    f"should be {expected_len} estimated connections."
+                    "If `indices` is 'lower' or 'upper', then connectivity data should "
+                    "be the lower- or upper-triangular part of the connectivity "
+                    f"matrix, respectively. Expected {expected_len} connections from "
+                    f"the {n_nodes} nodes, but got {self.n_estimated_nodes} "
+                    "connections."
+                )
+
+        else:  # indices = "all"
+            expected_len = n_nodes**2
+            if self.n_estimated_nodes != expected_len:
+                raise ValueError(
+                    "If `indices` is 'all', then connectivity data should be the full "
+                    f"connectivity matrix. Expected {expected_len} connections from "
+                    f"the {n_nodes} nodes, but got {self.n_estimated_nodes} "
+                    "connections."
                 )
 
     def copy(self):
@@ -635,10 +717,11 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
 
         Returns
         -------
-        indices : ``'all'`` | ``'symmetric'`` | tuple of list
-            Either ``'all'`` for all-to-all connectivity, ``'symmetric'`` for symmetric
-            connectivity, or a tuple of lists representing the node-to-nodes that
-            connectivity was computed for.
+        indices : ``'all'`` | ``'lower'`` | ``'upper'`` | tuple of list
+            Either ``'all'`` for all-to-all connectivity, ``'lower'`` for
+            lower-triangular connectivity, ``'upper'`` for upper-triangular
+            connectivity, or a tuple of lists representing the seed and target nodes
+            that connectivity was computed between.
         """
         return self.attrs["indices"]
 
@@ -672,7 +755,7 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
         #     size += self.metadata.memory_usage(index=True).sum()
         return size
 
-    def get_data(self, output="compact"):
+    def get_data(self, output="compact", missing="raise"):
         """Get connectivity data as a numpy array.
 
         Parameters
@@ -681,23 +764,89 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
             How to format the output:
 
             - ``'raveled'`` will represent each connectivity matrix as a
-              ``(..., n_nodes_in * n_nodes_out, ...)`` array
+              ``(..., n_nodes_in * n_nodes_out, ...)`` array.
             - ``'dense'`` will return each connectivity matrix as a ``(..., n_nodes_in,
-              n_nodes_out, ...)`` array
-            - ``'compact'`` (default) will return ``'raveled'`` if ``indices`` were
-              defined as a tuple of arrays, or ``'dense'`` if ``indices='all'``
-
-            Multivariate connectivity data cannot be returned in a dense form.
+              n_nodes_out, ...)`` array.
+            - ``'compact'`` (default) will return ``'raveled'`` if ``indices`` is
+              a tuple of arrays, or ``'dense'`` if ``indices`` is ``'all'``,
+              ``'lower'``, or ``'upper'``.
+        missing : ``'raise'`` | float
+            How to handle missing values in the dense connectivity matrix when these
+            cannot be filled in (see notes for more information). If ``'raise'``, an
+            error is raised. If a float, the missing values are filled with that float.
+            Ignored if ``output='raveled'``. Default is ``'raise'``.
 
         Returns
         -------
         data : array
             The output connectivity data.
+        multivariate_nodes : tuple of array
+            Returned if the connectivity data is multivariate with ``self.indices``
+            defined as a tuple of arrays, and ``output='dense'``. Used to map from the
+            original set of indices to the dense matrix space. See notes for more
+            information.
+
+        Notes
+        -----
+        **Handling missing values for dense outputs**
+
+        If ``indices`` is not ``'all'`` and ``output='dense'``, there may be missing
+        values from the full connectivity matrix that need to be filled in:
+
+        1. When ``indices`` is ``'lower'`` or ``'upper'``, the missing values will try
+           to be inferred based on the existing ones, falling back to the behaviour
+           determined by the ``missing`` parameter if they cannot be inferred.
+
+        2. When ``indices`` is a tuple and ``indices`` represents a subset of the full
+           connectivity matrix, the missing values will not be inferred, and the
+           behaviour is determined by the ``missing`` parameter.
+
+        3. When ``indices`` is a tuple and ``indices`` represents the full connectivity
+           matrix, there are no missing values to fill in.
+
+        **Handling dense outputs for multivariate connectivity**
+
+        Because multivariate connectivity data can involve multiple channels per
+        connection, it is not possible to represent the data in a dense matrix form
+        where each row/column represent a single channel.
+
+        Instead, the multivariate data is mapped into a new space, based on the set of
+        channels that define each node. E.g., the multivariate indices::
+
+            (
+                [[0, 1], [0, 1], [2, 3]],  # seeds
+                [[2, 3], [4, 5], [4, 5]]   # targets
+            )
+
+        contains the following sets of channels: ``[0, 1]`` (node 0); ``[2, 3]``
+        (node 1); and ``[4, 5]`` (node 2). Based on this, the multivariate indices can
+        be mapped to a new space with indices::
+
+            (
+                [0, 0, 1],  # seeds
+                [1, 2, 2]   # targets
+            )
+
+        For a dense connectivity matrix, this would return a ``(3, 3)`` upper-triangular
+        array.
+
+        To ensure the mapping from the original multivariate indices to the new dense
+        matrix space is traceable, ``multivariate_nodes`` is returned, which contains
+        the (unmasked form) of each node in the position where it exists in the dense
+        matrix space. For the above example, ``multivariate_nodes`` would be
+        ``[[0, 1], [2, 3], [4, 5]]``.
         """
         _check_option("output", output, ["raveled", "dense", "compact"])
+        _validate_type(missing, (str, "numeric"), "`missing`")
+        if isinstance(missing, str):
+            _check_option("missing", missing, ["raise"], "as a string")
+        else:
+            missing = float(missing)
+
+        multivariate_nodes = None
 
         if output == "compact":
-            if self.indices in ["all", "symmetric"]:
+            if self.indices in ["all", "lower", "upper"]:
                 output = "dense"
             else:
                 output = "raveled"
@@ -705,66 +854,35 @@ class BaseConnectivity(DynamicMixin, EpochMixin):
         if output == "raveled":
             data = self._data
         else:
-            if (
-                isinstance(self.indices, tuple)
-                and not np.all(
-                    [np.issubdtype(type(ind), int) for ind in self.indices[0]]
+            # Check if indices are for multivariate connectivity
+            if isinstance(self.indices, tuple) and _check_if_multivariate_indices(
+                self.indices
+            ):
+                # Remap multivariate indices from channels to the unique nodes
+                # (nodes here are considered a set of channels)
+                multivariate_nodes, indices = (
+                    _get_unique_multivariate_nodes_and_indices(self.indices)
                 )
-                and not np.all(
-                    [np.issubdtype(type(ind), int) for ind in self.indices[1]]
-                )
-            ):  # i.e. check if multivariate results based on nested indices
-                # multivariate results cannot be returned in a dense form as a single
-                # set of results would correspond to multiple entries in the matrix, and
-                # there could also be cases where multiple results correspond to the
-                # same entries in the matrix.
-                raise ValueError(
-                    "cannot return multivariate connectivity data in a dense form"
-                )
+                n_nodes = len(multivariate_nodes)
+            else:
+                indices, n_nodes = self.indices, self.n_nodes
 
-            # get the new shape of the data array
+            # Move epochs from first dimension temporarily for easier reshaping
+            data = self._data
             if self.is_epoched:
-                new_shape = [self.n_epochs]
-            else:
-                new_shape = []
+                data = np.moveaxis(data, 0, -1)
 
-            # handle the case where model order is defined in VAR connectivity
-            # and thus appends the connectivity matrices side by side, so the
-            # shape is N x N * lags
-            new_shape.extend([self.n_nodes, self.n_nodes])
-            if "components" in self.dims:
-                new_shape.append(len(self.coords["components"]))
-            if "freqs" in self.dims:
-                new_shape.append(len(self.coords["freqs"]))
-            if "times" in self.dims:
-                new_shape.append(len(self.coords["times"]))
+            # Get connectivity as a square matrix, with missing values filled
+            data = _get_full_connectivity(
+                data, indices, n_nodes, self.method, missing=missing
+            )
 
-            if isinstance(self.indices, tuple) or self.indices == "symmetric":
-                if np.iscomplexobj(self._data):
-                    fill_value = np.nan + 1j * np.nan
-                else:
-                    fill_value = np.nan
-                data = np.full(new_shape, fill_value=fill_value, dtype=self._data.dtype)
+            # Move epochs back to first dimension if needed
+            if self.is_epoched:
+                data = np.moveaxis(data, -1, 0)
 
-            if isinstance(self.indices, tuple):
-                # handle things differently if indices is defined
-                row_idx, col_idx = self.indices
-                if self.is_epoched:
-                    data[:, row_idx, col_idx, ...] = self._data
-                else:
-                    data[row_idx, col_idx, ...] = self._data
-            elif self.indices == "symmetric":
-                # get the upper/lower triangular indices
-                row_triu_inds, col_triu_inds = np.triu_indices(self.n_nodes, k=0)
-                if self.is_epoched:
-                    data[:, row_triu_inds, col_triu_inds, ...] = self._data
-                    data[:, col_triu_inds, row_triu_inds, ...] = self._data
-                else:
-                    data[row_triu_inds, col_triu_inds, ...] = self._data
-                    data[col_triu_inds, row_triu_inds, ...] = self._data
-            else:
-                data = self._data.reshape(new_shape)
-
+        if multivariate_nodes is not None:
+            return data, multivariate_nodes
         return data
 
     def rename_nodes(self, mapping):
@@ -929,7 +1047,7 @@ class SpectralConnectivity(BaseConnectivity, SpectralMixin):
 
 
 @fill_doc
-class TemporalConnectivity(BaseConnectivity, TimeMixin):
+class TemporalConnectivity(BaseConnectivity, TimeMixin, DynamicMixin):
     """Temporal connectivity class.
 
     This is an array of shape ``(n_connections, [n_components,] n_times)``, or
@@ -1190,7 +1308,7 @@ class EpochSpectroTemporalConnectivity(SpectroTemporalConnectivity):
 
 
 @fill_doc
-class Connectivity(BaseConnectivity):
+class Connectivity(BaseConnectivity, DynamicMixin):
     """Connectivity class without frequency or time component.
 
     This is an array of shape ``(n_connections[, n_components])``, or ``(n_nodes,
@@ -1235,7 +1353,7 @@ class Connectivity(BaseConnectivity):
 
 
 @fill_doc
-class EpochConnectivity(BaseConnectivity):
+class EpochConnectivity(Connectivity):
     """Epoch connectivity class.
 
     This is an array of shape ``(n_epochs, n_connections[, n_components])``, or

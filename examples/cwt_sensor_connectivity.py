@@ -89,11 +89,10 @@ freqs = con.freqs
 con.get_data()[np.where(indices[1] == seed)] = 1.0
 
 # Show topography of connectivity from seed
-title = "WPLI2 - Visual - Seed %s" % seed_ch
+title = f"WPLI2 - Visual - Seed {seed_ch}"
 
 layout = mne.find_layout(epochs.info, "meg")  # use full layout
 
-# Note that users of mne < 1.7 should use the `AverageTFR` class
 tfr = AverageTFRArray(epochs.info, con.get_data(), times, freqs, nave=len(epochs))
 tfr.plot_topo(fig_facecolor="w", font_color="k", border="k")
 

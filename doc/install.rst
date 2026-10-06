@@ -3,19 +3,8 @@
 Installation
 ============
 
-Dependencies
-------------
+We require that you use Python ≥ 3.11 and MNE ≥ 1.8.
 
-* ``mne`` (>=1.6)
-* ``numpy`` (>=1.21)
-* ``scipy`` (>=1.4.0)
-* ``xarray`` (>=2023.11.0)
-* ``joblib`` (>=1.0.0, optional)
-* ``pandas`` (>=1.3.2)
-* ``netCDF4`` (>=1.6.5)
-* ``matplotlib`` (optional, for using the interactive data inspector)
-
-We require that you use Python 3.10 or higher.
 You may choose to install ``mne-connectivity`` `via pip <#Installation via pip>`_,
 or conda.
 
@@ -27,7 +16,6 @@ simply run the following at the root of the repository:
 
 .. code-block:: bash
 
-   # with python>=3.10 at least
    conda create -n mne
    conda activate mne
    conda install -c conda-forge mne-connectivity

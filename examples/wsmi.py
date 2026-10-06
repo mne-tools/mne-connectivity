@@ -24,15 +24,16 @@ characteristic of conscious brain states.
 #
 # License: BSD (3-clause)
 
+# %%
+
 import matplotlib.pyplot as plt
 import mne
 import numpy as np
-import pandas as pd
-import seaborn as sns
 from matplotlib import colors
 from mne.datasets import sample
 
 from mne_connectivity import wsmi
+from mne_connectivity.viz import plot_connectivity
 
 ########################################################################################
 # Simulating Data with Different Connectivity Patterns
@@ -165,16 +166,7 @@ for i, j in zip(indices[0][:3], indices[1][:3]):  # First 3 pairs only
 
 # Now compute averaged connectivity for visualization
 conn_ave = wsmi(epochs, kernel=3, tau=1, average=True)
-# Get connectivity matrix for visualization
-conn_matrix = conn_ave.get_data("dense")
-conn_matrix += conn_matrix.T  # make matrix symmetric
-
-# Use pandas and seaborn for cleaner visualization
-df = pd.DataFrame(data=conn_matrix, index=names, columns=names)
-ax = sns.heatmap(df, annot=True, fmt="0.4f", cmap="viridis", vmin=0)
-ax.set_title("wSMI Connectivity Matrix\n(Higher values = stronger connectivity)")
-ax.tick_params(axis="x", labelrotation=45)
-ax.figure.tight_layout()
+plot_connectivity(conn_ave, info=epochs.info, node_labels="names")
 
 ########################################################################################
 # **Note**: Small negative values can occur for wSMI, reflecting estimator noise or a
@@ -372,36 +364,9 @@ print(f"Channels: {epochs_real.ch_names}")
 
 # Compute wSMI on real EEG data
 conn_real = wsmi(epochs_real, kernel=3, tau=1, average=True, verbose=False)
-conn_real_matrix = conn_real.get_data(output="dense")
-conn_real_matrix += conn_real_matrix.T  # make matrix symmetric
-conn_real_names = conn_real.attrs["node_names"]
 
 # Plot connectivity matrix
-fig, ax = plt.subplots(1, 1, figsize=(8, 6))
-im = ax.imshow(conn_real_matrix, cmap="viridis", vmin=0)
-ax.set_xticks(range(n_eeg))
-ax.set_yticks(range(n_eeg))
-ax.set_xticklabels(epochs_real.ch_names)
-ax.set_yticklabels(epochs_real.ch_names)
-
-# Add connectivity values
-for i in range(n_eeg):
-    for j in range(n_eeg):
-        text = ax.text(
-            j,
-            i,
-            f"{conn_real_matrix[i, j]:.3f}",
-            ha="center",
-            va="center",
-            color="black"
-            if conn_real_matrix[i, j] > conn_real_matrix.max() / 2
-            else "white",
-        )
-
-plt.colorbar(im, ax=ax, label="wSMI")
-plt.title("wSMI Connectivity: Real EEG Data\n(Visual stimulus epochs)")
-plt.tight_layout()
-plt.show()
+plot_connectivity(conn_real, info=epochs_real.info, node_labels="names")
 
 ########################################################################################
 # The connectivity matrix shows wSMI values between electrode pairs during visual

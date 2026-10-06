@@ -45,7 +45,7 @@ def parallel_loop(func, n_jobs=1, verbose=1):
     return par, func
 
 
-def check_indices(indices):
+def _check_indices(indices):
     """Check indices parameter for bivariate connectivity.
 
     Parameters
@@ -353,7 +353,7 @@ def degree(connectivity, threshold_prop=0.2):
     degree[:: n_nodes + 1] = 0.0
     n_keep = int(round((degree.size - len(connectivity)) * threshold_prop / split))
     degree[np.argsort(degree)[:-n_keep]] = 0
-    degree.shape = connectivity.shape
+    degree = np.reshape(degree, connectivity.shape)
     if split == 2:
         degree += degree.T  # normally unsafe, but we know where our zeros are
     degree = np.sum(degree > 0, axis=0)
@@ -376,3 +376,40 @@ def _prepare_xarray_mne_data_structures(conn_obj):
         conn_obj.attrs["event_id_vals"] = list(conn_obj.event_id.values())
 
     return conn_obj
+
+
+def _check_if_multivariate_indices(indices):
+    """Check if indices are for multivariate connectivity."""
+    return not np.all(
+        [np.issubdtype(type(ind), int) for ind in indices[0]]
+    ) and not np.all([np.issubdtype(type(ind), int) for ind in indices[1]])
+
+
+def _get_unique_multivariate_nodes_and_indices(indices):
+    """Get the unique multivariate nodes from the indices parameter."""
+    unique_nodes = []
+    for node_ind in (*indices[0], *indices[1]):
+        if isinstance(node_ind, np.ma.MaskedArray):
+            node_ind = node_ind.compressed()
+        node_ind = tuple(node_ind)
+        if node_ind not in unique_nodes:
+            unique_nodes.append(node_ind)
+    unique_nodes = tuple(np.array(node) for node in unique_nodes)
+
+    node_indices = ([], [])
+    for seed, target in zip(*indices):
+        if isinstance(seed, np.ma.MaskedArray):
+            seed = seed.compressed()
+        if isinstance(target, np.ma.MaskedArray):
+            target = target.compressed()
+        for node_idx, node in enumerate(unique_nodes):
+            if np.array_equal(node, seed):
+                node_indices[0].append(node_idx)
+                break
+        for node_idx, node in enumerate(unique_nodes):
+            if np.array_equal(node, target):
+                node_indices[1].append(node_idx)
+                break
+    node_indices = (np.array(node_indices[0]), np.array(node_indices[1]))
+
+    return unique_nodes, node_indices

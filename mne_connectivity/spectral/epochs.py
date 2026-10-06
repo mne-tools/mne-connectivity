@@ -21,7 +21,6 @@ from mne.time_frequency import (
 )
 from mne.time_frequency.multitaper import (
     _compute_mt_params,
-    _csd_from_mt,
     _mt_spectra,
     _psd_from_mt,
     _psd_from_mt_adaptive,
@@ -38,7 +37,13 @@ from mne.utils import (
 )
 
 from ..base import SpectralConnectivity, SpectroTemporalConnectivity
-from ..utils import _check_multivariate_indices, check_indices, fill_doc
+from ..utils import (
+    _CAN_FILL_MISSING,
+    _check_indices,
+    _check_multivariate_indices,
+    _make_square,
+    fill_doc,
+)
 from .epochs_bivariate import _CON_METHOD_MAP_BIVARIATE
 from .epochs_multivariate import (
     _CON_METHOD_MAP_MULTIVARIATE,
@@ -235,9 +240,9 @@ def _prepare_connectivity(
     for i, n_f_band in enumerate([len(f) for f in freqs_bands]):
         if n_f_band == 0:
             raise ValueError(
-                f"There are no frequency points between {fmin[i]:.1f}Hz and "
-                f"{fmax[i]:.1f}Hz. Change the band specification (fmin, fmax) or the "
-                "frequency resolution."
+                f"There are no frequency bins between {fmin[i]} Hz and {fmax[i]} Hz. "
+                "Change the band specification (fmin, fmax) or increase frequency "
+                "resolution."
             )
     if n_bands == 1:
         logger.info(
@@ -255,28 +260,21 @@ def _prepare_connectivity(
         logger.info("    connectivity scores will be averaged for each band")
 
     # Sort indices
-    multivariate_con = any(
-        this_method in _multivariate_methods for this_method in method
-    )
-
-    if indices is None:
-        if multivariate_con:
-            if any(this_method in _gc_methods for this_method in method):
-                raise ValueError(
-                    "indices must be specified when computing Granger causality, as "
-                    "all-to-all connectivity is not supported"
-                )
-            logger.info("using all indices for multivariate connectivity")
-            # indices expected to be a masked array, even if not ragged
-            indices_use = (picks[np.newaxis, :], picks[np.newaxis, :])
-            indices_use = np.ma.masked_array(indices_use, mask=False, fill_value=-1)
+    if not isinstance(indices, tuple):
+        # Can only be bivariate connectivity
+        if indices == "all":
+            logger.info("Computing all connections for full connectivity matrix")
+            # Only compute tril, then transform to full matrix later
+            indices_use = np.tril_indices(n_good_signals, k=-1)
         else:
-            logger.info("only using indices for lower-triangular matrix")
-            # only compute r for lower-triangular region
-            indices_use = np.tril_indices(n_good_signals, -1)
-            indices_use = tuple(picks[ind] for ind in indices_use)
+            logger.info(f"Computing connections for {indices}-triangular matrix")
+            if indices == "upper":
+                indices_use = np.triu_indices(n_good_signals, k=1)
+            else:  # "lower"
+                indices_use = np.tril_indices(n_good_signals, k=-1)
+        indices_use = tuple(picks[ind] for ind in indices_use)
     else:
-        if multivariate_con:
+        if any(this_method in _multivariate_methods for this_method in method):
             # pad ragged indices and mask the invalid entries
             indices_use = _check_multivariate_indices(indices, n_signals)
             if any(this_method in _gc_methods for this_method in method):
@@ -290,7 +288,7 @@ def _prepare_connectivity(
                             "Granger causality"
                         )
         else:
-            indices_use = check_indices(indices)
+            indices_use = _check_indices(indices)
 
     # number of connections to compute
     n_cons = len(indices_use[0])
@@ -463,37 +461,6 @@ def _compute_spectra(
     return x_t, this_psd, weights
 
 
-def _tfr_csd_from_mt(x_mt, y_mt, weights_x, weights_y):
-    """Compute time-frequency CSD from tapered spectra.
-
-    Parameters
-    ----------
-    x_mt : array, shape (..., n_tapers, n_freqs, n_times)
-        The tapered time-frequency spectra for signals x.
-    y_mt : array, shape (..., n_tapers, n_freqs, n_times)
-        The tapered time-frequency spectra for signals y.
-    weights_x : array, shape (n_tapers, n_freqs)
-        Weights to use for combining the tapered spectra of x_mt.
-    weights_y : array, shape (n_tapers, n_freqs)
-        Weights to use for combining the tapered spectra of y_mt.
-
-    Returns
-    -------
-    csd : array, shape (..., n_freqs, n_times)
-        The CSD between x and y.
-    """
-    # expand weights dims to match x_mt and y_mt
-    weights_x = weights_x[..., np.newaxis]
-    weights_y = weights_y[..., np.newaxis]
-    # compute CSD
-    csd = np.sum(weights_x * x_mt * (weights_y * y_mt).conj(), axis=-3)
-    denom = np.sqrt((weights_x * weights_x.conj()).real.sum(axis=-3)) * np.sqrt(
-        (weights_y * weights_y.conj()).real.sum(axis=-3)
-    )
-    csd *= 2 / denom
-    return csd
-
-
 def _epoch_spectral_connectivity(
     data,
     sig_idx,
@@ -625,35 +592,26 @@ def _epoch_spectral_connectivity(
         this_method.start_epoch()
 
     # accumulate connectivity scores
-    if mode in ["multitaper", "fourier"]:
-        for i in range(0, n_con_signals, block_size):
-            n_extra = max(0, i + block_size - n_con_signals)
-            con_idx = slice(i, i + block_size - n_extra)
-            compute_csd = _csd_from_mt if not is_tfr_con else _tfr_csd_from_mt
-            if mt_adaptive:
-                csd = compute_csd(
-                    x_t[idx_map[0][con_idx]],
-                    x_t[idx_map[1][con_idx]],
-                    weights[idx_map[0][con_idx]],
-                    weights[idx_map[1][con_idx]],
-                )
-            else:
-                csd = compute_csd(
-                    x_t[idx_map[0][con_idx]], x_t[idx_map[1][con_idx]], weights, weights
-                )
+    use_tapers = mode in ["multitaper", "fourier"]
+    if use_tapers:
+        # the per-pair taper weighting and normalization (as in MNE's _csd_from_mt)
+        # factor into per-signal scaling; sqrt(2) gives the one-sided factor of 2
+        taper_axis = -3 if is_tfr_con else -2
+        if is_tfr_con:
+            weights = weights[..., np.newaxis]
+        weights_sq = (weights * weights.conj()).real
+        x_t = x_t * (weights * np.sqrt(2 / weights_sq.sum(taper_axis, keepdims=True)))
+    # conjugate per signal once rather than per (much larger) gathered block
+    x_t_conj = x_t.conjugate()
+    for i in range(0, n_con_signals, block_size):
+        n_extra = max(0, i + block_size - n_con_signals)
+        con_idx = slice(i, i + block_size - n_extra)
+        csd = x_t[idx_map[0][con_idx]] * x_t_conj[idx_map[1][con_idx]]
+        if use_tapers:
+            csd = csd.sum(taper_axis)
 
-            for this_method in con_methods:
-                this_method.accumulate(con_idx, csd)
-    else:  # mode == 'cwt_morlet'  # reminder to add alternative TFR methods
-        for i in range(0, n_con_signals, block_size):
-            n_extra = max(0, i + block_size - n_con_signals)
-            con_idx = slice(i, i + block_size - n_extra)
-            # this codes can be very slow
-            csd = x_t[idx_map[0][con_idx]] * x_t[idx_map[1][con_idx]].conjugate()
-
-            for this_method in con_methods:
-                this_method.accumulate(con_idx, csd)
-    # future estimator types need to be explicitly handled here
+        for this_method in con_methods:
+            this_method.accumulate(con_idx, csd)
 
     return con_methods, psd
 
@@ -771,7 +729,7 @@ def spectral_connectivity_epochs(
     data,
     names=None,
     method="coh",
-    indices=None,
+    indices="lower",
     sfreq=None,
     *,
     mode="multitaper",
@@ -824,10 +782,8 @@ def spectral_connectivity_epochs(
         .. versionchanged:: 0.8
            Fourier coefficients stored in an :class:`mne.time_frequency.EpochsSpectrum`
            or :class:`mne.time_frequency.EpochsTFR` object can also be passed in as
-           data. Storing Fourier coefficients in
-           :class:`mne.time_frequency.EpochsSpectrum` objects requires ``mne >= 1.8``.
-           Storing multitaper weights in :class:`mne.time_frequency.EpochsTFR` objects
-           requires ``mne >= 1.10``.
+           data. Storing multitaper weights in :class:`mne.time_frequency.EpochsTFR`
+           objects requires ``mne >= 1.10``.
     %(names)s
     method : str | list of str
         Connectivity measure(s) to compute. These can be ``['coh', 'cohy', 'imcoh',
@@ -853,14 +809,7 @@ def spectral_connectivity_epochs(
 
         Multivariate methods (``['cacoh', 'mic', 'mim', 'gc', 'gc_tr']``) cannot be
         called with the other methods.
-    indices : tuple of array_like | None
-        Two array-likes with indices of connections for which to compute connectivity.
-        If a bivariate method is called, each array for the seeds and targets should
-        contain the channel indices for each bivariate connection. If a multivariate
-        method is called, each array for the seeds and targets should consist of nested
-        arrays containing the channel indices for each multivariate connection. If
-        ``None``, connections between all channels are computed, unless a Granger
-        causality method is called, in which case an error is raised.
+    %(indices_with_str_with_multivar)s
     sfreq : float | None
         The sampling frequency. Required if ``data`` is an array-like.
     mode : ``'multitaper'`` | ``'fourier'`` | ``'cwt_morlet'``
@@ -958,10 +907,10 @@ def spectral_connectivity_epochs(
         - ``(n_cons, n_freqs, n_times)`` for ``'cwt_morlet'`` mode
         - ``(n_cons, n_comps, n_freqs[, n_times])`` for valid multivariate methods if
           ``n_components > 1``
-        - ``n_cons = n_signals ** 2`` for bivariate methods with ``indices=None``
-        - ``n_cons = 1`` for multivariate methods with ``indices=None``
-        - ``n_cons = len(indices[0])`` for bivariate and multivariate methods when
-          ``indices`` is supplied
+        - ``n_cons = n_signals ** 2`` for methods with ``indices='all'``
+        - ``n_cons = n_signals * (n_signals - 1) / 2`` for methods with
+          ``indices='lower'`` or ``indices='upper'``
+        - ``n_cons = len(indices[0])`` when ``indices`` is a tuple of array-likes
 
     See Also
     --------
@@ -991,35 +940,9 @@ def spectral_connectivity_epochs(
     multitaper, or Morlet coefficients can also be passed in as data in the form of
     :class:`mne.time_frequency.EpochsSpectrum` or :class:`mne.time_frequency.EpochsTFR`
     objects.
-
-    By default, the connectivity between all signals is computed (only connections
-    corresponding to the lower-triangular part of the connectivity matrix). If one is
-    only interested in the connectivity between some signals, the ``indices`` parameter
-    can be used. For example, to compute the connectivity between the signal with index
-    0 and signals "2, 3, 4" (a total of 3 connections) one can use the following::
-
-        indices = (np.array([0, 0, 0]),    # row indices
-                   np.array([2, 3, 4]))    # col indices
-
-        con = spectral_connectivity_epochs(data, method='coh',
-                                           indices=indices, ...)
-
-    In this case ``con.get_data().shape = (3, n_freqs)``. The connectivity scores are in
-    the same order as defined indices.
-
-    For multivariate methods, this is handled differently. If ``indices`` is ``None``,
-    connectivity between all signals will be computed and a single connectivity spectrum
-    will be returned (this is not possible if a Granger causality method is called). If
-    ``indices`` is specified, seed and target indices for each connection should be
-    specified as nested array-likes. For example, to compute the connectivity between
-    signals (0, 1) -> (2, 3) and (0, 1) -> (4, 5), indices should be specified as::
-
-        indices = (np.array([[0, 1], [0, 1]]),  # seeds
-                   np.array([[2, 3], [4, 5]]))  # targets
-
-    More information on working with multivariate indices and handling connections where
-    the number of seeds and targets are not equal can be found in the
-    :doc:`../auto_examples/handling_ragged_arrays` example.
+    %(tri_indices_efficiency_note)s
+    %(tuple_bivar_indices_note)s
+    %(tuple_multivar_indices_note)s
 
     **Supported Connectivity Measures**
 
@@ -1177,6 +1100,16 @@ def spectral_connectivity_epochs(
     else:
         multivariate_con = False
 
+    # Check indices
+    _validate_type(indices, (tuple, str), "`indices`")
+    if isinstance(indices, str):
+        _check_option("indices", indices, ("lower", "upper", "all"), "as a string")
+    if multivariate_con and not isinstance(indices, tuple):
+        raise ValueError(
+            "`indices` must be a tuple of array-likes for multivariate connectivity "
+            f"methods, got {indices}."
+        )
+
     # handle connectivity estimators
     (con_method_types, n_methods, accumulate_psd) = _check_estimators(method)
 
@@ -1191,7 +1124,7 @@ def spectral_connectivity_epochs(
     is_tfr_con = False
     if isinstance(data, BaseEpochs | EpochsSpectrum | EpochsTFR):
         # Find good channels
-        if indices is None:
+        if not isinstance(indices, tuple):
             picks = _picks_to_idx(data.info, picks="all", exclude="bads")
 
         names = data.ch_names
@@ -1249,7 +1182,8 @@ def spectral_connectivity_epochs(
             if not hasattr(data, "weights") or (
                 data.weights is None and mode == "multitaper"
             ):
-                # XXX: Remove logic when support for mne<1.10 is dropped
+                # TODO Version: Only mention re-computing saved objects when mne<1.10 is
+                # dropped
                 raise AttributeError(
                     "weights are required for multitaper coefficients stored in "
                     "EpochsSpectrum (requires mne >= 1.8) and EpochsTFR (requires "
@@ -1323,7 +1257,7 @@ def spectral_connectivity_epochs(
                 gc_n_lags = None
 
             # make sure padded indices are stored in the connectivity object
-            if multivariate_con and indices is not None:
+            if multivariate_con:
                 # create a copy so that `indices_use` can be modified
                 indices = (indices_use[0].copy(), indices_use[1].copy())
 
@@ -1552,36 +1486,43 @@ def spectral_connectivity_epochs(
         freqs_used = freqs_bands
         freqs_used = [[np.min(band), np.max(band)] for band in freqs_used]
 
-    if indices is None:
-        if not multivariate_con:
-            # return all-to-all connectivity matrices raveled into a 1D array
-            logger.info("    assembling connectivity matrix")
-            con_flat = con
-            con = list()
-            for this_con_flat in con_flat:
-                this_con = np.zeros(
-                    (n_signals, n_signals) + this_con_flat.shape[1:],
-                    dtype=this_con_flat.dtype,
-                )
-                this_con[indices_use] = this_con_flat
+    # Make full connectivity matrix from lower-triangular part
+    if indices == "all":
+        for method_idx in range(n_methods):
+            this_con = _make_square(con[method_idx], "lower", n_good_signals)
+            this_con = _CAN_FILL_MISSING[method[method_idx]](this_con, "lower")
+            con[method_idx] = this_con.reshape((-1,) + this_con.shape[2:])
 
-                # ravel 2D connectivity into a 1D array
-                # while keeping other dimensions
-                this_con = this_con.reshape((n_signals**2,) + this_con_flat.shape[1:])
-                con.append(this_con)
-        elif n_signals != n_good_signals:
-            # add missing bads to the multivariate patterns
-            patterns_full = list()
-            for this_patterns in patterns:
-                if this_patterns is not None:
-                    this_patterns_full = np.zeros(
-                        (2, n_cons, n_signals) + this_patterns.shape[3:]
-                    )
-                    this_patterns_full[:, :, sig_idx] = this_patterns
-                else:
-                    this_patterns_full = None
-                patterns_full.append(this_patterns_full)
-            patterns = patterns_full
+    # Fill entries for bad channels
+    if not isinstance(indices, tuple) and n_signals != n_good_signals:
+        # Bad channels were excluded, need to create full (n_nodes x n_nodes) matrix and
+        # fill only the good channel entries
+        con_flat = con
+        con = list()
+        for this_con_flat in con_flat:
+            if indices == "all":
+                out_indices = np.unravel_index(
+                    np.arange(n_signals**2), (n_signals, n_signals)
+                )
+            elif indices == "lower":
+                out_indices = np.tril_indices(n_signals, k=-1)
+            else:  # "upper"
+                out_indices = np.triu_indices(n_signals, k=1)
+
+            out_indices = np.ravel_multi_index(out_indices, (n_signals, n_signals))
+            good_indices = np.ravel_multi_index(indices_use, (n_signals, n_signals))
+            insert_indices = np.searchsorted(out_indices, good_indices)
+
+            fill = np.nan
+            if np.iscomplexobj(this_con_flat):
+                fill = fill + 1j * fill
+            this_con = np.full(
+                (len(out_indices),) + this_con_flat.shape[1:],
+                fill,
+                dtype=this_con_flat.dtype,
+            )
+            this_con[insert_indices] = this_con_flat
+            con.append(this_con)
 
     # number of nodes in the original data
     n_nodes = n_signals

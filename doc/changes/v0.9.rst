@@ -1,0 +1,52 @@
+Version 0.9.0 (2026-08-24)
+==========================
+
+Upcoming breaking changes for v1.0
+----------------------------------
+
+The next release of MNE-Connectivity will be v1.0, which will include breaking changes. If you do not want the v1.0 release to break your code, you should pin your MNE-Connectivity version to ``<=0.9`` until v1.0 is released and you can update your code to accommodate any required changes.
+
+The following breaking changes are anticipated:
+
+- Separation of functions accepting MNE data objects and array-like inputs
+- Requiring spectral representations of data to be provided for spectral connectivity analysis functions
+- Changes to improve consistency of all-to-all vs. symmetric indexing of connectivity
+- Requiring :class:`mne.Info` objects as input to connectivity containers
+- Removing VAR-specific methods (``eigvals``, ``predict``, ``simulate``, etc) from non-VAR connectivity containers
+- Removing epoch-specific methods (``append``, ``combine``) from non-epoched connectivity containers
+- Moving spectral Granger causality methods from :func:`~mne_connectivity.spectral_connectivity_epochs` and :func:`~mne_connectivity.spectral_connectivity_time` to dedicated functions
+
+For more details and the most up-to-date information, see the following GitHub issue: `Expected changes for 1.0 #440 <https://github.com/mne-tools/mne-connectivity/issues/440>`_.
+
+Bugfixes
+--------
+
+- Fix bug where the :meth:`get_data() <mne_connectivity.Connectivity.get_data>` method of connectivity containers discarded the imaginary part of complex-valued data when ``output="dense"``, by `Thomas Binns`_. (`#412 <https://github.com/mne-tools/mne-connectivity/pull/412>`__)
+- Fix bug where connectivity in :func:`~mne_connectivity.make_signals_in_freq_bands` could be simulated outside of the epoch duration, by `Thomas Binns`_. (`#418 <https://github.com/mne-tools/mne-connectivity/pull/418>`__)
+- Fix bug where the :meth:`~mne_connectivity.TemporalConnectivity.predict` and :meth:`~mne_connectivity.TemporalConnectivity.simulate` methods of connectivity containers could not be used with VAR models with multiple lags, by `Thomas Binns`_. (`#420 <https://github.com/mne-tools/mne-connectivity/pull/420>`__)
+- Fix a bug in :func:`~mne_connectivity.make_surrogate_evoked_data` where sampled cutpoints were interpreted as numbers of sections instead of split indices, by `Rebecca Stevenson`_. (`#447 <https://github.com/mne-tools/mne-connectivity/pull/447>`__)
+
+
+API changes by deprecation
+--------------------------
+
+- Drop ``fskip`` parameter from :func:`~mne_connectivity.spectral_connectivity_epochs` and :func:`~mne_connectivity.spectral_connectivity_time` in favour of ``fdecim``, by `Thomas Binns`_. (`#392 <https://github.com/mne-tools/mne-connectivity/pull/392>`__)
+- Deprecate ``sfreq`` parameter default value of ``2*np.pi`` in :func:`~mne_connectivity.phase_slope_index` in favour of ``None``, which must be specified when input data is an array-like, by `Thomas Binns`_. (`#409 <https://github.com/mne-tools/mne-connectivity/pull/409>`__)
+- Begin deprecation of ``make_surrogate_data`` in favour of :func:`~mne_connectivity.make_surrogate_resting_data`, by `Thomas Binns`_. (`#415 <https://github.com/mne-tools/mne-connectivity/pull/415>`__)
+- Begin deprecation of ``n_times`` parameter of :func:`~mne_connectivity.make_signals_in_freq_bands` in favour of ``duration`` as the way to specify epoch length. Also begins deprecation of ``connection_delay`` to be specified in units of seconds rather than samples, by `Thomas Binns`_. (`#418 <https://github.com/mne-tools/mne-connectivity/pull/418>`__)
+
+
+New features
+------------
+
+- Add ``imcoh`` as a method to :func:`~mne_connectivity.spectral_connectivity_time`, by `Thomas Binns`_. (`#404 <https://github.com/mne-tools/mne-connectivity/pull/404>`__)
+- Add :func:`~mne_connectivity.make_surrogate_evoked_data` function for generating surrogates from evoked data, and add support for :class:`mne.Epochs` data in :func:`~mne_connectivity.make_surrogate_resting_data`, by `Thomas Binns`_. (`#415 <https://github.com/mne-tools/mne-connectivity/pull/415>`__)
+- Add ``connection_time`` parameter to :func:`~mne_connectivity.make_signals_in_freq_bands`, enabling connectivity to be simulated in a specific time range, by `Thomas Binns`_. (`#418 <https://github.com/mne-tools/mne-connectivity/pull/418>`__)
+- Allow epoched data as input to the :meth:`~mne_connectivity.Connectivity.predict` method of connectivity containers storing a non-dynamic VAR model, by `Thomas Binns`_. (`#420 <https://github.com/mne-tools/mne-connectivity/pull/420>`__)
+
+
+Authors
+-------
+
+* `Rebecca Stevenson`_
+* `Thomas Binns`_

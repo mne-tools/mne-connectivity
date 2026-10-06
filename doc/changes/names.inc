@@ -7,10 +7,12 @@
 .. _Giovanni Marraffini: https://github.com/GioMarraffini
 .. _Kenji Marshall: https://github.com/kenjimarshall
 .. _Laouen Belloli: https://github.com/Laouen
+.. _Marieke De Vylder: https://github.com/mariekedevylder
 .. _Marijn van Vliet: https://github.com/wmvanvliet
 .. _Mina Jamshidi: https://github.com/minajamshidi
 .. _Mohammad Orabe: https://github.com/orabe
 .. _Qianliang Li: https://github.com/Avoide
+.. _Rebecca Stevenson: https://github.com/RebeccaStevenson
 .. _Richard Höchenberger: https://github.com/hoechenberger
 .. _Richard Köhler: https://github.com/richardkoehler
 .. _Salman Qasim: https://github.com/seqasim

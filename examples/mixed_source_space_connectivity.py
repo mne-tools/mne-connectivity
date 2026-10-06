@@ -36,8 +36,8 @@ bem_dir = op.join(subjects_dir, subject, "bem")
 # Set file names
 fname_aseg = op.join(subjects_dir, subject, "mri", "aseg.mgz")
 
-fname_model = op.join(bem_dir, "%s-5120-bem.fif" % subject)
-fname_bem = op.join(bem_dir, "%s-5120-bem-sol.fif" % subject)
+fname_model = op.join(bem_dir, f"{subject}-5120-bem.fif")
+fname_bem = op.join(bem_dir, f"{subject}-5120-bem-sol.fif")
 
 fname_raw = op.join(data_dir, "sample_audvis_filt-0-40_raw.fif")
 fname_trans = op.join(data_dir, "sample_audvis_raw-trans.fif")
@@ -196,7 +196,7 @@ plot_connectivity_circle(
     n_lines=300,
     node_angles=node_angles,
     node_colors=node_colors,
-    title="All-to-All Connectivity left-Auditory " "Condition (PLI)",
+    title="All-to-All Connectivity left-Auditory Condition (PLI)",
     ax=ax,
 )
 fig.tight_layout()

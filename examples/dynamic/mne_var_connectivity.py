@@ -160,7 +160,7 @@ fig.colorbar(im, cax=cax, orientation="horizontal")
 # %%
 # Compute one VAR model using all epochs
 # --------------------------------------
-# By setting ``model='dynamic'``, we instead treat each Epoch as a sample of
+# By setting ``model='avg-epochs'``, we instead treat each Epoch as a sample of
 # the same VAR model and thus we only estimate one VAR model. One might do this
 # when one suspects the data is stationary and one VAR model represents all
 # epochs.

@@ -1,0 +1,1 @@
+Make ``check_indices`` validation helper function private, by `Thomas Binns`_.

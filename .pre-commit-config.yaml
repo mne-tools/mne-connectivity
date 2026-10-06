@@ -1,32 +1,33 @@
 repos:
-  # Ruff mne_connectivity
+  # Ruff mne-connectivity
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.17
+    rev: v0.16.10
     hooks:
-      - id: ruff
-        name: ruff lint mne_connectivity
+      - id: ruff-check
+        name: ruff lint mne-connectivity
         args: ["--fix"]
-        files: ^mne_connectivity/
-
-  # Ruff tutorials and examples
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.17
-    hooks:
-      - id: ruff
-        name: ruff lint tutorials and examples
+        files: ^mne_connectivity/|^tools/
+      - id: ruff-check
+        name: ruff lint mne-connectivity preview
+        args: ["--fix", "--preview", "--select=NPY201"]
+        files: ^mne_connectivity/|^tools/
+      - id: ruff-check
+        name: ruff lint doc and examples
         # D103: missing docstring in public function
         # D400: docstring first line must end with period
         args: ["--ignore=D103,D400", "--fix"]
-        files: ^tutorials/|^examples/
+        files: ^doc/|^examples/
+      - id: ruff-format
+        files: ^mne_connectivity/|^doc/|^examples/|^tools/
 
   # Codespell
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.4.2
+    rev: v2.4.3
     hooks:
       - id: codespell
         additional_dependencies:
           - tomli
-        files: ^mne_connectivity/|^doc/|^examples/|^tutorials/
+        files: ^mne_connectivity/|^doc/|^examples/|^tools/
         types_or: [python, bib, rst, inc]
 
   # yamllint
@@ -38,7 +39,7 @@ repos:
 
   # rstcheck
   - repo: https://github.com/rstcheck/rstcheck.git
-    rev: v6.2.5
+    rev: v6.3.0
     hooks:
       - id: rstcheck
         additional_dependencies:
@@ -55,9 +56,10 @@ repos:
 
   # toml-sort
   - repo: https://github.com/pappasam/toml-sort.git
-    rev: v0.24.4
+    rev: v0.25.0
     hooks:
       - id: toml-sort-fix
+        files: pyproject.toml
 
 ci:
   autofix_prs: true

@@ -4,11 +4,9 @@
 #
 # License: BSD (3-clause)
 
-try:  # 1.0+
-    from mne.utils.docs import _indentcount_lines
-except ImportError:
-    from mne.externals.doccer import indentcount_lines as _indentcount_lines  # noqa
+from functools import partial
 
+from mne.utils.docs import _indentcount_lines
 
 ##############################################################################
 # Define our standard documentation entries
@@ -31,14 +29,34 @@ names : array_like | None
     of names, then it must be equal in length to ``n_nodes``.
 """
 
-docdict["indices"] = """
-indices : tuple of array_like | ``'all'`` | ``'symmetric'`` | None
-    The indices of relevant connectivity data. If ``'all'`` (default), then data is
-    connectivity between all nodes. If ``'symmetric'``, then data is symmetric
-    connectivity between all nodes. If a tuple, then contains two array-likes where the
-    first array represents the "in nodes" (seeds), and the second array represents the
-    "out nodes" (targets).
+indices_base = """
+indices : tuple of array_like{other_types}
+    The indices of channels to compute connectivity between. If a tuple, then must
+    contain two array-likes, where the first array represents the channel indices of the
+    seeds, and the second array represents the channel indices of the targets.
+    {multivar_indices}See the notes section for more information.
+    {other_types_description}
+    {default}
 """
+multivar_indices_extra = (
+    "For multivariate methods, the seed and target indices should consist of nested "
+    "arrays containing the channel indices for each multivariate connection. "
+    # Final space is important for formatting!
+)
+indices_with_str = partial(
+    indices_base.format,
+    other_types=" | ``'lower'`` | ``'upper'`` | ``'all'``",
+    other_types_description=(
+        "If ``'lower'``, compute the lower-triangular part of the connectivity matrix. "
+        "If ``'upper'``, compute the upper-triangular part of the connectivity matrix. "
+        "If ``'all'``, compute all connections."
+    ),
+    default="Default is ``'lower'``.",
+)
+docdict["indices_with_str_only_bivar"] = indices_with_str(multivar_indices="")
+docdict["indices_with_str_with_multivar"] = indices_with_str(
+    multivar_indices=multivar_indices_extra
+)
 
 docdict["n_nodes"] = """
 n_nodes : int
@@ -107,7 +125,56 @@ docdict["wpli2_debiased"] = "'wpli2_debiased' : Debiased estimator of squared WP
 docdict["gc"] = "'gc' : State-space Granger Causality (GC)"
 docdict["gc_tr"] = "'gc_tr' : State-space GC on time-reversed signals"
 
+docdict["tri_indices_efficiency_note"] = """
+If connectivity for all possible connections is desired, we can save time and memory by
+only computing and storing the lower- (or upper-) triangular part of the connectivity
+matrix. When the full set of connectivity values is needed, the missing values can be
+inferred based on what has been computed. See the notes section of the
+:meth:`~Connectivity.get_data` method in the connectivity containers for more
+information.
+"""
+
+docdict["tuple_bivar_indices_note"] = """
+If one is only interested in the connectivity between some signals, the ``indices``
+parameter can be specified as a tuple of array-likes. For example, to compute the
+connectivity between the signal with index 0 and the signals with indices 2, 3, and 4 (a
+total of 3 connections) one can use the following::
+
+    indices = (np.array([0, 0, 0]),  # seed indices
+               np.array([2, 3, 4]))  # target indices
+"""
+
+docdict["tuple_multivar_indices_note"] = """
+For multivariate methods, ``indices`` must be specified as a tuple, where the seed and
+target indices for each connection are nested array-likes. For example, to compute the
+connectivity between signals (0, 1) → (2, 3) and (0, 1) → (4, 5), ``indices`` should be
+specified as::
+
+    indices = (np.array([[0, 1], [0, 1]]),  # seeds
+               np.array([[2, 3], [4, 5]]))  # targets
+
+More information on working with multivariate indices and handling connections where the
+number of seeds and targets are not equal can be found in the
+:doc:`../auto_examples/handling_ragged_arrays` example.
+"""
+
 # Downstream container variables
+docdict["indices"] = """
+indices : tuple of array_like | ``'lower'`` | ``'upper'`` | ``'all'``
+    The indices of channels connectivity was computed between.
+    If a tuple, then contains two array-likes, where the first array represents the
+    channel indices of the seeds, and the second array represents the channel indices of
+    the targets.
+    For multivariate methods, the seed and target indices should consist of nested
+    arrays containing the channel indices for each multivariate connection.
+    If ``'lower'``, connectivity represents the lower-triangular part of the
+    connectivity matrix.
+    If ``'upper'``, connectivity represents the upper-triangular part of the
+    connectivity matrix.
+    If ``'all'``, connectivity represents all connections.
+    Indices for multivarate methods should only be specified as a tuple of arrays.
+"""
+
 docdict["freqs"] = """
 freqs : list | array
     The frequencies at which the connectivity data is computed over. If the frequencies
@@ -169,6 +236,263 @@ random_state : None | int | instance of ~numpy.random.RandomState
     :class:`numpy.random.RandomState`. If ``None``, the seed will be obtained from the
     operating system (see :class:`numpy.random.RandomState` for details). Default is
     ``None``.
+"""
+
+# Visualisation
+docdict["viz_info"] = """
+info : mne.Info | None
+    The :class:`mne.Info` object with information about the sensors and methods of
+    measurement. Used to split the figures by channel types and identify bad channels.
+    If ``None`` (default), all channels are assumed to be good ``'misc'`` channels.
+"""
+
+docdict["viz_picks"] = """
+picks : str | array_like | slice | None
+    Channels to include in the plot. Connections involving these channels will be
+    included, based on ``selection``. Slices and lists of integers will be interpreted
+    as channel indices. In lists, channel type strings (e.g., ``['meg', 'eeg']``) will
+    pick channels of those types, channel name strings (e.g.,
+    ``['MEG0111', 'MEG2623']``) will pick the given channels. Can also be the string
+    values ``'all'`` to pick all channels, or ``'data'`` to pick data channels. None
+    (default) will pick any good channels. Note that channels in ``info['bads']`` will
+    be included if their names or indices are explicitly provided.
+"""
+
+viz_selection_template = """
+selection : ``'seeds'`` | ``'targets'`` | ``'both'``
+    What the ``picks`` parameter will be applied to. If ``'seeds'``, only connections
+    within the seed channels matchinng ``picks`` will be included. If ``'targets'``,
+    only connections within the target channels matching ``picks`` will be included. If
+    ``'both'``, connections will be included if either the seed or target channels match
+    ``picks``. Ignored if ``picks`` is ``None``.{}
+"""
+docdict["viz_selection"] = viz_selection_template.format("")
+docdict["viz_selection_line"] = docdict["viz_selection"].format(
+    " This also controls the channels which can be selected in the interactive circle "
+    "plot."
+)
+
+docdict["viz_exclude"] = """
+exclude : list of str | ``'bads'``
+    Channel names to exclude from plotting. All connections involving these channels
+    will be excluded. If ``'bads'`` (default), channels in ``info['bads']`` are
+    excluded.
+"""
+
+viz_combine_template = """
+combine : ``'mean'`` | callable | None
+    How to aggregate across connections. ``'mean'`` uses :func:`numpy.mean`. If
+    :func:`callable`, it must operate on an array of shape {} and return an array of
+    shape {}. If ``None``, plot {}. Defaults to {}.
+"""
+docdict["viz_combine_line_spectral"] = viz_combine_template.format(
+    "``(n_connections, n_freqs)``",
+    "``(n_freqs,)``",
+    "each connection individually",
+    "``None``",
+)
+docdict["viz_combine_line_temporal"] = viz_combine_template.format(
+    "``(n_connections, n_times)``",
+    "``(n_times,)``",
+    "each connection individually",
+    "``None``",
+)
+docdict["viz_combine_image_spectrotemporal"] = viz_combine_template.format(
+    "``(n_connections, n_freqs, n_times)``",
+    "``(n_freqs, n_times)``",
+    "one figure per connection",
+    "``'mean'``",
+)
+
+docdict["viz_ci"] = """
+ci : float | ``'sd'`` | ``'range'`` | None
+    Type of confidence band drawn around the aggregated data when ``combine`` is not
+    ``None``. If ``'sd'`` (default) the band spans ±1 the standard deviation across
+    connections. If ``'range'`` the band spans the range across connections at each bin.
+    If a float, it indicates the (bootstrapped) confidence interval to display, and must
+    satisfy ``0 < ci <= 100``. If ``None``, no band is drawn.
+"""
+
+docdict["viz_tmin_tmax"] = """
+tmin, tmax : float | None
+    First and last times to plot, in seconds. If ``None`` take the first/last time
+    in the data, respectively. Default is ``None``.
+"""
+
+docdict["viz_fmin_fmax"] = """
+fmin, fmax : float | None
+    First and last frequencies to plot, in Hz. If ``None`` take the first/last frequency
+    in the data, respectively. Default is ``None``.
+"""
+
+docdict["viz_colors_line"] = """
+colors : ``'auto'`` | ``'global'`` | ``'relative'``
+    How to color the connections. If ``'global'``, the same colormap is used across all
+    connections. This is recommended if the connectivity indices do not correspond to
+    a full or symmetric matrix. If ``'relative'``, the connections for each channel
+    span the full colormap. This is recommended if the connectivity indices correspond
+    to a full or symmetric matrix. If ``'auto'`` (default), the coloring is set to
+    ``'relative'`` if the connectivity indices correspond to a lower-triangular matrix
+    and ``interactive`` is ``True``, or ``'global'`` otherwise.
+"""
+
+docdict["viz_cmap_line"] = """
+cmap : str | matplotlib.colors.Colormap
+    Colormap to use for coloring the connections. If a str, must be a recognised
+    Matplotlib colormap name. Default is ``'turbo'``.
+"""
+
+docdict["viz_yscale_image"] = """
+yscale : ``'linear'`` | ``'log'`` | ``'auto'``
+    The scale of the y-axis (frequencies). ``'linear'`` gives a linear y-axis. ``'log'``
+    gives a log-spaced y-axis. ``'auto'`` (default) detects if frequencies are
+    log-spaced, and if so, sets the y-axis to ``'log'``, otherwise is ``'linear'``.
+    Default is ``'auto'``.
+"""
+
+docdict["viz_node_aliases"] = """
+node_aliases : dict | None
+    Mapping of node indices to node names. Keys should be seed or target indices
+    found in ``con.indices``, that is, integers for bivariate connectivity, and arrays
+    of integers for multivariate connectivity. If ``None`` and plotting results for
+    bivariate connectivity, node names will be taken from ``con.names``. If ``None``
+    and plotting results for multivariate connectivity, node names will be generated
+    as ``'node {idx}'``, where ``idx`` is the order of the node in the unique set of
+    indices, as determined by ``np.unique([*con.indices[0], *con.indices[1]])``.
+"""
+
+docdict["viz_vmin_vmax"] = """
+vmin, vmax : float | None
+    Lower and upper bounds of the colormap, respectively. If both entries are ``None``
+    and there are both positive and negative values in the data, the bounds are set at ±
+    the maximum absolute value of the data (yielding a colormap with midpoint at 0). If
+    both entries are ``None`` and the data is all positive or all negative, the bounds
+    are set at the min/max of the data, respectively. Providing ``None`` for just one
+    entry will set the corresponding boundary at the min/max of the data. Defaults to
+    ``None``.
+"""
+
+docdict["viz_cnorm"] = """
+cnorm : matplotlib.colors.Normalize | None
+    How to normalize the colormap. If ``None`` (default), standard linear normalization
+    is performed. If not ``None``, ``vmin`` and ``vmax`` will be ignored. See
+    :ref:`Matplotlib docs <matplotlib:colormapnorms>` for more details on colormap
+    normalization.
+"""
+
+docdict["viz_cbar"] = """
+colorbar : bool
+    Whether to display a colorbar for each figure. Defaults to ``True``.
+"""
+
+docdict["viz_cmap"] = """
+cmap : str | matplotlib.colors.Colormap | None
+    The colormap to use for coloring the connectivity values. If a str, must be a valid
+    Matplotlib colormap name.If ``None`` (default), ``'RdBu_r'`` is used for data that
+    has positive and negative values, ``Reds`` is used for data that is all positive,
+    and ``Blues_r`` is used for data that is all negative.
+"""
+
+docdict["viz_node_labels_matrix"] = """
+node_labels : ``'ticks'`` | ``'names'`` | None
+    How to label the nodes in the matrix along the x- and y-axes. If ``'ticks'``
+    (default), the indices of the nodes are shown at evenly spaced intervals. Note that
+    for many nodes, not all may have labels. If ``'names'``, each node's name is shown.
+    Note that for many nodes, this can lead to overlapping labels. If ``None``, no
+    labels are shown.
+"""
+
+docdict["viz_mask"] = """
+mask : numpy.ndarray | None
+    An array of boolean values, of the same shape as the data. Data that corresponds to
+    ``False`` entries in the mask are plotted differently, as determined by
+    ``mask_style``, ``mask_alpha``, and ``mask_cmap``. Useful for, e.g., highlighting
+    areas of statistical significance. Default is ``None``, for no masking.
+"""
+
+docdict["viz_mask_style"] = """
+mask_style : None | ``'contour'`` | ``'mask'`` | ``'both'``
+    How to distinguish the masked/unmasked regions of the plot. If ``'contour'``, a line
+    is drawn around the areas where ``mask`` is True. If ``'mask'``, areas where
+    ``mask`` is ``False`` will be (partially) transparent, as determined by
+    ``mask_alpha``. If ``'both'``, both a contour and transparency are used. Default is
+    ``None``, which is silently ignored if ``mask`` is ``None``, and is interpreted like
+    ``'both'`` otherwise.
+"""
+
+docdict["viz_mask_cmap"] = """
+mask_cmap : matplotlib.colors.Colormap | str | None
+    Colormap to use for masked areas of the plot. If a str, must be a valid Matplotlib
+    colormap name. If ``None``, ``cmap`` is used for both masked and unmasked areas.
+    Ignored if mask is ``None``. Default is ``'Greys'``.
+"""
+
+docdict["viz_mask_alpha"] = """
+mask_alpha : float
+    Relative opacity of the masked region versus the unmasked region, given as a float
+    between 0 and 1 (0 means masked areas are not visible at all). Defaults to ``0.1``.
+"""
+
+docdict["viz_highlight"] = """
+highlight : array_like of float, shape (2,) | array_like of float, shape (n, 2) | None
+    Segments of the data to highlight by means of a light-yellow background color. The
+    data periods to highlight must be specified as array-like objects in the form of
+    ``(start, end)`` in the units of the data. Multiple periods can be specified by
+    passing an array-like object of individual periods (e.g., for 3 periods, the shape
+    of the passed object would be ``(3, 2)``. If ``None`` (default), no highlighting is
+    applied.
+"""
+
+docdict["viz_interactive"] = """
+interactive : bool
+    Whether to make the plot interactive. This enables functionality like clicking on
+    a connection to show its name. Defaults to ``True``.
+"""
+
+docdict["viz_show"] = """
+show : bool
+    Whether to show the figure(s). Defaults to ``True``.
+"""
+
+viz_figures_base = """
+fig : instance of matplotlib.figure.Figure | list of instance of matplotlib.figure.Figure
+    The figure(s) containing the connectivity plot(s).{}
+"""  # noqa E501
+
+docdict["viz_figures_image"] = viz_figures_base.format(
+    " One figure is returned per connection."
+)
+
+docdict["viz_figures_line"] = viz_figures_base.format(
+    " One figure is returned per channel types in the seeds and targets."
+)
+
+docdict["viz_figures_matrix"] = viz_figures_base.format(
+    " One figure is returned per channel types in the seeds and targets. For "
+    "multivariate connectivity with multiple components, one figure is also returned "
+    "per component."
+)
+
+viz_components_note_base = """
+Plotting for multivariate connectivity with multiple components is handled by treating
+each component of the multivariate connections as a separate connection.{}
+"""
+
+docdict["viz_components_extra_con_note"] = viz_components_note_base.format(
+    " The names of the nodes are differentiated by the addition of the component "
+    "number to the node name, e.g., ``'node 0 (0)', 'node 0 (1)', ..., 'node n (m)'``."
+)
+
+docdict["viz_components_extra_fig_note"] = viz_components_note_base.format(
+    " The connections for each component are plotted on a separate figure."
+)
+
+docdict["viz_circle_line_note"] = """
+The circle plot acts as an overview of the channels and their connections in the line
+plot. If ``interactive`` is ``True``, left-clicking on a channel in the circle plot will
+show the connections only for that channel (the exact behaviour is determined by
+``selection``). Right-click to return to the original view. The circle plot is not shown
+if the plotted connections correspond to only a single node in the figure.
 """
 
 # Decoding initialisation
@@ -512,5 +836,5 @@ def fill_doc(f):
     except (TypeError, ValueError, KeyError) as exp:
         funcname = f.__name__
         funcname = docstring.split("\n")[0] if funcname is None else funcname
-        raise RuntimeError(f"Error documenting {funcname}:\n{str(exp)}")
+        raise RuntimeError(f"Error documenting {funcname}:\n{exp}")
     return f

@@ -58,12 +58,10 @@ epochs = mne.Epochs(
 epochs.load_data().pick("grad")  # just keep MEG and no EOG now
 
 # Compute Fourier coefficients for the epochs (returns an EpochsSpectrum object)
-# (storing Fourier coefficients in EpochsSpectrum objects requires MNE >= 1.8)
 tmin = 0.0  # exclude the baseline period
 spectrum = epochs.compute_psd(method="multitaper", tmin=tmin, output="complex")
 
 # Compute connectivity for the frequency band containing the evoked response
-# (passing EpochsSpectrum objects as data requires MNE-Connectivity >= 0.8)
 fmin, fmax = 4.0, 9.0
 con = spectral_connectivity_epochs(
     data=spectrum, method="pli", fmin=fmin, fmax=fmax, faverage=True, n_jobs=1

@@ -5,10 +5,24 @@
 import gc
 import os
 import warnings
-from contextlib import contextmanager
+from contextlib import contextmanager, suppress
 
+import numpy as np
 import pytest
+from mne import EpochsArray, create_info
 from mne.utils import _check_qt_version
+
+
+@pytest.fixture()
+def data_make_full():
+    """Create random data for _make_<method>_full tests."""
+    # Simulate random data
+    rng = np.random.default_rng(42)
+    n_epochs, n_channels, n_times = 4, 3, 50
+    sfreq = 100.0
+    data = rng.standard_normal((n_epochs, n_channels, n_times))
+    info = create_info(ch_names=n_channels, sfreq=sfreq, ch_types="eeg")
+    return EpochsArray(data, info=info)
 
 
 def has_pyvista():
@@ -48,6 +62,17 @@ def pytest_configure(config):
     # Fixtures
     for fixture in ("matplotlib_config",):
         config.addinivalue_line("usefixtures", fixture)
+
+    # Cap the number of threads each pytest-xdist worker uses, adapted from SciPy
+    if os.getenv("OMP_NUM_THREADS") is None:
+        from threadpoolctl import threadpool_limits
+
+        xdist_worker_count = int(os.getenv("PYTEST_XDIST_WORKER_COUNT", "1"))
+        max_threads = (os.cpu_count() or 2) // 2  # number of physical cores
+        threads_per_worker = max(max_threads // xdist_worker_count, 1)
+        # suppress e.g. AttributeError raised by older versions of OpenBLAS
+        with suppress(Exception):
+            threadpool_limits(threads_per_worker, user_api="blas")
 
     warning_lines = r"""
     error::
