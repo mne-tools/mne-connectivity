@@ -59,10 +59,6 @@ def has_imageio_ffmpeg():
 
 def pytest_configure(config):
     """Configure pytest options."""
-    # Fixtures
-    for fixture in ("matplotlib_config",):
-        config.addinivalue_line("usefixtures", fixture)
-
     # Cap the number of threads each pytest-xdist worker uses, adapted from SciPy
     if os.getenv("OMP_NUM_THREADS") is None:
         from threadpoolctl import threadpool_limits
@@ -110,7 +106,7 @@ def close_all():
     plt.close("all")
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="session", autouse=True)
 def matplotlib_config():
     """Configure matplotlib for viz tests."""
     import matplotlib
