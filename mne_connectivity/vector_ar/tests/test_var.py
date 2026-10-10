@@ -9,7 +9,7 @@ from numpy.testing import (
     assert_array_less,
 )
 
-from mne_connectivity import Connectivity, select_order, vector_auto_regression
+from mne_connectivity import VARConnectivity, select_order, vector_auto_regression
 
 warning_str = dict(
     sm_depr="ignore:Using or importing*.:DeprecationWarning",  # noqa
@@ -128,13 +128,13 @@ def test_regression_against_statsmodels(lags, trend):
                 model.get_data().squeeze()[..., idx],
                 sm_A.squeeze()[:, idx * block_size : (idx + 1) * block_size],
             )
-
+    assert_array_almost_equal(model.eigvals, np.linalg.eigvals(model.companion))
     if lags == 3:
-        if np.max(np.abs(np.linalg.eigvals(model.companion))) < 1.0:
+        if np.max(np.abs(model.eigvals)) < 1.0:
             # the regressed model should be stable for sufficient lags
-            assert model.is_stable()
+            assert model.is_stable
         else:
-            assert not model.is_stable()
+            assert not model.is_stable
 
 
 @pytest.mark.filterwarnings(warning_str["sm_depr"])
@@ -201,8 +201,8 @@ def test_var_debiased():
     )
 
     # manually solve things using pseudoinverse
-    eigvals = model.eigvals()
-    eigvals_fb = model_fb.eigvals()
+    eigvals = model.eigvals
+    eigvals_fb = model_fb.eigvals
 
     assert np.linalg.norm(eigvals - sample_eigs) > np.linalg.norm(
         eigvals_fb - sample_eigs
@@ -263,7 +263,7 @@ def test_vector_auto_regression():
     data = rng.randn(n_epochs, n_signals, n_times)
     times = np.arange(n_times)
 
-    with pytest.raises(ValueError, match='"model" parameter'):
+    with pytest.raises(ValueError, match="Invalid value for the 'model' parameter"):
         vector_auto_regression(data, model="static")
 
     # compute time-varying var
@@ -323,15 +323,15 @@ def test_vector_auto_regression_bad_channels(model):
     info = create_info(n_signals, sfreq=n_times, ch_types="eeg")
     info["bads"] = ["1"]
     data = EpochsArray(data, info)
-    corr = vector_auto_regression(data, model=model)
-    corr_data = corr.get_data()
+    var = vector_auto_regression(data, model=model)
+    var_data = var.get_data()
     if model == "dynamic":
-        corr_data = corr_data[0]  # take only epoch
+        var_data = var_data[0]  # take only epoch
 
-    assert corr.n_nodes == n_signals
-    assert corr.names == data.ch_names
-    assert_array_equal(corr_data[[0, 2, 1, 1, 1], [1, 1, 0, 1, 2]], 0)  # bads indices
-    assert corr_data.shape == (n_signals, n_signals)
+    assert var.n_nodes == n_signals
+    assert var.names == data.ch_names
+    assert_array_equal(var_data[[0, 2, 1, 1, 1], [1, 1, 0, 1, 2]], 0)  # bads indices
+    assert var_data.shape == (n_signals, n_signals, var.coords["lags"].size)
 
 
 @pytest.mark.parametrize("model", ["avg-epochs", "dynamic"])
@@ -372,7 +372,7 @@ def test_dynamic_mixin(model, lags):
         expected_shape = (n_epochs, *expected_shape)
     assert companion.shape == expected_shape
     if lags == 1:
-        assert_array_equal(companion, var.get_data(output="dense"))
+        assert_array_equal(companion, var.get_data(output="dense")[..., 0])
 
 
 def test_dynamic_mixin_errors():
@@ -416,15 +416,16 @@ def test_dynamic_mixin_errors():
 
     # Check components in the connectivity data get caught
     n_comps = 2
-    mv_var_data = rng.standard_normal(size=(n_signals**2, n_comps))
+    lags = np.arange(1)
+    mv_var_data = rng.standard_normal(size=(n_signals**2, n_comps, lags.size))
     indices = np.unravel_index(np.arange(n_signals**2), (n_signals, n_signals))
     indices = ([[ind] for ind in indices[0]], [[ind] for ind in indices[1]])
-    mv_var = Connectivity(
+    mv_var = VARConnectivity(
         mv_var_data,
         n_nodes=n_signals,
         method="var",
         indices=indices,
-        lags=1,
+        lags=lags,
         components=n_comps,
     )
     with pytest.raises(
@@ -454,9 +455,9 @@ def test_dynamic_mixin_errors():
 
     # Check a warning is raised when a non-VAR model is used for prediction
     n_nodes = 3
-    non_var_data = rng.standard_normal(size=(n_nodes**2,))
-    non_var = Connectivity(
-        non_var_data, n_nodes=n_nodes, method="not a var model", lags=1
+    non_var_data = rng.standard_normal(size=(n_nodes**2, lags.size))
+    non_var = VARConnectivity(
+        non_var_data, n_nodes=n_nodes, method="not a var model", lags=lags
     )
     expected_warning = (
         rf"The connectivity data comes from a method \({non_var.method}\) that is not "
