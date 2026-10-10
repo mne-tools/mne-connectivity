@@ -186,6 +186,11 @@ times : list | array
     The times at which the connectivity data is computed over.
 """
 
+docdict["lags"] = """
+lags : list | array
+    The lags at which the connectivity data is computed over.
+"""
+
 docdict["method"] = """
 method : str | None
     The method name used to compute connectivity (default ``None``).

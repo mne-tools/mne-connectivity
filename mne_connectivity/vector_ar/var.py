@@ -2,16 +2,11 @@ import numpy as np
 import scipy
 from mne import BaseEpochs
 from mne._fiff.pick import _picks_to_idx
-from mne.utils import logger, verbose
+from mne.utils import _check_option, logger, verbose
 from scipy.linalg import sqrtm
 from tqdm import tqdm
 
-from ..base import (
-    Connectivity,
-    EpochConnectivity,
-    EpochTemporalConnectivity,
-    TemporalConnectivity,
-)
+from ..base import EpochVARConnectivity, VARConnectivity
 from ..utils import fill_doc
 
 
@@ -56,15 +51,13 @@ def vector_auto_regression(
 
     Returns
     -------
-    conn : Connectivity | TemporalConnectivity | EpochConnectivity | EpochTemporalConnectivity
+    conn : VARConnectivity | EpochVARConnectivity
         The connectivity data estimated.
 
     See Also
     --------
-    mne_connectivity.Connectivity
-    mne_connectivity.TemporalConnectivity
-    mne_connectivity.EpochConnectivity
-    mne_connectivity.EpochTemporalConnectivity
+    mne_connectivity.VARConnectivity
+    mne_connectivity.EpochVARConnectivity
 
     Notes
     -----
@@ -72,11 +65,7 @@ def vector_auto_regression(
     connectivity class. For example, they can be the electrode names of EEG.
 
     For higher-order VAR models, there are ``n_order`` ``A`` matrices, representing the
-    linear dynamics with respect to that lag. These are represented by vertically
-    concatenated matrices. For example, if the input is data where ``n_signals`` is 3,
-    then an order-1 VAR model will result in a 3x3 connectivity matrix. An order-2 VAR
-    model will result in a 6x3 connectivity matrix, with two 3x3 matrices representing
-    the dynamics at lag 1 and lag 2, respectively.
+    linear dynamics with respect to that lag.
 
     When computing a VAR model (i.e. linear dynamical system), we require the input to
     be a ``(n_epochs, n_signals, n_times)`` 3D array. There are two ways one can
@@ -128,10 +117,7 @@ def vector_auto_regression(
     ----------
     .. footbibliography::
     """  # noqa: E501
-    if model not in ["avg-epochs", "dynamic"]:
-        raise ValueError(
-            f'"model" parameter must be one of (avg-epochs, dynamic), not {model}.'
-        )
+    _check_option("model", model, ["avg-epochs", "dynamic"])
 
     picks = None
     events = None
@@ -170,24 +156,33 @@ def vector_auto_regression(
     if picks is not None:
         data = data[:, picks]
 
-    model_params = {
-        "lags": lags,
-        "l2_reg": l2_reg,
-    }
-
     if verbose:
         logger.info(
-            f"Running {model} vector autoregression with parameters: \n{model_params}"
+            f"Running {model} vector autoregression with parameters:\n"
+            f"- lags: {lags}\n- l2_reg: {l2_reg}\n"
         )
+
+    model_kwargs = dict(
+        lags=np.arange(lags),
+        n_nodes=n_nodes,
+        names=names,
+        indices="all",
+        n_epochs_used=n_epochs,
+        times_used=times,
+        metadata=metadata,
+        events=events,
+        event_id=event_id,
+        l2_reg=l2_reg,
+    )
 
     if model == "avg-epochs":
         # compute VAR model where each epoch is a
         # sample of the multivariate time-series of interest
         # ordinary least squares or regularized least squares
         # (ridge regression)
-        X, Y = _construct_var_eqns(data, **model_params)
+        X, Y = _construct_var_eqns(data, lags=lags, l2_reg=l2_reg)
 
-        b, res, rank, s = scipy.linalg.lstsq(X, Y)
+        b = scipy.linalg.lstsq(X, Y)[0]
 
         # get the coefficients
         coef = b.transpose()
@@ -203,35 +198,7 @@ def vector_auto_regression(
 
         # create connectivity
         coef = coef.reshape((-1, lags))
-        if lags > 1:
-            conn = TemporalConnectivity(
-                data=coef,
-                times=list(range(lags)),
-                n_nodes=n_nodes,
-                names=names,
-                indices="all",
-                n_epochs_used=n_epochs,
-                times_used=times,
-                method="var",
-                metadata=metadata,
-                events=events,
-                event_id=event_id,
-                **model_params,
-            )
-        else:
-            conn = Connectivity(
-                data=coef[:, 0],  # take first and only lag
-                n_nodes=n_nodes,
-                names=names,
-                indices="all",
-                n_epochs_used=n_epochs,
-                times_used=times,
-                method="var",
-                metadata=metadata,
-                events=events,
-                event_id=event_id,
-                **model_params,
-            )
+        conn = VARConnectivity(data=coef, method="var", **model_kwargs)
     else:
         assert model == "dynamic"
         # compute time-varying VAR model where each epoch
@@ -253,35 +220,7 @@ def vector_auto_regression(
             A_mats = A_mats_holder
         # create connectivity
         A_mats = A_mats.reshape((n_epochs, -1, lags))
-        if lags > 1:
-            conn = EpochTemporalConnectivity(
-                data=A_mats,
-                times=list(range(lags)),
-                n_nodes=n_nodes,
-                names=names,
-                indices="all",
-                n_epochs_used=n_epochs,
-                times_used=times,
-                method="var_dynamic",
-                metadata=metadata,
-                events=events,
-                event_id=event_id,
-                **model_params,
-            )
-        else:
-            conn = EpochConnectivity(
-                data=A_mats[..., 0],  # take first and only lag
-                n_nodes=n_nodes,
-                names=names,
-                indices="all",
-                n_epochs_used=n_epochs,
-                times_used=times,
-                method="var_dynamic",
-                metadata=metadata,
-                events=events,
-                event_id=event_id,
-                **model_params,
-            )
+        conn = EpochVARConnectivity(data=A_mats, method="var_dynamic", **model_kwargs)
     return conn
 
 
@@ -508,91 +447,6 @@ def _estimate_var(X, lags, offset=0, l2_reg=0):
     sse = np.dot(resid.T, resid)
     omega = sse / df_resid
 
-    return params, resid, omega
-
-
-def _test_forloop(X, lags, offset=0, l2_reg=0):
-    # possibly offset the endogenous variable over the samples
-    endog = X[offset:, :]
-
-    # get the number of equations we want
-    n_times, n_equations = endog.shape
-
-    y_sample = endog[lags:]
-
-    # X.T @ X coefficient matrix
-    n_channels = n_equations * lags
-    XdotX = np.zeros((n_channels, n_channels))
-
-    # X.T @ Y ordinate / dependent variable matrix
-    XdotY = np.zeros((n_channels, n_channels))
-
-    # loop over sample points and aggregate the
-    # necessary elements of the normal equations
-    first_component = np.zeros((n_channels, 1))
-    second_component = np.zeros((1, n_channels))
-    y_component = np.zeros((1, n_channels))
-    for idx in range(n_times - lags):
-        for jdx in range(lags):
-            first_component[jdx * n_equations : (jdx + 1) * n_equations, :] = endog[
-                idx + jdx, :
-            ][:, np.newaxis]
-            second_component[:, jdx * n_equations : (jdx + 1) * n_equations] = endog[
-                idx + jdx, :
-            ][np.newaxis, :]
-            y_component[:, jdx * n_equations : (jdx + 1) * n_equations] = endog[
-                idx + 1 + jdx, :
-            ][np.newaxis, :]
-        # second_component = np.hstack([endog[idx + jdx, :]
-        # for jdx in range(lags)])[np.newaxis, :]
-        # print(second_component.shape)
-        # increment for X.T @ X
-        XdotX += first_component @ second_component
-
-        # increment for X.T @ Y
-        # second_component = np.hstack([endog[idx + 1 + jdx, :]
-        # for jdx in range(lags)])[np.newaxis, :]
-        XdotY += first_component @ y_component
-
-    if l2_reg != 0:
-        final_params = np.linalg.lstsq(
-            XdotX + l2_reg * np.eye(n_equations * lags), XdotY, rcond=1e-15
-        )[0]
-    else:
-        final_params = np.linalg.lstsq(XdotX, XdotY, rcond=1e-15)[0].T
-
-    # format the final matrix as (lags * n_equations, n_equations)
-    params = np.empty((lags * n_equations, n_equations))
-    for idx in range(lags):
-        start_col = n_equations * idx
-        stop_col = n_equations * (idx + 1)
-        start_row = n_equations * (lags - idx - 1)
-        stop_row = n_equations * (lags - idx)
-        params[start_row:stop_row, ...] = final_params[
-            n_equations * (lags - 1) :, start_col:stop_col
-        ].T
-
-    # print(final_params.round(5))
-    # print(params_)
-    # print(params)
-    # build the predictor matrix using the endogenous data
-    # with lags and trends.
-    # Note that the pure endogenous VAR model with OLS
-    # makes this matrix a (n_samples - lags, n_channels * lags) matrix
-    # z = _get_var_predictor_matrix(
-    # endog, lags
-    # )
-    # (n_samples - lags, n_channels)
-    # resid = y_sample - np.dot(z, params)
-    resid = np.zeros((n_times - lags, n_equations))
-
-    # compute the degrees of freedom in residual calculation
-    avobs = len(y_sample)
-    df_resid = avobs - (n_equations * lags)
-
-    # K x K sse
-    sse = np.dot(resid.T, resid)
-    omega = sse / df_resid
     return params, resid, omega
 
 

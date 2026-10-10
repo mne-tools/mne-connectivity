@@ -198,19 +198,19 @@ class DynamicMixin:
                 UserWarning,
             )
 
+    @property
     def is_stable(self):
-        companion_mat = self.companion
-        return np.abs(np.linalg.eigvals(companion_mat)).max() < 1.0
+        """Check if the VAR model is stable."""
+        return np.abs(self.eigvals).max() < 1.0
 
+    @property
     def eigvals(self):
+        """Eigenvalues of the companion matrix for the VAR model."""
         return np.linalg.eigvals(self.companion)
 
     @property
     def companion(self):
-        """Generate block companion matrix for a vector autoregressive (VAR) model.
-
-        Returns the data matrix if the VAR model order (i.e., the number of lags) is 1.
-        """
+        """Block companion matrix for the VAR model."""
         from .vector_ar.utils import _block_companion
 
         self._check_is_var()
@@ -221,10 +221,10 @@ class DynamicMixin:
                 "models with multiple components."
             )
 
-        lags = self.attrs.get("lags")
+        n_lags = len(self.coords["lags"])
         data = self.get_data("dense")
-        if lags == 1:
-            return data
+        if n_lags == 1:  # return the coefficients without singleton lags
+            return data[..., 0]
 
         if self.is_epoched:
             n_epochs = self.n_epochs
@@ -233,7 +233,7 @@ class DynamicMixin:
             data = data[np.newaxis, ...]
         arrs = []
         for idx in range(n_epochs):
-            blocks = _block_companion([data[idx, ..., jdx] for jdx in range(lags)])
+            blocks = _block_companion([data[idx, ..., jdx] for jdx in range(n_lags)])
             arrs.append(blocks)
         if not self.is_epoched:
             arrs = arrs[0]
@@ -310,19 +310,19 @@ class DynamicMixin:
         # prepare VAR model
         n_epochs, _, n_times = data.shape
         var_model = self.get_data(output="dense")
-        lags = self.attrs.get("lags")
+        n_lags = len(self.coords["lags"])
 
         # reshape the coeffs for prediction (and add epochs dim if not present)
-        var_model = np.reshape(var_model, (n_var, self.n_nodes, self.n_nodes * lags))
+        var_model = np.reshape(var_model, (n_var, self.n_nodes, self.n_nodes * n_lags))
 
         # predict the data by applying forward model
         predicted_data = np.zeros(data.shape)
-        for lag_idx in range(1, lags + 1):
+        for lag_idx in range(1, n_lags + 1):
             for epo_idx in range(n_epochs):
                 var_idx = epo_idx if self.is_epoched else 0
-                bp = var_model[var_idx, :, (lag_idx - 1) :: lags]
-                predicted_data[epo_idx, :, lags:] += np.dot(
-                    bp, data[epo_idx, :, (lags - lag_idx) : (n_times - lag_idx)]
+                bp = var_model[var_idx, :, (lag_idx - 1) :: n_lags]
+                predicted_data[epo_idx, :, n_lags:] += np.dot(
+                    bp, data[epo_idx, :, (n_lags - lag_idx) : (n_times - lag_idx)]
                 )
         if data_ndim == 2:  # remove unwanted epochs dim
             predicted_data = predicted_data[0]
@@ -367,8 +367,8 @@ class DynamicMixin:
 
         # reshape the coeffs for simulation
         n_nodes = self.n_nodes
-        lags = self.attrs.get("lags")
-        var_model = np.reshape(var_model, (n_nodes, n_nodes * lags))
+        n_lags = len(self.coords["lags"])
+        var_model = np.reshape(var_model, (n_nodes, n_nodes * n_lags))
 
         # set noise function
         if noise_func is None:
@@ -377,20 +377,22 @@ class DynamicMixin:
             def noise_func():
                 return rng.normal(size=(1, n_nodes))
 
-        n = n_samples + 10 * lags
+        n = n_samples + 10 * n_lags
 
         # simulated data
         data = np.zeros((n, n_nodes))
         res = np.zeros((n, n_nodes))
 
-        for jdx in range(lags, n):
+        for jdx in range(n_lags, n):
             e = noise_func()
             res[jdx, :] = e
             data[jdx, :] = e
-            for idx in range(1, lags + 1):
-                data[jdx, :] += var_model[:, (idx - 1) :: lags].dot(data[jdx - idx, :])
+            for idx in range(1, n_lags + 1):
+                data[jdx, :] += var_model[:, (idx - 1) :: n_lags].dot(
+                    data[jdx - idx, :]
+                )
 
-        return data[10 * lags :, :].transpose()
+        return data[10 * n_lags :, :].transpose()
 
 
 @fill_doc
@@ -502,14 +504,14 @@ class BaseConnectivity(EpochMixin):
         r += f"{self.method if self.method is not None else 'Unknown method'} | "
 
         dim_info = []
-        for dim in ("epochs", "connections", "components", "freqs", "times"):
+        for dim in ("epochs", "connections", "components", "freqs", "times", "lags"):
             if dim == "connections":
                 dim_info.append(f"{self.n_estimated_nodes} connections")
             elif dim == "freqs" and dim in self.dims:
                 dim_info.append(f"{self.freqs[0]}-{self.freqs[-1]} Hz")
             elif dim == "times" and dim in self.dims:
                 dim_info.append(f"{self.times[0]}-{self.times[-1]} s")
-            elif dim in self.dims:  # epochs or components
+            elif dim in self.dims:  # epochs/components/lags
                 dim_info.append(f"{len(self.coords[dim])} {dim}")
         dim_info = ", ".join(dim_info) + " | "
         r += dim_info
@@ -568,6 +570,9 @@ class BaseConnectivity(EpochMixin):
                 times = list(range(data.shape[-1]))
             coords["times"] = list(times)
             dims.append("times")
+        if "lags" in kwargs:
+            coords["lags"] = kwargs.pop("lags")
+            dims.append("lags")
 
         # convert all numpy arrays to lists
         for key, val in kwargs.items():
@@ -991,6 +996,51 @@ class BaseConnectivity(EpochMixin):
 
 
 @fill_doc
+class Connectivity(BaseConnectivity):
+    """Connectivity class without frequency or time component.
+
+    This is an array of shape ``(n_connections[, n_components])``, or ``(n_nodes,
+    n_nodes[, n_components])``. This describes a connectivity matrix/graph that does not
+    vary over time, frequency, or epochs. ``n_components`` is an optional dimension for
+    multivariate methods where each connection has multiple components of connectivity.
+
+    Parameters
+    ----------
+    %(data)s
+    %(n_nodes)s
+    %(names)s
+    %(indices)s
+    %(method)s
+    %(n_epochs_used)s
+    %(connectivity_kwargs)s
+
+    See Also
+    --------
+    mne_connectivity.wsmi
+    """
+
+    def __init__(
+        self,
+        data,
+        n_nodes,
+        names=None,
+        indices="all",
+        method=None,
+        n_epochs_used=None,
+        **kwargs,
+    ):
+        super().__init__(
+            data,
+            names=names,
+            method=method,
+            n_nodes=n_nodes,
+            indices=indices,
+            n_epochs_used=n_epochs_used,
+            **kwargs,
+        )
+
+
+@fill_doc
 class SpectralConnectivity(BaseConnectivity, SpectralMixin):
     """Spectral connectivity class.
 
@@ -1047,7 +1097,7 @@ class SpectralConnectivity(BaseConnectivity, SpectralMixin):
 
 
 @fill_doc
-class TemporalConnectivity(BaseConnectivity, TimeMixin, DynamicMixin):
+class TemporalConnectivity(BaseConnectivity, TimeMixin):
     """Temporal connectivity class.
 
     This is an array of shape ``(n_connections, [n_components,] n_times)``, or
@@ -1156,6 +1206,100 @@ class SpectroTemporalConnectivity(BaseConnectivity, SpectralMixin, TimeMixin):
             freqs=freqs,
             spec_method=spec_method,
             times=times,
+            n_epochs_used=n_epochs_used,
+            **kwargs,
+        )
+
+
+@fill_doc
+class VARConnectivity(BaseConnectivity, DynamicMixin):
+    """Vector autoregression (VAR) connectivity class.
+
+    This is an array of shape ``(n_connections, n_lags)``, or ``(n_nodes, n_nodes,
+    n_lags)``. This describes a VAR model that does not vary over epochs.
+
+    Parameters
+    ----------
+    %(data)s
+    %(lags)s
+    %(n_nodes)s
+    %(names)s
+    %(indices)s
+    %(method)s
+    %(n_epochs_used)s
+    %(connectivity_kwargs)s
+
+    See Also
+    --------
+    mne_connectivity.vector_auto_regression
+    """
+
+    def __init__(
+        self,
+        data,
+        lags,
+        n_nodes,
+        names=None,
+        indices="all",
+        method=None,
+        n_epochs_used=None,
+        **kwargs,
+    ):
+        super().__init__(
+            data,
+            lags=lags,
+            names=names,
+            method=method,
+            n_nodes=n_nodes,
+            indices=indices,
+            n_epochs_used=n_epochs_used,
+            **kwargs,
+        )
+
+
+@fill_doc
+class EpochConnectivity(Connectivity):
+    """Epoch connectivity class.
+
+    This is an array of shape ``(n_epochs, n_connections[, n_components])``, or
+    ``(n_epochs, n_nodes, n_nodes[, n_components])``. This describes how connectivity
+    varies for different epochs. ``n_components`` is an optional dimension for
+    multivariate methods where each connection has multiple components of connectivity.
+
+    Parameters
+    ----------
+    %(data)s
+    %(n_nodes)s
+    %(names)s
+    %(indices)s
+    %(method)s
+    %(n_epochs_used)s
+    %(connectivity_kwargs)s
+
+    See Also
+    --------
+    mne_connectivity.wsmi
+    """
+
+    # whether or not the connectivity occurs over epochs
+    is_epoched = True
+
+    def __init__(
+        self,
+        data,
+        n_nodes,
+        names=None,
+        indices="all",
+        method=None,
+        n_epochs_used=None,
+        **kwargs,
+    ):
+        super().__init__(
+            data,
+            names=names,
+            method=method,
+            n_nodes=n_nodes,
+            indices=indices,
             n_epochs_used=n_epochs_used,
             **kwargs,
         )
@@ -1308,62 +1452,17 @@ class EpochSpectroTemporalConnectivity(SpectroTemporalConnectivity):
 
 
 @fill_doc
-class Connectivity(BaseConnectivity, DynamicMixin):
-    """Connectivity class without frequency or time component.
+class EpochVARConnectivity(BaseConnectivity, DynamicMixin):
+    """Vector autoregression (VAR) connectivity class over epochs.
 
-    This is an array of shape ``(n_connections[, n_components])``, or ``(n_nodes,
-    n_nodes[, n_components])``. This describes a connectivity matrix/graph that does not
-    vary over time, frequency, or epochs. ``n_components`` is an optional dimension for
-    multivariate methods where each connection has multiple components of connectivity.
-
-    Parameters
-    ----------
-    %(data)s
-    %(n_nodes)s
-    %(names)s
-    %(indices)s
-    %(method)s
-    %(n_epochs_used)s
-    %(connectivity_kwargs)s
-
-    See Also
-    --------
-    mne_connectivity.vector_auto_regression
-    """
-
-    def __init__(
-        self,
-        data,
-        n_nodes,
-        names=None,
-        indices="all",
-        method=None,
-        n_epochs_used=None,
-        **kwargs,
-    ):
-        super().__init__(
-            data,
-            names=names,
-            method=method,
-            n_nodes=n_nodes,
-            indices=indices,
-            n_epochs_used=n_epochs_used,
-            **kwargs,
-        )
-
-
-@fill_doc
-class EpochConnectivity(Connectivity):
-    """Epoch connectivity class.
-
-    This is an array of shape ``(n_epochs, n_connections[, n_components])``, or
-    ``(n_epochs, n_nodes, n_nodes[, n_components])``. This describes how connectivity
-    varies for different epochs. ``n_components`` is an optional dimension for
-    multivariate methods where each connection has multiple components of connectivity.
+    This is an array of shape ``(n_epochs, n_connections, n_lags)``, or ``(n_epochs,
+    n_nodes, n_nodes, n_lags)``. This describes a dynamic VAR model (i.e., one that
+    varies over epochs).
 
     Parameters
     ----------
     %(data)s
+    %(lags)s
     %(n_nodes)s
     %(names)s
     %(indices)s
@@ -1382,6 +1481,7 @@ class EpochConnectivity(Connectivity):
     def __init__(
         self,
         data,
+        lags,
         n_nodes,
         names=None,
         indices="all",
@@ -1391,6 +1491,7 @@ class EpochConnectivity(Connectivity):
     ):
         super().__init__(
             data,
+            lags=lags,
             names=names,
             method=method,
             n_nodes=n_nodes,

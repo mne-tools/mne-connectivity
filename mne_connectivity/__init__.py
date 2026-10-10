@@ -19,9 +19,11 @@ from .base import (
     EpochSpectralConnectivity,
     EpochSpectroTemporalConnectivity,
     EpochTemporalConnectivity,
+    EpochVARConnectivity,
     SpectralConnectivity,
     SpectroTemporalConnectivity,
     TemporalConnectivity,
+    VARConnectivity,
 )
 from .datasets import (
     make_signals_in_freq_bands,
