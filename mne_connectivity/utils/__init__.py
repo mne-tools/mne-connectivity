@@ -4,6 +4,7 @@ from .utils import (
     _check_if_multivariate_indices,
     _check_indices,
     _check_multivariate_indices,
+    _correct_signs,
     _get_unique_multivariate_nodes_and_indices,
     _prepare_xarray_mne_data_structures,
     degree,
