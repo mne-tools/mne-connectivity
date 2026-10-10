@@ -57,7 +57,7 @@ jobs:
             cd mne-python
             ./tools/circleci_dependencies.sh
             cd ..
-            pip install -ve .[doc]
+            pip install --group doc -ve .
 
       - save_cache:
           key: pip-cache-312

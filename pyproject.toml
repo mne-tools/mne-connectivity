@@ -2,6 +2,61 @@
 build-backend = "setuptools.build_meta"
 requires = ["setuptools>=64", "setuptools_scm[toml]>=8", "wheel"]
 
+[dependency-groups]
+build = ["build", "twine"]
+dev = [
+  "PyQt6",
+  { include-group = "build" },
+  { include-group = "doc" },
+  { include-group = "style" },
+  { include-group = "test" },
+]
+doc = [
+  "intersphinx-registry",
+  "joblib",  # for sphinx_gallery_conf["parallel"]
+  "memory-profiler",
+  "mne-bids",
+  "mne-connectivity[gui]",
+  "nibabel >= 5.2",  # released 2023-12-11, will become 5.3 on 2026-10-08
+  "nilearn >= 0.10",  # released 2023-01-06, will become 0.11 on 2026-12-02
+  "numpydoc",
+  "pooch",
+  "pydata-sphinx-theme >= 0.14.1",
+  "PyQt6",
+  "sphinx != 8.1.0",
+  "sphinx-copybutton",
+  "sphinx-design",
+  "sphinx-gallery >= 0.18.0",
+  "sphinx-issues",
+  "sphinx_autodoc_typehints",
+  "sphinxcontrib-bibtex",
+  "sphinxcontrib-towncrier",
+  "threadpoolctl",
+]
+style = [
+  "codespell",
+  "isort",
+  "pre-commit",
+  "pydocstyle",
+  "pydocstyle[toml]",
+  "rstcheck",
+  "ruff",
+  "toml-sort",
+  "yamllint",
+]
+test = [
+  "joblib",
+  "mne-bids",
+  "mne-connectivity[gui]",
+  "pymatreader",
+  "pytest",
+  "pytest-cov",
+  "pytest-timeout",
+  "pytest-xdist",
+  "statsmodels",
+  "threadpoolctl",
+]
+
 [project]
 classifiers = [
   "Intended Audience :: Developers",
@@ -38,37 +93,7 @@ readme = { content-type = "text/x-rst", file = "README.rst" }
 requires-python = ">=3.11"
 
 [project.optional-dependencies]
-all = [
-  "mne-connectivity[build]",
-  "mne-connectivity[doc]",
-  "mne-connectivity[gui]",
-  "mne-connectivity[style]",
-  "mne-connectivity[test]",
-  "PyQt6",
-]
-build = ["build", "twine"]
-doc = [
-  "intersphinx-registry",
-  "joblib",  # for sphinx_gallery_conf["parallel"]
-  "memory-profiler",
-  "mne-bids",
-  "mne-connectivity[gui]",
-  "nibabel >= 5.2",  # released 2023-12-11, will become 5.3 on 2026-10-08
-  "nilearn >= 0.10",  # released 2023-01-06, will become 0.11 on 2026-12-02
-  "numpydoc",
-  "pooch",
-  "pydata-sphinx-theme >= 0.14.1",
-  "PyQt6",
-  "sphinx != 8.1.0",
-  "sphinx-copybutton",
-  "sphinx-design",
-  "sphinx-gallery >= 0.18.0",
-  "sphinx-issues",
-  "sphinx_autodoc_typehints",
-  "sphinxcontrib-bibtex",
-  "sphinxcontrib-towncrier",
-  "threadpoolctl",
-]
+all = ["mne-connectivity[gui]", "PyQt6"]
 full = ["mne-connectivity[all]"]
 gui = [
   "h5netcdf",
@@ -79,29 +104,6 @@ gui = [
   "qtpy",
   "sip",
   "vtk",
-]
-style = [
-  "codespell",
-  "isort",
-  "pre-commit",
-  "pydocstyle",
-  "pydocstyle[toml]",
-  "rstcheck",
-  "ruff",
-  "toml-sort",
-  "yamllint",
-]
-test = [
-  "joblib",
-  "mne-bids",
-  "mne-connectivity[gui]",
-  "pymatreader",
-  "pytest",
-  "pytest-cov",
-  "pytest-timeout",
-  "pytest-xdist",
-  "statsmodels",
-  "threadpoolctl",
 ]
 
 [project.urls]
