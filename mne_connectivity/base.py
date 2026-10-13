@@ -199,8 +199,13 @@ class DynamicMixin:
             )
 
     @property
+    def lags(self):
+        """The lags of the VAR model."""
+        return self.xarray.coords.get("lags").values.tolist()
+
+    @property
     def is_stable(self):
-        """Check if the VAR model is stable."""
+        """Whether the VAR model is stable."""
         return np.abs(self.eigvals).max() < 1.0
 
     @property
