@@ -35,7 +35,9 @@ def vector_auto_regression(
         ``times_used`` in the returned ``conn`` will not be available.
     %(names)s
     lags : int | None
-        Autoregressive model order (default 1).
+        Autoregressive model order (default 1). See
+        :func:`~mne_connectivity.select_order` for a selection based on information
+        criterion.
     l2_reg : float | None
         Ridge penalty (l2-regularization) parameter (default 0.0).
     compute_fb_operator : bool
@@ -56,6 +58,7 @@ def vector_auto_regression(
 
     See Also
     --------
+    mne_connectivity.select_order
     mne_connectivity.VARConnectivity
     mne_connectivity.EpochVARConnectivity
 
