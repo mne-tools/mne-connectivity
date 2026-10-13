@@ -8,9 +8,11 @@ from .base import (
     EpochSpectralConnectivity,
     EpochSpectroTemporalConnectivity,
     EpochTemporalConnectivity,
+    EpochVARConnectivity,
     SpectralConnectivity,
     SpectroTemporalConnectivity,
     TemporalConnectivity,
+    VARConnectivity,
 )
 
 
@@ -35,11 +37,13 @@ def _xarray_to_conn(array, cls_func):
     # get the dimensions
     coords = array.coords
 
-    # attach times and frequencies
+    # attach times/frequencies/lags
     if "times" in coords:
         array.attrs["times"] = coords.get("times")
     if "freqs" in coords:
         array.attrs["freqs"] = coords.get("freqs")
+    if "lags" in coords:
+        array.attrs["lags"] = coords.get("lags")
 
     # get the names
     names = array.attrs["node_names"]
@@ -100,10 +104,12 @@ def read_connectivity(fname):
         "TemporalConnectivity": TemporalConnectivity,
         "SpectralConnectivity": SpectralConnectivity,
         "SpectroTemporalConnectivity": SpectroTemporalConnectivity,
+        "VARConnectivity": VARConnectivity,
         "EpochConnectivity": EpochConnectivity,
         "EpochTemporalConnectivity": EpochTemporalConnectivity,
         "EpochSpectralConnectivity": EpochSpectralConnectivity,
         "EpochSpectroTemporalConnectivity": EpochSpectroTemporalConnectivity,
+        "EpochVARConnectivity": EpochVARConnectivity,
     }
     cls_func = conn_cls[data_structure_name]
 
@@ -137,6 +143,24 @@ def read_connectivity(fname):
                 "method name."
             )
         conn_da.attrs["method"] = method_map[conn_da.attrs["method"]]
+
+    # map deprecated VAR method-class combinations to their current ones
+    method_class_map = {"var": VARConnectivity, "var_dynamic": EpochVARConnectivity}
+    if conn_da.attrs["method"] in method_class_map:
+        if cls_func != method_class_map[conn_da.attrs["method"]]:
+            cls_func = method_class_map[conn_da.attrs["method"]]
+            warn(
+                "Storing 'var' and 'var_dynamic' methods outside of the "
+                "VARConnectivity and EpochVARConnectivity classes was deprecated in "
+                "v1.0. To avoid this warning, consider saving this connectivity "
+                "container with the updated class."
+            )
+            n_lags = conn_da.attrs.pop("lags")
+            if n_lags > 1:
+                conn_da = conn_da.rename({"times": "lags"})
+            else:
+                conn_da = conn_da.expand_dims("lags", axis=-1)
+            conn_da.coords["lags"] = np.arange(n_lags)
 
     # get the data as a new connectivity container
     conn = _xarray_to_conn(conn_da, cls_func)
