@@ -44,6 +44,57 @@ class SpectralMixin:
         """
         return self.xarray.coords.get("freqs").values.tolist()
 
+    def combine_freqs(self, method="mean"):
+        """Aggregate connectivity data over frequencies.
+
+        Parameters
+        ----------
+        method : ``'mean'`` | ``'median'`` | callable
+            How to aggregate the data across frequencies. If `callable`, must take a
+            :class:`NumPy array<numpy.ndarray>` of shape ``(..., n_freqs, ...)`` as
+            input and return an array collapsed over the frequency dimension. Default
+            is ``'mean'``.
+
+        Returns
+        -------
+        con : instance of Connectivity | EpochConnectivity | TemporalConnectivity
+            The connectivity data aggregated over the frequency dimension.
+
+        Notes
+        -----
+        Passing in ``np.median`` is considered unsafe for complex data. Pass the string
+        ``"median"`` instead to compute the *marginal* median (i.e., the median of the
+        real and imaginary components separately). See discussion here:
+
+        https://github.com/scipy/scipy/pull/12676#issuecomment-783370228
+        """
+        expected_shape = tuple(
+            [n for n, dim in zip(self.shape, self.dims) if dim != "freqs"]
+        )
+        freqs_axis = self.dims.index("freqs")
+        func = _check_combine(method, valid=("mean", "median"), axis=freqs_axis)
+        data = func(self._data, axis=freqs_axis)
+
+        if data.shape != expected_shape:
+            raise RuntimeError(
+                "`combine_freqs` got a method that resulted in data of shape "
+                f"{data.shape}, expected {expected_shape}."
+            )
+
+        match type(self).__name__:
+            case "SpectralConnectivity":
+                con_cls = Connectivity
+            case "SpectroTemporalConnectivity":
+                con_cls = TemporalConnectivity
+            case "EpochSpectralConnectivity":
+                con_cls = EpochConnectivity
+            case "EpochSpectroTemporalConnectivity":
+                con_cls = EpochTemporalConnectivity
+        cls_kwargs = copy(self.attrs)
+        del cls_kwargs["freqs"]
+
+        return con_cls(data=data, **cls_kwargs)
+
 
 class TimeMixin:
     @property
