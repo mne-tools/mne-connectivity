@@ -154,8 +154,8 @@ class EpochMixin:
 
         # now combine the xarray data, altered events and event ID
         self._obj = xr.concat([self.xarray, epoch_conn.xarray], dim="epochs")
-        self.events = events
-        self.event_id = event_id
+        self._obj.attrs["events"] = events
+        self._obj.attrs["event_id"] = event_id
         return self
 
     def combine(self, combine="mean"):
