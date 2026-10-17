@@ -196,8 +196,8 @@ def plot_connectivity_circle():
 
 # Get complex connectivity values at frequency bands
 freqs = cacoh.freqs
-cacoh_10_12 = np.mean(cacoh.get_data()[0, freqs.index(10) : freqs.index(12) + 1])
-cacoh_23_25 = np.mean(cacoh.get_data()[0, freqs.index(23) : freqs.index(25) + 1])
+cacoh_10_12 = cacoh.combine_freqs(method="mean", fmin=10, fmax=12).get_data()[0]
+cacoh_23_25 = cacoh.combine_freqs(method="mean", fmin=23, fmax=25).get_data()[0]
 
 # Plot complex connectivity values
 fig, axis = plot_connectivity_circle()
@@ -375,8 +375,8 @@ data = data_10_12.add_channels([data_23_25])
 
 # Get complex connectivity values at frequency bands
 freqs = cacoh.freqs
-cacoh_10_12 = np.mean(cacoh.get_data()[0, freqs.index(10) : freqs.index(12) + 1])
-cacoh_23_25 = np.mean(cacoh.get_data()[0, freqs.index(23) : freqs.index(25) + 1])
+cacoh_10_12 = cacoh.combine_freqs(method="mean", fmin=10, fmax=12).get_data()[0]
+cacoh_23_25 = cacoh.combine_freqs(method="mean", fmin=23, fmax=25).get_data()[0]
 
 # Plot complex connectivity values
 fig, axis = plot_connectivity_circle()
