@@ -207,11 +207,9 @@ def phase_slope_index(
     freqs = np.array(cohy.freqs)
     names = cohy.names
     n_tapers = cohy.attrs.get("n_tapers")
-    n_epochs_used = cohy.n_epochs
+    n_epochs_used = cohy.n_epochs_used
     n_nodes = cohy.n_nodes
     metadata = cohy.metadata
-    events = cohy.events
-    event_id = cohy.event_id
 
     logger.info(f"Computing PSI from estimated Coherency: {cohy}")
     # compute PSI in the requested bands
@@ -241,8 +239,6 @@ def phase_slope_index(
             n_epochs_used=n_epochs_used,
             n_tapers=n_tapers,
             metadata=metadata,
-            events=events,
-            event_id=event_id,
         )
     else:
         # spectrotemporal
@@ -259,8 +255,6 @@ def phase_slope_index(
             n_epochs_used=n_epochs_used,
             n_tapers=n_tapers,
             metadata=metadata,
-            events=events,
-            event_id=event_id,
         )
 
     return psi
@@ -455,7 +449,7 @@ def phase_slope_index_time(
     freqs = np.array(cohy.freqs)
     names = cohy.names
     n_tapers = cohy.attrs.get("n_tapers")
-    n_epochs_used = cohy.n_epochs
+    n_epochs = cohy.n_epochs
     n_nodes = cohy.n_nodes
     metadata = cohy.metadata
     events = cohy.events
@@ -484,16 +478,16 @@ def phase_slope_index_time(
         freqs_computed=freqs_computed,
         n_tapers=n_tapers,
         metadata=metadata,
-        events=events,
-        event_id=event_id,
     )
     if average:
         # average over epochs
         psi = SpectralConnectivity(
-            data=psi.mean(axis=0), n_epochs_used=n_epochs_used, **conn_kwargs
+            data=psi.mean(axis=0), n_epochs_used=n_epochs, **conn_kwargs
         )
     else:
-        psi = EpochSpectralConnectivity(data=psi, **conn_kwargs)
+        psi = EpochSpectralConnectivity(
+            data=psi, events=events, event_id=event_id, **conn_kwargs
+        )
 
     return psi
 

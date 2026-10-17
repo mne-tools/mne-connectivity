@@ -29,11 +29,7 @@ from mne_connectivity.viz import plot_connectivity_circle
 
 
 class SpectralMixin:
-    """Mixin class for spectral connectivities.
-
-    Note: In mne-connectivity, we associate the word "spectral" with time-frequency.
-    Reference to eigenvalue structure is not captured in this mixin.
-    """
+    """Mixin class for spectral connectivity."""
 
     @property
     def freqs(self):
@@ -46,6 +42,8 @@ class SpectralMixin:
 
 
 class TimeMixin:
+    """Mixin class for temporal connectivity."""
+
     @property
     def times(self):
         """The time points of the connectivity data."""
@@ -53,7 +51,13 @@ class TimeMixin:
 
 
 class EpochMixin:
-    def _init_epochs(self, events, event_id, on_missing="warn") -> None:
+    """Mixin class for per-epoch connectivity."""
+
+    is_epoched = True
+
+    def __init__(self, events, event_id, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
         # Epochs should have the events array that informs user of
         # sample points at which each Epoch was taken from.
         # An empty list occurs when NetCDF stores empty arrays.
@@ -63,39 +67,55 @@ class EpochMixin:
             events = np.empty((0, 3))
 
         event_id = _check_event_id(event_id, events)
-        self.event_id = event_id
-        self.events = events
 
         # see BaseEpochs init in MNE-Python
         if events is not None:
-            for key, val in self.event_id.items():
+            for key, val in event_id.items():
                 if val not in events[:, 2]:
                     msg = f"No matching events found for {key} (event id {val})"
-                    _on_missing(on_missing, msg)
+                    _on_missing("warn", msg)
 
             # ensure metadata matches original events size
             self.selection = np.arange(len(events))
-            self.events = events
-            del events
 
-            values = list(self.event_id.values())
-            selected = np.where(np.isin(self.events[:, 2], values))[0]
+            values = list(event_id.values())
+            selected = np.where(np.isin(events[:, 2], values))[0]
 
-            self.events = self.events[selected]
+            events = events[selected]
+
+        self._obj.attrs["events"] = events
+        self._obj.attrs["event_id"] = event_id
+
+    @property
+    def n_epochs(self):
+        """The number of epochs the connectivity data varies over."""
+        return self._data.shape[0]
+
+    @property
+    def events(self):
+        """The events array, for those event types found in ``event_id``."""
+        return self.xarray.attrs["events"]
+
+    @property
+    def event_id(self):
+        """Mapping from condition descriptions (strings) to integer event codes."""
+        return self.xarray.attrs["event_id"]
 
     def append(self, epoch_conn):
-        """Append another connectivity structure.
+        """Append another epoched connectivity structure, in place.
 
         Parameters
         ----------
-        epoch_conn : instance of Connectivity
-            The epoched Connectivity class to append.
+        epoch_conn : instance of EpochConnectivity | EpochTemporalConnectivity | EpochSpectralConnectivity | EpochSpectroTemporalConnectivity
+            The connectivity container to append. Must be of the same type as the
+            current container instance.
 
         Returns
         -------
-        self : instance of Connectivity
-            The altered epoched Connectivity class.
-        """
+        self : instance of EpochConnectivity | EpochTemporalConnectivity | EpochSpectralConnectivity | EpochSpectroTemporalConnectivity
+            The altered connectivity container with the new epochs appended. The
+            instance type matches that of the current container instance.
+        """  # noqa: E501
         if not isinstance(self, type(epoch_conn)):
             raise ValueError(
                 f"The type of the epoch connectivity to append is {type(epoch_conn)}, "
@@ -157,12 +177,6 @@ class EpochMixin:
         """  # noqa: E501
         from .io import _xarray_to_conn
 
-        if not self.is_epoched:
-            raise RuntimeError(
-                "Combine only works over Epoched connectivity. It does not work with "
-                f"{self}"
-            )
-
         fun = _check_combine(combine, valid=("mean", "median"))
 
         # get a copy of metadata into attrs as a dictionary
@@ -188,7 +202,23 @@ class EpochMixin:
         return conn
 
 
+class NonEpochMixin:
+    """Mixin class for non-epoched connectivity."""
+
+    is_epoched = False
+
+    @property
+    def n_epochs_used(self):
+        """Number of epochs used in computation of connectivity.
+
+        Can be ``None``, if no epochs were used.
+        """
+        return self.attrs["n_epochs_used"]
+
+
 class DynamicMixin:
+    """Mixin class for VAR models."""
+
     def _check_is_var(self):
         if not re.match(r"^var(?:_dynamic)?$", self.method):
             warn(
@@ -394,7 +424,7 @@ class DynamicMixin:
 
 
 @fill_doc
-class BaseConnectivity(EpochMixin):
+class BaseConnectivity:
     """Base class for connectivity data.
 
     This class should not be instantiated directly, but should be used to do
@@ -414,8 +444,6 @@ class BaseConnectivity(EpochMixin):
     %(indices)s
     %(method)s
     %(n_nodes)s
-    %(events)s
-    %(event_id)s
     metadata : instance of pandas.DataFrame | None
         The metadata data frame that would come from the :class:`mne.Epochs` class. See
         :class:`mne.Epochs` docstring for details.
@@ -446,8 +474,9 @@ class BaseConnectivity(EpochMixin):
     not transfer.
     """
 
-    # whether or not the connectivity occurs over epochs
-    is_epoched = False
+    # Expected to be properly defined in the child classes
+    is_epoched: bool
+    n_epochs_used: int | None
 
     def __init__(
         self,
@@ -456,8 +485,6 @@ class BaseConnectivity(EpochMixin):
         indices,
         method,
         n_nodes,
-        events=None,
-        event_id=None,
         metadata=None,
         **kwargs,
     ):
@@ -487,14 +514,7 @@ class BaseConnectivity(EpochMixin):
                 )
         self._check_data_consistency(data, indices=indices, n_nodes=n_nodes)
         self._prepare_xarray(
-            data,
-            names=names,
-            indices=indices,
-            n_nodes=n_nodes,
-            method=method,
-            events=events,
-            event_id=event_id,
-            **kwargs,
+            data, names=names, indices=indices, n_nodes=n_nodes, method=method, **kwargs
         )
 
     def __repr__(self) -> str:
@@ -514,7 +534,7 @@ class BaseConnectivity(EpochMixin):
         dim_info = ", ".join(dim_info) + " | "
         r += dim_info
 
-        if self.n_epochs_used is not None and not self.is_epoched:
+        if not self.is_epoched and self.n_epochs_used is not None:
             r += f"nave: {self.n_epochs_used} | "
 
         r += f"~{sizeof_fmt(self._size)}>"
@@ -530,15 +550,8 @@ class BaseConnectivity(EpochMixin):
             start_idx = 0
         self.n_estimated_nodes = data.shape[start_idx]
 
-    def _prepare_xarray(
-        self, data, names, indices, n_nodes, method, events, event_id, **kwargs
-    ):
+    def _prepare_xarray(self, data, names, indices, n_nodes, method, **kwargs):
         """Prepare xarray data structure."""
-        # generate events and event_id that originate from Epochs class
-        # which stores the windows of Raw that were used to generate
-        # the corresponding connectivity data
-        self._init_epochs(events, event_id, on_missing="warn")
-
         # set node names
         if names is None:
             names = list(map(str, range(n_nodes)))
@@ -554,7 +567,7 @@ class BaseConnectivity(EpochMixin):
         n_estimated_list = list(map(str, range(self.n_estimated_nodes)))
         coords = dict()
         if self.is_epoched:
-            coords["epochs"] = list(map(str, range(data.shape[0])))
+            coords["epochs"] = list(range(data.shape[0]))
         coords["node_in -> node_out"] = n_estimated_list
         if "components" in kwargs:
             coords["components"] = kwargs.pop("components")
@@ -589,8 +602,6 @@ class BaseConnectivity(EpochMixin):
         kwargs["method"] = method
         kwargs["indices"] = indices
         kwargs["n_nodes"] = n_nodes
-        kwargs["events"] = self.events
-        # kwargs['event_id'] = self.event_id
 
         # create xarray object
         xarray_obj = xr.DataArray(data=data, coords=coords, dims=dims, attrs=kwargs)
@@ -655,19 +666,8 @@ class BaseConnectivity(EpochMixin):
                 )
 
     def copy(self):
+        """Return a deep copy of the connectivity container."""
         return deepcopy(self)
-
-    def get_epoch_annotations(self):
-        pass
-
-    @property
-    def n_epochs(self):
-        """The number of epochs the connectivity data varies over."""
-        if self.is_epoched:
-            n_epochs = self._data.shape[0]
-        else:
-            n_epochs = None
-        return n_epochs
 
     @property
     def _data(self):
@@ -734,15 +734,6 @@ class BaseConnectivity(EpochMixin):
     def xarray(self):
         """Xarray of the connectivity data."""
         return self._obj
-
-    @property
-    def n_epochs_used(self):
-        """Number of epochs used in computation of connectivity.
-
-        Can be ``None``, if there was no epochs used. This is equivalent to the number
-        of epochs, if there is no combining of epochs.
-        """
-        return self.attrs.get("n_epochs_used")
 
     @property
     def _size(self):
@@ -933,12 +924,6 @@ class BaseConnectivity(EpochMixin):
             self.get_data(), node_names=self.names, indices=self.indices, **kwargs
         )
 
-    # def plot_matrix(self):
-    #     pass
-
-    # def plot_3d(self):
-    #     pass
-
     def save(self, fname):
         """Save connectivity data to disk.
 
@@ -991,7 +976,52 @@ class BaseConnectivity(EpochMixin):
 
 
 @fill_doc
-class SpectralConnectivity(BaseConnectivity, SpectralMixin):
+class Connectivity(BaseConnectivity, DynamicMixin, NonEpochMixin):
+    """Connectivity class without frequency or time component.
+
+    This is an array of shape ``(n_connections[, n_components])``, or ``(n_nodes,
+    n_nodes[, n_components])``. This describes a connectivity matrix/graph that does not
+    vary over time, frequency, or epochs. ``n_components`` is an optional dimension for
+    multivariate methods where each connection has multiple components of connectivity.
+
+    Parameters
+    ----------
+    %(data)s
+    %(n_nodes)s
+    %(names)s
+    %(indices)s
+    %(method)s
+    %(n_epochs_used)s
+    %(connectivity_kwargs)s
+
+    See Also
+    --------
+    mne_connectivity.vector_auto_regression
+    """
+
+    def __init__(
+        self,
+        data,
+        n_nodes,
+        names=None,
+        indices="all",
+        method=None,
+        n_epochs_used=None,
+        **kwargs,
+    ):
+        super().__init__(
+            data=data,
+            names=names,
+            method=method,
+            n_nodes=n_nodes,
+            indices=indices,
+            n_epochs_used=n_epochs_used,
+            **kwargs,
+        )
+
+
+@fill_doc
+class SpectralConnectivity(BaseConnectivity, SpectralMixin, NonEpochMixin):
     """Spectral connectivity class.
 
     This class stores connectivity data that varies over frequencies. The underlying
@@ -1019,8 +1049,6 @@ class SpectralConnectivity(BaseConnectivity, SpectralMixin):
     mne_connectivity.spectral_connectivity_time
     """
 
-    expected_n_dim = 2
-
     def __init__(
         self,
         data,
@@ -1034,7 +1062,7 @@ class SpectralConnectivity(BaseConnectivity, SpectralMixin):
         **kwargs,
     ):
         super().__init__(
-            data,
+            data=data,
             names=names,
             method=method,
             indices=indices,
@@ -1047,7 +1075,7 @@ class SpectralConnectivity(BaseConnectivity, SpectralMixin):
 
 
 @fill_doc
-class TemporalConnectivity(BaseConnectivity, TimeMixin, DynamicMixin):
+class TemporalConnectivity(BaseConnectivity, TimeMixin, DynamicMixin, NonEpochMixin):
     """Temporal connectivity class.
 
     This is an array of shape ``(n_connections, [n_components,] n_times)``, or
@@ -1077,8 +1105,6 @@ class TemporalConnectivity(BaseConnectivity, TimeMixin, DynamicMixin):
     also be discontiguous.
     """
 
-    expected_n_dim = 2
-
     def __init__(
         self,
         data,
@@ -1091,7 +1117,7 @@ class TemporalConnectivity(BaseConnectivity, TimeMixin, DynamicMixin):
         **kwargs,
     ):
         super().__init__(
-            data,
+            data=data,
             names=names,
             method=method,
             n_nodes=n_nodes,
@@ -1103,7 +1129,9 @@ class TemporalConnectivity(BaseConnectivity, TimeMixin, DynamicMixin):
 
 
 @fill_doc
-class SpectroTemporalConnectivity(BaseConnectivity, SpectralMixin, TimeMixin):
+class SpectroTemporalConnectivity(
+    BaseConnectivity, SpectralMixin, TimeMixin, NonEpochMixin
+):
     """Spectrotemporal connectivity class.
 
     This class stores connectivity data that varies over both frequency and time. The
@@ -1148,7 +1176,7 @@ class SpectroTemporalConnectivity(BaseConnectivity, SpectralMixin, TimeMixin):
         **kwargs,
     ):
         super().__init__(
-            data,
+            data=data,
             names=names,
             method=method,
             indices=indices,
@@ -1162,7 +1190,55 @@ class SpectroTemporalConnectivity(BaseConnectivity, SpectralMixin, TimeMixin):
 
 
 @fill_doc
-class EpochSpectralConnectivity(SpectralConnectivity):
+class EpochConnectivity(EpochMixin, BaseConnectivity, DynamicMixin):
+    """Epoch connectivity class.
+
+    This is an array of shape ``(n_epochs, n_connections[, n_components])``, or
+    ``(n_epochs, n_nodes, n_nodes[, n_components])``. This describes how connectivity
+    varies for different epochs. ``n_components`` is an optional dimension for
+    multivariate methods where each connection has multiple components of connectivity.
+
+    Parameters
+    ----------
+    %(data)s
+    %(n_nodes)s
+    %(names)s
+    %(indices)s
+    %(method)s
+    %(events)s
+    %(event_id)s
+    %(connectivity_kwargs)s
+
+    See Also
+    --------
+    mne_connectivity.vector_auto_regression
+    """
+
+    def __init__(
+        self,
+        data,
+        n_nodes,
+        names=None,
+        indices="all",
+        method=None,
+        events=None,
+        event_id=None,
+        **kwargs,
+    ):
+        super().__init__(
+            data=data,
+            names=names,
+            method=method,
+            n_nodes=n_nodes,
+            indices=indices,
+            events=events,
+            event_id=event_id,
+            **kwargs,
+        )
+
+
+@fill_doc
+class EpochSpectralConnectivity(EpochMixin, BaseConnectivity, SpectralMixin):
     """Spectral connectivity class over epochs.
 
     This is an array of shape ``(n_epochs, n_connections, [n_components,] n_freqs)``, or
@@ -1180,15 +1256,14 @@ class EpochSpectralConnectivity(SpectralConnectivity):
     %(indices)s
     %(method)s
     %(spec_method)s
+    %(events)s
+    %(event_id)s
     %(connectivity_kwargs)s
 
     See Also
     --------
     mne_connectivity.spectral_connectivity_time
     """
-
-    # whether or not the connectivity occurs over epochs
-    is_epoched = True
 
     def __init__(
         self,
@@ -1199,22 +1274,26 @@ class EpochSpectralConnectivity(SpectralConnectivity):
         indices="all",
         method=None,
         spec_method=None,
+        events=None,
+        event_id=None,
         **kwargs,
     ):
         super().__init__(
-            data,
+            data=data,
             freqs=freqs,
             names=names,
             indices=indices,
             n_nodes=n_nodes,
             method=method,
             spec_method=spec_method,
+            events=events,
+            event_id=event_id,
             **kwargs,
         )
 
 
 @fill_doc
-class EpochTemporalConnectivity(TemporalConnectivity):
+class EpochTemporalConnectivity(EpochMixin, BaseConnectivity, TimeMixin, DynamicMixin):
     """Temporal connectivity class over epochs.
 
     This is an array of shape ``(n_epochs, n_connections, [n_components,] n_times)``, or
@@ -1231,6 +1310,8 @@ class EpochTemporalConnectivity(TemporalConnectivity):
     %(names)s
     %(indices)s
     %(method)s
+    %(events)s
+    %(event_id)s
     %(connectivity_kwargs)s
 
     See Also
@@ -1239,25 +1320,35 @@ class EpochTemporalConnectivity(TemporalConnectivity):
     mne_connectivity.vector_auto_regression
     """
 
-    # whether or not the connectivity occurs over epochs
-    is_epoched = True
-
     def __init__(
-        self, data, times, n_nodes, names=None, indices="all", method=None, **kwargs
+        self,
+        data,
+        times,
+        n_nodes,
+        names=None,
+        indices="all",
+        method=None,
+        events=None,
+        event_id=None,
+        **kwargs,
     ):
         super().__init__(
-            data,
+            data=data,
             times=times,
             names=names,
             indices=indices,
             n_nodes=n_nodes,
             method=method,
+            events=events,
+            event_id=event_id,
             **kwargs,
         )
 
 
 @fill_doc
-class EpochSpectroTemporalConnectivity(SpectroTemporalConnectivity):
+class EpochSpectroTemporalConnectivity(
+    EpochMixin, BaseConnectivity, SpectralMixin, TimeMixin
+):
     """Spectrotemporal connectivity class over epochs.
 
     This is an array of shape ``(n_epochs, n_connections, [n_components,] n_freqs,
@@ -1276,11 +1367,10 @@ class EpochSpectroTemporalConnectivity(SpectroTemporalConnectivity):
     %(indices)s
     %(method)s
     %(spec_method)s
+    %(events)s
+    %(event_id)s
     %(connectivity_kwargs)s
     """
-
-    # whether or not the connectivity occurs over epochs
-    is_epoched = True
 
     def __init__(
         self,
@@ -1292,10 +1382,12 @@ class EpochSpectroTemporalConnectivity(SpectroTemporalConnectivity):
         indices="all",
         method=None,
         spec_method=None,
+        events=None,
+        event_id=None,
         **kwargs,
     ):
         super().__init__(
-            data,
+            data=data,
             names=names,
             freqs=freqs,
             times=times,
@@ -1303,98 +1395,7 @@ class EpochSpectroTemporalConnectivity(SpectroTemporalConnectivity):
             n_nodes=n_nodes,
             method=method,
             spec_method=spec_method,
-            **kwargs,
-        )
-
-
-@fill_doc
-class Connectivity(BaseConnectivity, DynamicMixin):
-    """Connectivity class without frequency or time component.
-
-    This is an array of shape ``(n_connections[, n_components])``, or ``(n_nodes,
-    n_nodes[, n_components])``. This describes a connectivity matrix/graph that does not
-    vary over time, frequency, or epochs. ``n_components`` is an optional dimension for
-    multivariate methods where each connection has multiple components of connectivity.
-
-    Parameters
-    ----------
-    %(data)s
-    %(n_nodes)s
-    %(names)s
-    %(indices)s
-    %(method)s
-    %(n_epochs_used)s
-    %(connectivity_kwargs)s
-
-    See Also
-    --------
-    mne_connectivity.vector_auto_regression
-    """
-
-    def __init__(
-        self,
-        data,
-        n_nodes,
-        names=None,
-        indices="all",
-        method=None,
-        n_epochs_used=None,
-        **kwargs,
-    ):
-        super().__init__(
-            data,
-            names=names,
-            method=method,
-            n_nodes=n_nodes,
-            indices=indices,
-            n_epochs_used=n_epochs_used,
-            **kwargs,
-        )
-
-
-@fill_doc
-class EpochConnectivity(Connectivity):
-    """Epoch connectivity class.
-
-    This is an array of shape ``(n_epochs, n_connections[, n_components])``, or
-    ``(n_epochs, n_nodes, n_nodes[, n_components])``. This describes how connectivity
-    varies for different epochs. ``n_components`` is an optional dimension for
-    multivariate methods where each connection has multiple components of connectivity.
-
-    Parameters
-    ----------
-    %(data)s
-    %(n_nodes)s
-    %(names)s
-    %(indices)s
-    %(method)s
-    %(n_epochs_used)s
-    %(connectivity_kwargs)s
-
-    See Also
-    --------
-    mne_connectivity.vector_auto_regression
-    """
-
-    # whether or not the connectivity occurs over epochs
-    is_epoched = True
-
-    def __init__(
-        self,
-        data,
-        n_nodes,
-        names=None,
-        indices="all",
-        method=None,
-        n_epochs_used=None,
-        **kwargs,
-    ):
-        super().__init__(
-            data,
-            names=names,
-            method=method,
-            n_nodes=n_nodes,
-            indices=indices,
-            n_epochs_used=n_epochs_used,
+            events=events,
+            event_id=event_id,
             **kwargs,
         )

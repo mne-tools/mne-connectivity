@@ -1114,8 +1114,6 @@ def spectral_connectivity_epochs(
     (con_method_types, n_methods, accumulate_psd) = _check_estimators(method)
 
     times_in = None
-    events = None
-    event_id = None
     freqs = None
     weights = None
     metadata = None
@@ -1129,9 +1127,6 @@ def spectral_connectivity_epochs(
 
         names = data.ch_names
         sfreq = data.info["sfreq"]
-
-        events = data.events
-        event_id = data.event_id
 
         # Extract metadata from the Epochs data structure.
         # Make Annotations persist through by adding them to the metadata.
@@ -1548,8 +1543,6 @@ def spectral_connectivity_epochs(
             times_used=times,
             n_tapers=n_tapers,
             metadata=metadata,
-            events=events,
-            event_id=event_id,
             rank=rank,
             n_lags=gc_n_lags if _method in _gc_methods else None,
         )

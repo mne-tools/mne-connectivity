@@ -25,6 +25,7 @@ from mne_connectivity import (
     TemporalConnectivity,
     envelope_correlation,
     phase_slope_index,
+    phase_slope_index_time,
     read_connectivity,
     spectral_connectivity_epochs,
     spectral_connectivity_time,
@@ -624,9 +625,9 @@ def test_append(conn_cls):
     "conn_func",
     [
         vector_auto_regression,
-        spectral_connectivity_epochs,
+        spectral_connectivity_time,
         envelope_correlation,
-        phase_slope_index,
+        phase_slope_index_time,
     ],
 )
 def test_events_handling(conn_func):
@@ -636,7 +637,10 @@ def test_events_handling(conn_func):
     assert len(epochs.events) == n_epochs
 
     # create the connectivity data structure
-    conn = conn_func(epochs, verbose=False)
+    kwargs = dict()
+    if conn_func in (spectral_connectivity_time, phase_slope_index_time):
+        kwargs["freqs"] = np.arange(15, 20)
+    conn = conn_func(epochs, **kwargs)
     assert len(conn.events) == n_epochs
 
 
