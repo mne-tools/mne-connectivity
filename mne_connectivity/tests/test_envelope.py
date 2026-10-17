@@ -121,12 +121,12 @@ def test_envelope_correlation():
     # test resulting Epoch -> non-Epoch data structure
     # using callable
     corr = envelope_correlation(data_hilbert)
-    corr_combine = corr.combine(combine=lambda data: np.mean(data, axis=0))
+    corr_combine = corr.combine_epochs(method=lambda data: np.mean(data, axis=0))
     assert_allclose(corr_combine.get_data(output="dense"), corr_orig)
     with pytest.raises(ValueError, match="Combine option"):
-        corr.combine(combine=1.0)
+        corr.combine_epochs(method=1.0)
     with pytest.raises(ValueError, match="Combine option"):
-        corr.combine(combine="foo")
+        corr.combine_epochs(method="foo")
 
     # check against FieldTrip, which uses the square-log-norm version
     # from scipy.io import savemat
