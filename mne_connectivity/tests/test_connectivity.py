@@ -716,3 +716,125 @@ def test_get_data_complex(indices, output, missing):
     conn = Connectivity(data=data, indices=indices, n_nodes=n_nodes, method="coh")
     out_data = conn.get_data(output=output, missing=missing)
     assert np.iscomplexobj(out_data)
+
+
+@pytest.mark.parametrize(
+    "conn_cls",
+    [
+        EpochConnectivity,
+        SpectralConnectivity,
+        EpochSpectralConnectivity,
+        TemporalConnectivity,
+        EpochTemporalConnectivity,
+        EpochSpectroTemporalConnectivity,
+    ],
+)
+@pytest.mark.parametrize("n_components", [0, 2])
+@pytest.mark.parametrize(
+    "method", ["mean", "median", lambda x, axis: np.mean(x, axis=axis)]
+)
+def test_combine(conn_cls, n_components, method):
+    """Test `combine_epochs/freqs/times` methods run correctly."""
+    # Create connectivity container
+    n_epochs, n_nodes = 4, 3
+    indices = np.tril_indices(n_nodes, k=-1)
+    if n_components > 0:  # make indices into multivariate format
+        indices = ([[ind] for ind in indices[0]], [[ind] for ind in indices[1]])
+    correct_numpy_shape, extra_kwargs = _prep_correct_connectivity_input(
+        conn_cls,
+        n_nodes=n_nodes,
+        tril=True,
+        n_epochs=n_epochs,
+        n_components=n_components,
+    )
+    rng = np.random.default_rng(44)
+    data = rng.random(correct_numpy_shape)
+    con = conn_cls(data=data, n_nodes=n_nodes, indices=indices, **extra_kwargs)
+
+    # Check combining methods
+    aggr_dims = ["epochs", "times", "freqs"]
+    for dim in con.dims:
+        if dim not in aggr_dims:
+            continue  # can't aggregate over this dimension
+
+        for subset in [True, False]:  # i.e., specify fmin/fmax, tmin/tmax
+            if dim == "epochs" and subset:
+                continue  # can't aggregate over subset of epochs
+
+            # Prepare for combining over only subset of values
+            dim_axis = con.dims.index(dim)
+            args = []
+            dim_indices = np.arange(con.shape[dim_axis])
+            if subset:
+                args.extend([getattr(con, dim)[1], getattr(con, dim)[-2]])
+                dim_indices = dim_indices[1:-1]
+
+            # Combine data and check is correct
+            combine_meth = getattr(con, f"combine_{dim}")
+            if isinstance(method, str):
+                method_func = partial(getattr(np, method), axis=dim_axis)
+                con_out = combine_meth(method, *args)
+            else:
+                method_func = partial(method, axis=dim_axis)
+                con_out = combine_meth(method_func, *args)
+            expected_out = method_func(np.take(data, dim_indices, axis=dim_axis))
+            assert_allclose(expected_out, con_out.get_data("raveled"))
+
+            # Check attrs are correct
+            if dim == "freqs":
+                assert con_out.attrs["fmin"] == con.coords["freqs"][dim_indices[0]]
+                assert con_out.attrs["fmax"] == con.coords["freqs"][dim_indices[-1]]
+            if dim == "times":
+                assert con_out.attrs["tmin"] == con.coords["times"][dim_indices[0]]
+                assert con_out.attrs["tmax"] == con.coords["times"][dim_indices[-1]]
+            for attr in con_out.attrs:
+                if attr not in ["fmin", "fmax", "tmin", "tmax"]:
+                    if isinstance(con_out.attrs[attr], np.ndarray):
+                        assert_array_equal(con_out.attrs[attr], con.attrs[attr], attr)
+                    else:
+                        assert con_out.attrs[attr] == con.attrs[attr], attr
+
+
+@pytest.mark.parametrize(
+    "conn_cls, aggr_dim",
+    [
+        (EpochConnectivity, "epochs"),
+        (SpectralConnectivity, "freqs"),
+        (TemporalConnectivity, "times"),
+    ],
+)
+def test_combine_errors(conn_cls, aggr_dim):
+    """Test that errors are raised for bad `combine_epochs/freqs/times` calls."""
+    # Create connectivity container
+    n_epochs, n_nodes = 4, 3
+    correct_numpy_shape, extra_kwargs = _prep_correct_connectivity_input(
+        conn_cls, n_nodes=n_nodes, tril=False, n_epochs=n_epochs
+    )
+    rng = np.random.default_rng(44)
+    data = rng.random(correct_numpy_shape)
+    con = conn_cls(data=data, n_nodes=n_nodes, **extra_kwargs)
+
+    # Check bad combine method errors
+    combine_meth = getattr(con, f"combine_{aggr_dim}")
+    with pytest.raises(
+        ValueError, match="Combine option must be mean, median or callable"
+    ):
+        combine_meth("not-a-method")
+
+    # Check bad min-max errors
+    if aggr_dim != "epochs":
+        with pytest.raises(
+            ValueError, match=f"No values found in the {aggr_dim} dimension between"
+        ):
+            vmax = getattr(con, aggr_dim)[-1]
+            combine_meth("mean", vmax + 1, vmax + 2)
+
+    # Check bad callable output
+    def bad_callable(x):
+        return np.mean(x)  # collapse across all dimensions
+
+    with pytest.raises(
+        RuntimeError,
+        match=f"`combine_{aggr_dim}` got a method that resulted in data of shape",
+    ):
+        combine_meth(bad_callable)
