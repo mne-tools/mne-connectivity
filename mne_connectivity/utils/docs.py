@@ -217,6 +217,42 @@ event_id : int | list of int | dict | None
     string integer names corresponding to the event ID integers.
 """
 
+# Container methods
+combine_method_base = """
+method : ``'mean'`` | ``'median'`` | callable
+    How to aggregate the data across {}. If `callable`, must take a
+    :class:`NumPy array<numpy.ndarray>` of shape {} as input and return an array
+    collapsed over the {} dimension. Default is ``'mean'``.
+"""
+docdict["combine_method_epochs"] = combine_method_base.format(
+    "epochs", "``(n_epochs, ...)``", "epoch"
+)
+docdict["combine_method_freqs"] = combine_method_base.format(
+    "frequencies", "``(..., n_freqs, ...)``", "frequency"
+)
+docdict["combine_method_times"] = combine_method_base.format(
+    "times", "``(..., n_times)``", "time"
+)
+
+docdict["combine_fmin_fmax"] = """
+fmin, fmax : float | None
+    First and last frequencies to aggregate over, in Hz.  If ``None`` use the first/last
+    frequencies in the data, respectively. Default is ``None``.
+"""
+docdict["combine_tmin_tmax"] = """
+tmin, tmax : float | None
+    First and last times to aggregate over, in seconds.  If ``None`` use the first/last
+    times in the data, respectively. Default is ``None``.
+"""
+
+docdict["combine_median_note"] = """
+Passing in ``np.median`` is considered unsafe for complex data. Pass the string
+``"median"`` instead to compute the *marginal* median (i.e., the median of the
+real and imaginary components separately). See discussion here:
+
+https://github.com/scipy/scipy/pull/12676#issuecomment-783370228
+"""
+
 # Verbose
 docdict["verbose"] = """
 verbose : bool | str | int | None
