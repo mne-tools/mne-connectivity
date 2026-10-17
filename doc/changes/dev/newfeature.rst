@@ -1,0 +1,1 @@
+Add :meth:`~mne_connectivity.Connectivity.combine_freqs` and :meth:`~mne_connectivity.Connectivity.combine_times` methods to connectivity containers for combining over frequencies and times, by `Thomas Binns`_.
