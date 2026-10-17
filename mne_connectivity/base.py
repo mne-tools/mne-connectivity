@@ -65,12 +65,10 @@ class SpectralMixin:
         -----
         %(combine_median_note)s
         """  # noqa: E501
-        data, fmin, fmax = _combine(
+        data, fmin, fmax, cls_kwargs = _combine(
             self, method=method, vmin=fmin, vmax=fmax, combine_dim="freqs"
         )
 
-        cls_kwargs = copy(self.attrs)
-        cls_kwargs["names"] = cls_kwargs.pop("node_names")
         cls_kwargs["fmin"], cls_kwargs["fmax"] = fmin, fmax
         match type(self).__name__:
             case "SpectralConnectivity":
@@ -113,12 +111,10 @@ class TimeMixin:
         -----
         %(combine_median_note)s
         """  # noqa: E501
-        data, tmin, tmax = _combine(
+        data, tmin, tmax, cls_kwargs = _combine(
             self, method=method, vmin=tmin, vmax=tmax, combine_dim="times"
         )
 
-        cls_kwargs = copy(self.attrs)
-        cls_kwargs["names"] = cls_kwargs.pop("node_names")
         cls_kwargs["tmin"], cls_kwargs["tmax"] = tmin, tmax
         match type(self).__name__:
             case "TemporalConnectivity":
@@ -240,27 +236,29 @@ class EpochMixin:
         -----
         %(combine_median_note)s
         """  # noqa: E501
-        data, _, _ = _combine(
-            self, method=method, vmin=None, vmax=None, combine_dim="epochs"
-        )
-
         if not self.is_epoched:
             raise RuntimeError(
                 "`combine_epochs` only works with epoched connectivity objects. It "
                 f"does not work with {self.__name__}."
             )
 
-        cls_kwargs = copy(self.attrs)
-        cls_kwargs["names"] = cls_kwargs.pop("node_names")
+        data, _, _, cls_kwargs = _combine(
+            self, method=method, vmin=None, vmax=None, combine_dim="epochs"
+        )
+
         match type(self).__name__:
             case "EpochConnectivity":
                 con_cls = Connectivity
             case "EpochTemporalConnectivity":
                 con_cls = TemporalConnectivity
+                cls_kwargs["times"] = self.times
             case "EpochSpectralConnectivity":
                 con_cls = SpectralConnectivity
+                cls_kwargs["freqs"] = self.freqs
             case "EpochSpectroTemporalConnectivity":
                 con_cls = SpectroTemporalConnectivity
+                cls_kwargs["freqs"] = self.freqs
+                cls_kwargs["times"] = self.times
 
         return con_cls(data=data, metadata=self.metadata, **cls_kwargs)
 
@@ -1506,4 +1504,9 @@ def _combine(
             f"{data.shape}, expected {expected_shape}."
         )
 
-    return data, vmin, vmax
+    cls_kwargs = copy(con.attrs)
+    cls_kwargs["names"] = cls_kwargs.pop("node_names")
+    if "components" in con.dims:
+        cls_kwargs["components"] = con.coords["components"].values.tolist()
+
+    return data, vmin, vmax, cls_kwargs
