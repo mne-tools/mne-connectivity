@@ -202,19 +202,14 @@ n_epochs_used : int | None
 """
 
 docdict["events"] = """
-events : array of int, shape (n_events, 3)
-    The events typically returned by the read_events function. If some events don't
-    match the events of interest as specified by ``event_id``, they will be marked as
-    'IGNORED' in the drop log.
+events : array of int, shape (n_events, 3) | None
+    The events array. Default is ``None``.
 """
 
 docdict["event_id"] = """
-event_id : int | list of int | dict | None
-    The ID of the event to consider. If a dict, the keys can later be used to access
-    associated events. Example: ``dict(auditory=1, visual=3)``. If an int, a dict will
-    be created with the ID as string. If a list, all events with the IDs specified in
-    the list are used. If ``None``, all events will be used and a dict is created with
-    string integer names corresponding to the event ID integers.
+event_id : dict | None
+    Mapping from condition descriptions (strings) to integer event codes. Default is
+    ``None``.
 """
 
 # Container methods

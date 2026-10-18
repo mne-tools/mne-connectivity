@@ -187,9 +187,6 @@ def envelope_correlation(
     if n_nodes is None:
         raise RuntimeError("Passing in empty epochs object is not allowed.")
 
-    # apply function on correlation structure
-    n_epochs = len(corrs)
-
     # ravel from 2D connectivity into 1D array
     # over all epochs
     corr = np.array([_corr.flatten() for _corr in corrs])
@@ -204,7 +201,6 @@ def envelope_correlation(
         names=names,
         method="env_corr_orth" if orthogonalize else "env_corr",
         indices="lower",
-        n_epochs_used=n_epochs,
         n_nodes=n_nodes,
         events=events,
         event_id=event_id,

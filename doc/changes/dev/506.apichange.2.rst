@@ -1,0 +1,1 @@
+Isolate ``n_epochs_used`` property to non-epoched connectivity containers, by `Thomas Binns`_. 

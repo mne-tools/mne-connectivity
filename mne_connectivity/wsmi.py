@@ -625,16 +625,17 @@ def wsmi(
         names=ch_names,
         method=method_name,
         indices=indices,
-        n_epochs_used=n_epochs,
         n_nodes=n_nodes,
-        events=events,
-        event_id=event_id,
         metadata=metadata,
     )
     if average:
-        result_connectivity = Connectivity(data=np.mean(con, axis=0), **con_kwargs)
+        result_connectivity = Connectivity(
+            data=np.mean(con, axis=0), n_epochs_used=n_epochs, **con_kwargs
+        )
     else:
-        result_connectivity = EpochConnectivity(data=con, **con_kwargs)
+        result_connectivity = EpochConnectivity(
+            data=con, events=events, event_id=event_id, **con_kwargs
+        )
 
     logger.info(f"{method_name} computation finished.")
 
