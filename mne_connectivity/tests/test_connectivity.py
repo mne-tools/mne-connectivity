@@ -580,7 +580,7 @@ def test_io(conn_cls, tmpdir):
 def test_deprecated_method_renaming_io(method_old_new, tmpdir):
     """Test that deprecated methods are renamed when reading in connectivity data.
 
-    Test VAR methods separately, as this additionalyl involves packaging into a new
+    Test VAR methods separately, as this additionally involves packaging into a new
     container class.
     """
     method_old, method_new = method_old_new
