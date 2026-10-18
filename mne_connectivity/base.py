@@ -1234,7 +1234,7 @@ class VARConnectivity(BaseConnectivity, DynamicMixin, NonEpochMixin):
         **kwargs,
     ):
         super().__init__(
-            data,
+            data=data,
             lags=lags,
             names=names,
             method=method,
@@ -1451,6 +1451,8 @@ class EpochSpectroTemporalConnectivity(
             n_nodes=n_nodes,
             method=method,
             spec_method=spec_method,
+            events=events,
+            event_id=event_id,
             **kwargs,
         )
 
@@ -1480,9 +1482,6 @@ class EpochVARConnectivity(EpochMixin, BaseConnectivity, DynamicMixin):
     mne_connectivity.vector_auto_regression
     """
 
-    # whether or not the connectivity occurs over epochs
-    is_epoched = True
-
     def __init__(
         self,
         data,
@@ -1496,7 +1495,7 @@ class EpochVARConnectivity(EpochMixin, BaseConnectivity, DynamicMixin):
         **kwargs,
     ):
         super().__init__(
-            data,
+            data=data,
             lags=lags,
             names=names,
             method=method,
