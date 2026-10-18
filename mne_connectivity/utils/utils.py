@@ -371,9 +371,10 @@ def _prepare_xarray_mne_data_structures(conn_obj):
     conn_obj.attrs["metadata"] = _prepare_write_metadata(conn_obj.metadata)
 
     # write event IDs since they are stored as a list instead
-    if conn_obj.event_id is not None:
+    if hasattr(conn_obj, "event_id") and conn_obj.event_id is not None:
         conn_obj.attrs["event_id_keys"] = list(conn_obj.event_id.keys())
         conn_obj.attrs["event_id_vals"] = list(conn_obj.event_id.values())
+        del conn_obj.attrs["event_id"]
 
     return conn_obj
 

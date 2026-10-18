@@ -1,0 +1,1 @@
+Remove ``append`` and ``combine`` methods, ``n_epochs`` property, and ``events`` and ``event_id`` attributes from non-epoched connectivity containers, by `Thomas Binns`_.
