@@ -194,6 +194,7 @@ class EpochMixin:
             "EpochTemporalConnectivity": TemporalConnectivity,
             "EpochSpectralConnectivity": SpectralConnectivity,
             "EpochSpectroTemporalConnectivity": SpectroTemporalConnectivity,
+            "EpochVARConnectivity": VARConnectivity,
         }
         cls_func = conn_cls[self.__class__.__name__]
 
