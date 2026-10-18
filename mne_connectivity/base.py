@@ -250,6 +250,9 @@ class EpochMixin:
         data, _, _, cls_kwargs = _combine(
             self, method=method, vmin=None, vmax=None, combine_dim="epochs"
         )
+        cls_kwargs["n_epochs_used"] = self.n_epochs
+        del cls_kwargs["events"]
+        del cls_kwargs["event_id"]
 
         match type(self).__name__:
             case "EpochConnectivity":

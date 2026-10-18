@@ -785,6 +785,8 @@ def test_combine(conn_cls, n_components, method):
             assert_allclose(expected_out, con_out.get_data("raveled"))
 
             # Check attrs are correct
+            if dim == "epochs":
+                assert con_out.attrs["n_epochs_used"] == con.n_epochs
             if dim == "freqs":
                 assert con_out.attrs["fmin"] == con.coords["freqs"][dim_indices[0]]
                 assert con_out.attrs["fmax"] == con.coords["freqs"][dim_indices[-1]]
@@ -792,7 +794,7 @@ def test_combine(conn_cls, n_components, method):
                 assert con_out.attrs["tmin"] == con.coords["times"][dim_indices[0]]
                 assert con_out.attrs["tmax"] == con.coords["times"][dim_indices[-1]]
             for attr in con_out.attrs:
-                if attr not in ["fmin", "fmax", "tmin", "tmax"]:
+                if attr not in ["fmin", "fmax", "tmin", "tmax", "n_epochs_used"]:
                     if isinstance(con_out.attrs[attr], np.ndarray):
                         assert_array_equal(con_out.attrs[attr], con.attrs[attr], attr)
                     else:
