@@ -179,13 +179,13 @@ class EpochMixin:
 
         Parameters
         ----------
-        epoch_conn : instance of EpochConnectivity | EpochTemporalConnectivity | EpochSpectralConnectivity | EpochSpectroTemporalConnectivity
+        epoch_conn : instance of EpochConnectivity or EpochTemporalConnectivity or EpochSpectralConnectivity or EpochSpectroTemporalConnectivity
             The connectivity container to append. Must be of the same type as the
             current container instance.
 
         Returns
         -------
-        self : instance of EpochConnectivity | EpochTemporalConnectivity | EpochSpectralConnectivity | EpochSpectroTemporalConnectivity
+        self : instance of EpochConnectivity or EpochTemporalConnectivity or EpochSpectralConnectivity or EpochSpectroTemporalConnectivity
             The altered connectivity container with the new epochs appended. The
             instance type matches that of the current container instance.
         """  # noqa: E501

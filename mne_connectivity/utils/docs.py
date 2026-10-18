@@ -246,17 +246,17 @@ con : instance of {}
     of the current connectivity instance, without the {} dimension.
 """
 docdict["combine_out_epochs"] = combine_out_base.format(
-    "Connectivity | SpectralConnectivity | TemporalConnectivity | SpectroTemporalConnectivity",  # noqa: E501
+    "Connectivity or SpectralConnectivity or TemporalConnectivity or SpectroTemporalConnectivity",  # noqa: E501
     "epoch",
     "epoch",
 )
 docdict["combine_out_freqs"] = combine_out_base.format(
-    "Connectivity | EpochConnectivity | TemporalConnectivity | EpochTemporalConnectivity",  # noqa: E501
+    "Connectivity or EpochConnectivity or TemporalConnectivity or EpochTemporalConnectivity",  # noqa: E501
     "frequency",
     "frequency",
 )
 docdict["combine_out_times"] = combine_out_base.format(
-    "Connectivity | EpochConnectivity | SpectralConnectivity | EpochSpectralConnectivity",  # noqa: E501
+    "Connectivity or EpochConnectivity or SpectralConnectivity or EpochSpectralConnectivity",  # noqa: E501
     "time",
     "time",
 )
