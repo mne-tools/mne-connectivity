@@ -781,8 +781,6 @@ def spectral_connectivity_time(
             "indices": indices,
             "method": m,
             "spec_method": mode,
-            "events": events,
-            "event_id": event_id,
             "metadata": metadata,
             "rank": rank,
             "n_lags": gc_n_lags if m in _gc_methods else None,
@@ -791,10 +789,12 @@ def spectral_connectivity_time(
             store_params.update(components=np.arange(n_components) + 1)
         if average:
             store_params["data"] = np.mean(store_params["data"], axis=0)
+            store_params["n_epochs_used"] = n_epochs
             if conn_patterns[m] is not None:
                 store_params["patterns"] = np.mean(store_params["patterns"], axis=1)
             out.append(SpectralConnectivity(**store_params))
         else:
+            store_params.update(events=events, event_id=event_id)
             out.append(EpochSpectralConnectivity(**store_params))
 
     logger.info("[Connectivity computation done]")

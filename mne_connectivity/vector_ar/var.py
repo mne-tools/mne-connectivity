@@ -170,11 +170,8 @@ def vector_auto_regression(
         n_nodes=n_nodes,
         names=names,
         indices="all",
-        n_epochs_used=n_epochs,
         times_used=times,
         metadata=metadata,
-        events=events,
-        event_id=event_id,
         l2_reg=l2_reg,
     )
 
@@ -201,7 +198,9 @@ def vector_auto_regression(
 
         # create connectivity
         coef = coef.reshape((-1, lags))
-        conn = VARConnectivity(data=coef, method="var", **model_kwargs)
+        conn = VARConnectivity(
+            data=coef, method="var", n_epochs_used=n_epochs, **model_kwargs
+        )
     else:
         assert model == "dynamic"
         # compute time-varying VAR model where each epoch
@@ -223,7 +222,13 @@ def vector_auto_regression(
             A_mats = A_mats_holder
         # create connectivity
         A_mats = A_mats.reshape((n_epochs, -1, lags))
-        conn = EpochVARConnectivity(data=A_mats, method="var_dynamic", **model_kwargs)
+        conn = EpochVARConnectivity(
+            data=A_mats,
+            method="var_dynamic",
+            events=events,
+            event_id=event_id,
+            **model_kwargs,
+        )
     return conn
 
 
