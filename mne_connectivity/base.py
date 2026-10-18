@@ -56,10 +56,7 @@ class SpectralMixin:
 
         Returns
         -------
-        con : instance of Connectivity | EpochConnectivity | TemporalConnectivity | EpochTemporalConnectivity
-            The connectivity data aggregated over the frequency dimension. Instance type
-            reflects that of the current connectivity instance, without the frequency
-            dimension.
+        %(combine_out_freqs)s
 
         Notes
         -----
@@ -102,10 +99,7 @@ class TimeMixin:
 
         Returns
         -------
-        con : instance of Connectivity | EpochConnectivity | SpectralConnectivity | EpochSpectralConnectivity
-            The connectivity data aggregated over the time dimension. Instance type
-            reflects that of the current connectivity instance, without the time
-            dimension.
+        %(combine_out_times)s
 
         Notes
         -----
@@ -227,10 +221,7 @@ class EpochMixin:
 
         Returns
         -------
-        con : instance of Connectivity | SpectralConnectivity | TemporalConnectivity | SpectroTemporalConnectivity
-            The connectivity data aggregated over the epoch dimension. Instance type
-            reflects that of the current connectivity instance, without the epoch
-            dimension.
+        %(combine_out_epochs)s
 
         Notes
         -----

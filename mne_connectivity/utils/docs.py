@@ -245,11 +245,31 @@ tmin, tmax : float | None
     times in the data, respectively. Default is ``None``.
 """
 
+combine_out_base = """
+con : instance of {}
+    The connectivity data aggregated over the {} dimension. Instance type reflects that
+    of the current connectivity instance, without the {} dimension.
+"""
+docdict["combine_out_epochs"] = combine_out_base.format(
+    "Connectivity | SpectralConnectivity | TemporalConnectivity | SpectroTemporalConnectivity",  # noqa: E501
+    "epoch",
+    "epoch",
+)
+docdict["combine_out_freqs"] = combine_out_base.format(
+    "Connectivity | EpochConnectivity | TemporalConnectivity | EpochTemporalConnectivity",  # noqa: E501
+    "frequency",
+    "frequency",
+)
+docdict["combine_out_times"] = combine_out_base.format(
+    "Connectivity | EpochConnectivity | SpectralConnectivity | EpochSpectralConnectivity",  # noqa: E501
+    "time",
+    "time",
+)
+
 docdict["combine_median_note"] = """
 Passing in ``np.median`` is considered unsafe for complex data. Pass the string
 ``"median"`` instead to compute the *marginal* median (i.e., the median of the
 real and imaginary components separately). See discussion here:
-
 https://github.com/scipy/scipy/pull/12676#issuecomment-783370228
 """
 
