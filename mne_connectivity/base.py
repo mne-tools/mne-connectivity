@@ -986,7 +986,7 @@ class BaseConnectivity:
 
 
 @fill_doc
-class Connectivity(BaseConnectivity, DynamicMixin, NonEpochMixin):
+class Connectivity(BaseConnectivity, NonEpochMixin):
     """Connectivity class without frequency or time component.
 
     This is an array of shape ``(n_connections[, n_components])``, or ``(n_nodes,
@@ -1085,7 +1085,7 @@ class SpectralConnectivity(BaseConnectivity, SpectralMixin, NonEpochMixin):
 
 
 @fill_doc
-class TemporalConnectivity(BaseConnectivity, TimeMixin, DynamicMixin, NonEpochMixin):
+class TemporalConnectivity(BaseConnectivity, TimeMixin, NonEpochMixin):
     """Temporal connectivity class.
 
     This is an array of shape ``(n_connections, [n_components,] n_times)``, or
@@ -1246,7 +1246,7 @@ class VARConnectivity(BaseConnectivity, DynamicMixin, NonEpochMixin):
 
 
 @fill_doc
-class EpochConnectivity(EpochMixin, BaseConnectivity, DynamicMixin):
+class EpochConnectivity(EpochMixin, BaseConnectivity):
     """Epoch connectivity class.
 
     This is an array of shape ``(n_epochs, n_connections[, n_components])``, or
@@ -1349,7 +1349,7 @@ class EpochSpectralConnectivity(EpochMixin, BaseConnectivity, SpectralMixin):
 
 
 @fill_doc
-class EpochTemporalConnectivity(EpochMixin, BaseConnectivity, TimeMixin, DynamicMixin):
+class EpochTemporalConnectivity(EpochMixin, BaseConnectivity, TimeMixin):
     """Temporal connectivity class over epochs.
 
     This is an array of shape ``(n_epochs, n_connections, [n_components,] n_times)``, or
