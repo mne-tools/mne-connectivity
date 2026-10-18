@@ -117,7 +117,7 @@ def read_connectivity(fname):
     }
     cls_func = conn_cls[data_structure_name]
 
-    # map deprecated method names to their current names
+    # map deprecated method names to their current names (and classes)
     method_map = {
         "phase-slope-index": "psi",
         "envelope correlation": "env_corr_orth",  # orth is default option
@@ -125,10 +125,17 @@ def read_connectivity(fname):
         "wSMI": "wsmi",
         "VAR(p)": "var",
         "VAR(1)": "var",
-        "Time-varying VAR(1)": "var_dynamic",
-        "Time-varying VAR(p)": "var_dynamic",
+        "Time-varying VAR(1)": "var",
+        "Time-varying VAR(p)": "var",
+    }
+    method_class_map = {
+        "VAR(p)": VARConnectivity,
+        "VAR(1)": VARConnectivity,
+        "Time-varying VAR(1)": EpochVARConnectivity,
+        "Time-varying VAR(p)": EpochVARConnectivity,
     }
     if conn_da.attrs["method"] in method_map:
+        # warn about name changing
         if conn_da.attrs["method"] == "envelope correlation":
             warn(
                 "The 'envelope correlation' method name was deprecated in v1.0 in "
@@ -146,18 +153,15 @@ def read_connectivity(fname):
                 "warning, consider saving this connectivity container with the updated "
                 "method name."
             )
-        conn_da.attrs["method"] = method_map[conn_da.attrs["method"]]
 
-    # map deprecated VAR method-class combinations to their current ones
-    method_class_map = {"var": VARConnectivity, "var_dynamic": EpochVARConnectivity}
-    if conn_da.attrs["method"] in method_class_map:
-        if cls_func != method_class_map[conn_da.attrs["method"]]:
+        # warn about class changing
+        if conn_da.attrs["method"] in method_class_map:
             cls_func = method_class_map[conn_da.attrs["method"]]
             warn(
-                "Storing 'var' and 'var_dynamic' methods outside of the "
-                "VARConnectivity and EpochVARConnectivity classes was deprecated in "
-                "v1.0. To avoid this warning, consider saving this connectivity "
-                "container with the updated class."
+                "Storing VAR models outside of the VARConnectivity and "
+                "EpochVARConnectivity classes was deprecated in v1.0. To avoid this "
+                "warning, consider saving this connectivity container with the updated "
+                "class."
             )
             n_lags = conn_da.attrs.pop("lags")
             if n_lags > 1:
@@ -165,6 +169,8 @@ def read_connectivity(fname):
             else:
                 conn_da = conn_da.expand_dims("lags", axis=-1)
             conn_da.coords["lags"] = np.arange(n_lags)
+
+        conn_da.attrs["method"] = method_map[conn_da.attrs["method"]]
 
     # get the data as a new connectivity container
     conn = _xarray_to_conn(conn_da, cls_func)

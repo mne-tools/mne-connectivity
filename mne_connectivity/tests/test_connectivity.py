@@ -575,38 +575,25 @@ def test_io(conn_cls, tmpdir):
         ("phase-slope-index", "psi"),
         ("SMI", "smi"),
         ("wSMI", "wsmi"),
-        ("VAR(1)", "var"),
-        ("VAR(p)", "var"),
-        ("Time-varying VAR(1)", "var_dynamic"),
-        ("Time-varying VAR(p)", "var_dynamic"),
     ],
 )
 def test_deprecated_method_renaming_io(method_old_new, tmpdir):
-    """Test that deprecated methods are renamed when reading in connectivity data."""
+    """Test that deprecated methods are renamed when reading in connectivity data.
+
+    Test VAR methods separately, as this additionalyl involves packaging into a new
+    container class.
+    """
     method_old, method_new = method_old_new
 
     # Save connectivity container with deprecated method name
     n_nodes = 3
     data = np.ones((n_nodes**2,))
-    if "var" in method_new:
-        data = data[..., np.newaxis]  # add lags dim
-        lags = np.arange(1)
-
-    if method_new == "var":
-        conn = VARConnectivity(data=data, n_nodes=n_nodes, method=method_old, lags=lags)
-    elif method_new == "var_dynamic":
-        data = data[np.newaxis, ...]  # add epochs dim
-        conn = EpochVARConnectivity(
-            data=data, n_nodes=n_nodes, method=method_old, lags=lags
-        )
-    else:
-        conn = Connectivity(data=data, n_nodes=n_nodes, method=method_old)
+    conn = Connectivity(data=data, n_nodes=n_nodes, method=method_old)
     conn.save(os.path.join(tmpdir, "connectivity.nc"))
 
     # Read the connectivity container back in
-    method_old_escaped = method_old.replace("(", r"\(").replace(")", r"\)")
     with pytest.warns(
-        RuntimeWarning, match=f"The '{method_old_escaped}' method name was deprecated"
+        RuntimeWarning, match=f"The '{method_old}' method name was deprecated"
     ):
         new_conn = read_connectivity(os.path.join(tmpdir, "connectivity.nc"))
 
@@ -616,20 +603,23 @@ def test_deprecated_method_renaming_io(method_old_new, tmpdir):
 
 @pytest.mark.parametrize("dynamic", [True, False])
 @pytest.mark.parametrize("n_lags", [1, 3])
-def test_deprecated_var_containers_io(dynamic, n_lags, tmpdir):
-    """Test that deprecated VAR models get moved to VAR containers when reading in."""
+def test_deprecated_var_io(dynamic, n_lags, tmpdir):
+    """Test that deprecated VAR models get renamed and moved to VAR containers."""
     n_nodes = 3
     expected_shape = (n_nodes**2,)
     conn_kwargs = dict()
     if dynamic:
         expected_shape = (4,) + expected_shape
-        method = "var_dynamic"
+        method = "Time-varying VAR"
     else:
-        method = "var"
+        method = "VAR"
     if n_lags > 1:
-        # Old VAR models did not have a lags dimension for models with order of 1
+        method += "(p)"
         expected_shape += (n_lags,)
         conn_kwargs["times"] = list(range(n_lags))
+    else:
+        # Old VAR models did not have a lags dimension for models with order of 1
+        method += "(1)"
     data = np.ones(expected_shape)
     if dynamic and n_lags > 1:
         cls = EpochTemporalConnectivity
@@ -646,14 +636,19 @@ def test_deprecated_var_containers_io(dynamic, n_lags, tmpdir):
     conn.save(os.path.join(tmpdir, "connectivity.nc"))
 
     # Read the connectivity container back in
+    method_escaped = method.replace("(", r"\(").replace(")", r"\)")
     with pytest.warns(
-        RuntimeWarning, match="Storing 'var' and 'var_dynamic' methods outside of the"
+        RuntimeWarning, match=f"The '{method_escaped}' method name was deprecated"
     ):
-        new_conn = read_connectivity(os.path.join(tmpdir, "connectivity.nc"))
+        with pytest.warns(
+            RuntimeWarning,
+            match="Storing VAR models outside of the VARConnectivity",
+        ):
+            new_conn = read_connectivity(os.path.join(tmpdir, "connectivity.nc"))
     assert isinstance(
         new_conn, VARConnectivity if not dynamic else EpochVARConnectivity
     )
-    assert new_conn.method == "var_dynamic" if dynamic else "var"
+    assert new_conn.method == "var"
     assert new_conn.dims == tuple(dim for dim in conn.dims if dim != "times") + (
         "lags",
     )
