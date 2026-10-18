@@ -169,7 +169,6 @@ def vector_auto_regression(
         lags=np.arange(lags),
         n_nodes=n_nodes,
         names=names,
-        indices="all",
         times_used=times,
         metadata=metadata,
         l2_reg=l2_reg,

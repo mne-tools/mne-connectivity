@@ -117,8 +117,6 @@ def _prep_correct_connectivity_input(
         EpochTemporalConnectivity,
         EpochSpectralConnectivity,
         EpochSpectroTemporalConnectivity,
-        VARConnectivity,
-        EpochVARConnectivity,
     ],
 )
 def test_connectivity_containers(conn_cls):
@@ -277,8 +275,7 @@ def test_connectivity_containers(conn_cls):
 def test_connectivity_containers_multivariate(conn_cls):
     """Test that connectivity containers work properly with multivariate data.
 
-    Don't test VARConnectivity or EpochVARConnectivity, since this isn't expected
-    behaviour.
+    Don't test VARConnectivity or EpochVARConnectivity, since this isn't supported.
     """
     indices = (
         np.array([[0, 1], [0, 1], [2, 3]]),
@@ -342,6 +339,43 @@ def test_connectivity_containers_multivariate(conn_cls):
             indicess=(np.arange(3), np.arange(3)),
             **index_kwargs,
         )
+
+
+@pytest.mark.parametrize("conn_cls", [VARConnectivity, EpochVARConnectivity])
+def test_var_connectivity_containers(conn_cls):
+    """Test that VAR connectivity containers work properly."""
+    # Construct test data
+    n_epochs, n_nodes = 4, 3
+    correct_numpy_shape, extra_kwargs = _prep_correct_connectivity_input(
+        conn_cls, n_nodes=n_nodes, tril=False, n_epochs=n_epochs
+    )
+    data = np.ones(correct_numpy_shape)
+
+    # Test initialization error checks
+    with pytest.raises(
+        ValueError, match="`indices` should not be provided for VAR models."
+    ):
+        conn_cls(data=data, indices="all", n_nodes=2, **extra_kwargs)
+    with pytest.raises(
+        NotImplementedError,
+        match="VAR models with multiple components are not currently supported.",
+    ):
+        mv_data = np.expand_dims(data, axis=-1)  # add components dim
+        conn_cls(data=mv_data, n_nodes=2, components=np.arange(1), **extra_kwargs)
+
+    # Test that connectivity container can be instantiated properly
+    conn = conn_cls(data=data, n_nodes=n_nodes, **extra_kwargs)
+    assert conn.indices == "all"
+    assert conn.shape == tuple(correct_numpy_shape)
+
+    # Test that `get_data` works as intended
+    assert_array_equal(conn.get_data(output="raveled"), data)
+    dense_shape = []  # should be ([n_epochs], n_nodes, n_nodes, ...) dense shape
+    if conn_cls.is_epoched:
+        dense_shape.append(n_epochs)
+    dense_shape.extend([n_nodes, n_nodes, len(extra_kwargs["lags"])])
+    for output in ["dense", "compact"]:  # compact is alias for dense with 'all' indices
+        assert conn.get_data(output).shape == tuple(dense_shape)
 
 
 def test_get_data_error_catch():
@@ -623,7 +657,7 @@ def test_deprecated_var_containers_io(dynamic, n_lags, tmpdir):
     assert new_conn.dims == tuple(dim for dim in conn.dims if dim != "times") + (
         "lags",
     )
-    assert_array_equal(new_conn.coords["lags"], np.arange(n_lags))
+    assert_array_equal(new_conn.lags, np.arange(n_lags))
 
 
 @pytest.mark.parametrize(

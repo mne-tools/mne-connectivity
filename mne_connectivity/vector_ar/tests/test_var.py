@@ -414,50 +414,12 @@ def test_dynamic_mixin_errors():
     ):
         dynamic_var.predict(data[:, : n_signals - 1])
 
-    # Check components in the connectivity data get caught
-    n_comps = 2
-    lags = np.arange(1)
-    mv_var_data = rng.standard_normal(size=(n_signals**2, n_comps, lags.size))
-    indices = np.unravel_index(np.arange(n_signals**2), (n_signals, n_signals))
-    indices = ([[ind] for ind in indices[0]], [[ind] for ind in indices[1]])
-    mv_var = VARConnectivity(
-        mv_var_data,
-        n_nodes=n_signals,
-        method="var",
-        indices=indices,
-        lags=lags,
-        components=n_comps,
-    )
-    with pytest.raises(
-        NotImplementedError,
-        match=(
-            "Prediction is not currently supported from VAR models with multiple "
-            "components."
-        ),
-    ):
-        mv_var.predict(data)
-    with pytest.raises(
-        NotImplementedError,
-        match=(
-            "Simulation is not currently supported from VAR models with multiple "
-            "components."
-        ),
-    ):
-        mv_var.simulate(n_samples=10)
-    with pytest.raises(
-        NotImplementedError,
-        match=(
-            "Companion matrix generation is not currently supported for VAR models "
-            "with multiple components."
-        ),
-    ):
-        mv_var.companion
-
     # Check a warning is raised when a non-VAR model is used for prediction
     n_nodes = 3
-    non_var_data = rng.standard_normal(size=(n_nodes**2, lags.size))
+    lags = np.arange(1)
+    var_data = rng.standard_normal(size=(n_nodes**2, lags.size))
     non_var = VARConnectivity(
-        non_var_data, n_nodes=n_nodes, method="not a var model", lags=lags
+        var_data, n_nodes=n_nodes, method="not a var model", lags=lags
     )
     expected_warning = (
         rf"The connectivity data comes from a method \({non_var.method}\) that is not "

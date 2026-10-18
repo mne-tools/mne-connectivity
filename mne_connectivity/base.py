@@ -55,8 +55,8 @@ class EpochMixin:
 
     is_epoched = True
 
-    def __init__(self, events, event_id, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *, events, event_id, **kwargs):
+        super().__init__(**kwargs)
 
         # Epochs should have the events array that informs user of
         # sample points at which each Epoch was taken from.
@@ -219,6 +219,19 @@ class NonEpochMixin:
 class DynamicMixin:
     """Mixin class for VAR models."""
 
+    def __init__(self, **kwargs):
+        if "indices" in kwargs:
+            raise ValueError(
+                "`indices` should not be provided for VAR models. These models are "
+                "expected to represent the interactions between all channels, making "
+                "`indices` implicitly 'all'."
+            )
+        if "components" in kwargs:
+            raise NotImplementedError(
+                "VAR models with multiple components are not currently supported."
+            )
+        super().__init__(indices="all", **kwargs)
+
     def _check_is_var(self):
         if not re.match(r"^var(?:_dynamic)?$", self.method):
             warn(
@@ -250,12 +263,6 @@ class DynamicMixin:
 
         self._check_is_var()
 
-        if "components" in self.dims:
-            raise NotImplementedError(
-                "Companion matrix generation is not currently supported for VAR "
-                "models with multiple components."
-            )
-
         n_lags = len(self.coords["lags"])
         data = self.get_data("dense")
         if n_lags == 1:  # return the coefficients without singleton lags
@@ -274,6 +281,38 @@ class DynamicMixin:
             arrs = arrs[0]
 
         return np.asarray(arrs)
+
+    @property
+    def indices(self):
+        """Indices of connectivity data.
+
+        Returns
+        -------
+        indices : ``'all'``
+            VAR models represent the interactions between all channels.
+        """
+        return super().indices
+
+    def get_data(self, output="compact"):
+        """Get connectivity data as a numpy array.
+
+        Parameters
+        ----------
+        output : ``'compact'`` | ``'raveled'`` | ``'dense'``
+            How to format the output:
+
+            - ``'raveled'`` will represent each connectivity matrix as a
+              ``(..., n_nodes_in * n_nodes_out, ...)`` array.
+            - ``'dense'`` will return each connectivity matrix as a ``(..., n_nodes_in,
+              n_nodes_out, ...)`` array.
+            - ``'compact'`` (default) is an alias for ``'dense'``.
+
+        Returns
+        -------
+        data : array
+            The output connectivity data.
+        """
+        return super().get_data(output=output)
 
     def predict(self, data):
         """Predict samples on data using the vector autoregressive (VAR) model.
@@ -317,12 +356,6 @@ class DynamicMixin:
 
         if data.ndim == 2 and self.is_epoched:
             raise ValueError("For a time-varying VAR model, `data` must be a 3D array.")
-
-        if "components" in self.dims:
-            raise NotImplementedError(
-                "Prediction is not currently supported from VAR models with multiple "
-                "components."
-            )
 
         n_var = self.n_epochs if self.is_epoched else 1
         if self.is_epoched and data.shape[0] != n_var:
@@ -389,12 +422,6 @@ class DynamicMixin:
         the data is simulated from the average of these models.
         """
         self._check_is_var()
-
-        if "components" in self.dims:
-            raise NotImplementedError(
-                "Simulation is not currently supported from VAR models with multiple "
-                "components."
-            )
 
         var_model = self.get_data(output="dense")
         if self.is_epoched:
@@ -1200,11 +1227,13 @@ class SpectroTemporalConnectivity(
 
 
 @fill_doc
-class VARConnectivity(BaseConnectivity, DynamicMixin, NonEpochMixin):
+class VARConnectivity(DynamicMixin, BaseConnectivity, NonEpochMixin):
     """Vector autoregression (VAR) connectivity class.
 
     This is an array of shape ``(n_connections, n_lags)``, or ``(n_nodes, n_nodes,
-    n_lags)``. This describes a VAR model that does not vary over epochs.
+    n_lags)``. This describes a VAR model that does not vary over epochs. The data is
+    expected to represent the interactions between all channels, i.e.,
+    ``indices='all'`` in other :class:`~mne_connectivity.Connectivity` containers.
 
     Parameters
     ----------
@@ -1212,7 +1241,6 @@ class VARConnectivity(BaseConnectivity, DynamicMixin, NonEpochMixin):
     %(lags)s
     %(n_nodes)s
     %(names)s
-    %(indices)s
     %(method)s
     %(n_epochs_used)s
     %(connectivity_kwargs)s
@@ -1228,7 +1256,6 @@ class VARConnectivity(BaseConnectivity, DynamicMixin, NonEpochMixin):
         lags,
         n_nodes,
         names=None,
-        indices="all",
         method=None,
         n_epochs_used=None,
         **kwargs,
@@ -1239,7 +1266,6 @@ class VARConnectivity(BaseConnectivity, DynamicMixin, NonEpochMixin):
             names=names,
             method=method,
             n_nodes=n_nodes,
-            indices=indices,
             n_epochs_used=n_epochs_used,
             **kwargs,
         )
@@ -1458,12 +1484,14 @@ class EpochSpectroTemporalConnectivity(
 
 
 @fill_doc
-class EpochVARConnectivity(EpochMixin, BaseConnectivity, DynamicMixin):
+class EpochVARConnectivity(EpochMixin, DynamicMixin, BaseConnectivity):
     """Vector autoregression (VAR) connectivity class over epochs.
 
     This is an array of shape ``(n_epochs, n_connections, n_lags)``, or ``(n_epochs,
     n_nodes, n_nodes, n_lags)``. This describes a dynamic VAR model (i.e., one that
-    varies over epochs).
+    varies over epochs). The data is expected to represent the interactions between all
+    channels, i.e., ``indices='all'`` in other :class:`~mne_connectivity.Connectivity`
+    containers.
 
     Parameters
     ----------
@@ -1471,7 +1499,6 @@ class EpochVARConnectivity(EpochMixin, BaseConnectivity, DynamicMixin):
     %(lags)s
     %(n_nodes)s
     %(names)s
-    %(indices)s
     %(method)s
     %(events)s
     %(event_id)s
@@ -1488,7 +1515,6 @@ class EpochVARConnectivity(EpochMixin, BaseConnectivity, DynamicMixin):
         lags,
         n_nodes,
         names=None,
-        indices="all",
         method=None,
         events=None,
         event_id=None,
@@ -1500,7 +1526,6 @@ class EpochVARConnectivity(EpochMixin, BaseConnectivity, DynamicMixin):
             names=names,
             method=method,
             n_nodes=n_nodes,
-            indices=indices,
             events=events,
             event_id=event_id,
             **kwargs,

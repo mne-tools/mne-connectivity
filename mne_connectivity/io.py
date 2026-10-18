@@ -65,6 +65,10 @@ def _xarray_to_conn(array, cls_func):
     if isinstance(array.attrs["indices"], np.ndarray):
         array.attrs["indices"] = tuple(np.ma.masked_values(array.attrs["indices"], -1))
 
+    # remove indices for VAR containers (will be set to 'all' in the constructor)
+    if cls_func in [VARConnectivity, EpochVARConnectivity]:
+        array.attrs.pop("indices")
+
     # create the connectivity class
     conn = cls_func(data=data, names=names, metadata=metadata, **array.attrs)
     return conn
