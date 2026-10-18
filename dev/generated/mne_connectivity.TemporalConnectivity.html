@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mne_connectivity.TemporalConnectivity &#8212; MNE-Connectivity 0.10.0.dev36+ga3d1005ac documentation</title>
+    <title>mne_connectivity.TemporalConnectivity &#8212; MNE-Connectivity 0.10.0.dev37+gc2171e018 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
 
-    <script src="../_static/documentation_options.js?v=1b6e8940"></script>
+    <script src="../_static/documentation_options.js?v=69644068"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -136,7 +136,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.10.0.dev36+ga3d1005ac documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.10.0.dev37+gc2171e018 documentation</p>
   
 </a></div>
     
@@ -570,8 +570,6 @@ these may include extra parameters that are stored as xarray <code class="docuti
 </dd>
 <dt><a class="reference internal" href="#mne_connectivity.TemporalConnectivity.method" title="mne_connectivity.TemporalConnectivity.method"><code class="xref py py-obj docutils literal notranslate"><span class="pre">method</span></code></a></dt><dd><p>The method used to compute connectivity.</p>
 </dd>
-<dt><a class="reference internal" href="#mne_connectivity.TemporalConnectivity.n_epochs" title="mne_connectivity.TemporalConnectivity.n_epochs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_epochs</span></code></a></dt><dd><p>The number of epochs the connectivity data varies over.</p>
-</dd>
 <dt><a class="reference internal" href="#mne_connectivity.TemporalConnectivity.n_epochs_used" title="mne_connectivity.TemporalConnectivity.n_epochs_used"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_epochs_used</span></code></a></dt><dd><p>Number of epochs used in computation of connectivity.</p>
 </dd>
 <dt><a class="reference internal" href="#mne_connectivity.TemporalConnectivity.n_nodes" title="mne_connectivity.TemporalConnectivity.n_nodes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_nodes</span></code></a></dt><dd><p>The number of nodes in the original dataset.</p>
@@ -590,28 +588,25 @@ these may include extra parameters that are stored as xarray <code class="docuti
 <p class="rubric">Methods</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#mne_connectivity.TemporalConnectivity.append" title="mne_connectivity.TemporalConnectivity.append"><code class="xref py py-obj docutils literal notranslate"><span class="pre">append</span></code></a>(epoch_conn)</p></td>
-<td><p>Append another connectivity structure.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mne_connectivity.TemporalConnectivity.copy" title="mne_connectivity.TemporalConnectivity.copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy</span></code></a>()</p></td>
+<td><p>Return a deep copy of the connectivity container.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#mne_connectivity.TemporalConnectivity.combine" title="mne_connectivity.TemporalConnectivity.combine"><code class="xref py py-obj docutils literal notranslate"><span class="pre">combine</span></code></a>([combine])</p></td>
-<td><p>Combine connectivity data over epochs.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#mne_connectivity.TemporalConnectivity.get_data" title="mne_connectivity.TemporalConnectivity.get_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_data</span></code></a>([output, missing])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#mne_connectivity.TemporalConnectivity.get_data" title="mne_connectivity.TemporalConnectivity.get_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_data</span></code></a>([output, missing])</p></td>
 <td><p>Get connectivity data as a numpy array.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#mne_connectivity.TemporalConnectivity.plot_circle" title="mne_connectivity.TemporalConnectivity.plot_circle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_circle</span></code></a>(**kwargs)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mne_connectivity.TemporalConnectivity.plot_circle" title="mne_connectivity.TemporalConnectivity.plot_circle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_circle</span></code></a>(**kwargs)</p></td>
 <td><p>Visualize connectivity as a circular graph.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#mne_connectivity.TemporalConnectivity.predict" title="mne_connectivity.TemporalConnectivity.predict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict</span></code></a>(data)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#mne_connectivity.TemporalConnectivity.predict" title="mne_connectivity.TemporalConnectivity.predict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict</span></code></a>(data)</p></td>
 <td><p>Predict samples on data using the vector autoregressive (VAR) model.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#mne_connectivity.TemporalConnectivity.rename_nodes" title="mne_connectivity.TemporalConnectivity.rename_nodes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rename_nodes</span></code></a>(mapping)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mne_connectivity.TemporalConnectivity.rename_nodes" title="mne_connectivity.TemporalConnectivity.rename_nodes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rename_nodes</span></code></a>(mapping)</p></td>
 <td><p>Rename nodes.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#mne_connectivity.TemporalConnectivity.save" title="mne_connectivity.TemporalConnectivity.save"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code></a>(fname)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#mne_connectivity.TemporalConnectivity.save" title="mne_connectivity.TemporalConnectivity.save"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code></a>(fname)</p></td>
 <td><p>Save connectivity data to disk.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#mne_connectivity.TemporalConnectivity.simulate" title="mne_connectivity.TemporalConnectivity.simulate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">simulate</span></code></a>(n_samples[, noise_func, random_state])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mne_connectivity.TemporalConnectivity.simulate" title="mne_connectivity.TemporalConnectivity.simulate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">simulate</span></code></a>(n_samples[, noise_func, random_state])</p></td>
 <td><p>Simulate data using the vector autoregressive (VAR) model.</p></td>
 </tr>
 </tbody>
@@ -619,13 +614,7 @@ these may include extra parameters that are stored as xarray <code class="docuti
 </div>
 <div class="pst-scrollable-table-container"><table class="table">
 <tbody>
-<tr class="row-odd"><td><p><strong>copy</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><strong>eigvals</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p><strong>get_epoch_annotations</strong></p></td>
+<tr class="row-odd"><td><p><strong>eigvals</strong></p></td>
 <td></td>
 </tr>
 <tr class="row-even"><td><p><strong>is_stable</strong></p></td>
@@ -640,56 +629,11 @@ one. However, that describes one connectivity snapshot for each epoch. These epo
 might be chunks of time that have different meaning for time <code class="docutils literal notranslate"><span class="pre">t=0</span></code>. Epochs can
 mean separate trials, where the beginning of the trial implies t=0. These epochs may
 also be discontiguous.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="mne_connectivity.TemporalConnectivity.append">
-<span class="sig-name descname"><span class="pre">append</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">epoch_conn</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mne_connectivity.TemporalConnectivity.append" title="Link to this definition">#</a></dt>
-<dd><p>Append another connectivity structure.</p>
-<dl class="field-list">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><dl>
-<dt><strong>epoch_conn</strong><span class="classifier">instance of <a class="reference internal" href="mne_connectivity.Connectivity.html#mne_connectivity.Connectivity" title="mne_connectivity.Connectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Connectivity</span></code></a></span></dt><dd><p>The epoched Connectivity class to append.</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><dl>
-<dt><strong>self</strong><span class="classifier">instance of <a class="reference internal" href="mne_connectivity.Connectivity.html#mne_connectivity.Connectivity" title="mne_connectivity.Connectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Connectivity</span></code></a></span></dt><dd><p>The altered epoched Connectivity class.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="py property">
 <dt class="sig sig-object py" id="mne_connectivity.TemporalConnectivity.attrs">
 <span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">attrs</span></span><a class="headerlink" href="#mne_connectivity.TemporalConnectivity.attrs" title="Link to this definition">#</a></dt>
 <dd><p>Xarray attributes of connectivity.</p>
 <p>See <code class="docutils literal notranslate"><span class="pre">xarray</span></code>’s <code class="docutils literal notranslate"><span class="pre">attrs</span></code>.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="mne_connectivity.TemporalConnectivity.combine">
-<span class="sig-name descname"><span class="pre">combine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">combine</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mean'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mne_connectivity.TemporalConnectivity.combine" title="Link to this definition">#</a></dt>
-<dd><p>Combine connectivity data over epochs.</p>
-<dl class="field-list">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><dl>
-<dt><strong>combine</strong><span class="classifier"><code class="docutils literal notranslate"><span class="pre">'mean'</span></code> | <code class="docutils literal notranslate"><span class="pre">'median'</span></code> | <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#callable" title="(in Python v3.15)"><code class="docutils literal notranslate"><span class="pre">callable()</span></code></a></span></dt><dd><p>How to combine correlation estimates across epochs. Default is <code class="docutils literal notranslate"><span class="pre">'mean'</span></code>.
-If callable, it must accept one positional input. For example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">combine</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-</pre></div>
-</div>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><dl>
-<dt><strong>conn</strong><span class="classifier">instance of <a class="reference internal" href="mne_connectivity.Connectivity.html#mne_connectivity.Connectivity" title="mne_connectivity.Connectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Connectivity</span></code></a></span></dt><dd><p>The combined connectivity data structure. Instance type reflects that of the
-input instance, without the epoch dimension.</p>
-</dd>
-</dl>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py property">
@@ -703,6 +647,12 @@ input instance, without the epoch dimension.</p>
 <dt class="sig sig-object py" id="mne_connectivity.TemporalConnectivity.coords">
 <span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">coords</span></span><a class="headerlink" href="#mne_connectivity.TemporalConnectivity.coords" title="Link to this definition">#</a></dt>
 <dd><p>The coordinates of the xarray data.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mne_connectivity.TemporalConnectivity.copy">
+<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mne_connectivity.TemporalConnectivity.copy" title="Link to this definition">#</a></dt>
+<dd><p>Return a deep copy of the connectivity container.</p>
 </dd></dl>
 
 <dl class="py property">
@@ -816,17 +766,10 @@ that connectivity was computed between.</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="mne_connectivity.TemporalConnectivity.n_epochs">
-<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">n_epochs</span></span><a class="headerlink" href="#mne_connectivity.TemporalConnectivity.n_epochs" title="Link to this definition">#</a></dt>
-<dd><p>The number of epochs the connectivity data varies over.</p>
-</dd></dl>
-
-<dl class="py property">
 <dt class="sig sig-object py" id="mne_connectivity.TemporalConnectivity.n_epochs_used">
 <span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">n_epochs_used</span></span><a class="headerlink" href="#mne_connectivity.TemporalConnectivity.n_epochs_used" title="Link to this definition">#</a></dt>
 <dd><p>Number of epochs used in computation of connectivity.</p>
-<p>Can be <code class="docutils literal notranslate"><span class="pre">None</span></code>, if there was no epochs used. This is equivalent to the number
-of epochs, if there is no combining of epochs.</p>
+<p>Can be <code class="docutils literal notranslate"><span class="pre">None</span></code>, if no epochs were used.</p>
 </dd></dl>
 
 <dl class="py property">
@@ -1108,16 +1051,14 @@ the data is simulated from the average of these models.</p>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_connectivity.TemporalConnectivity"><code class="docutils literal notranslate"><span class="pre">TemporalConnectivity</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_connectivity.TemporalConnectivity.append"><code class="docutils literal notranslate"><span class="pre">TemporalConnectivity.append()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_connectivity.TemporalConnectivity.attrs"><code class="docutils literal notranslate"><span class="pre">TemporalConnectivity.attrs</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_connectivity.TemporalConnectivity.combine"><code class="docutils literal notranslate"><span class="pre">TemporalConnectivity.combine()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_connectivity.TemporalConnectivity.companion"><code class="docutils literal notranslate"><span class="pre">TemporalConnectivity.companion</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_connectivity.TemporalConnectivity.coords"><code class="docutils literal notranslate"><span class="pre">TemporalConnectivity.coords</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_connectivity.TemporalConnectivity.copy"><code class="docutils literal notranslate"><span class="pre">TemporalConnectivity.copy()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_connectivity.TemporalConnectivity.dims"><code class="docutils literal notranslate"><span class="pre">TemporalConnectivity.dims</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_connectivity.TemporalConnectivity.get_data"><code class="docutils literal notranslate"><span class="pre">TemporalConnectivity.get_data()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_connectivity.TemporalConnectivity.indices"><code class="docutils literal notranslate"><span class="pre">TemporalConnectivity.indices</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_connectivity.TemporalConnectivity.method"><code class="docutils literal notranslate"><span class="pre">TemporalConnectivity.method</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_connectivity.TemporalConnectivity.n_epochs"><code class="docutils literal notranslate"><span class="pre">TemporalConnectivity.n_epochs</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_connectivity.TemporalConnectivity.n_epochs_used"><code class="docutils literal notranslate"><span class="pre">TemporalConnectivity.n_epochs_used</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_connectivity.TemporalConnectivity.n_nodes"><code class="docutils literal notranslate"><span class="pre">TemporalConnectivity.n_nodes</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_connectivity.TemporalConnectivity.names"><code class="docutils literal notranslate"><span class="pre">TemporalConnectivity.names</span></code></a></li>

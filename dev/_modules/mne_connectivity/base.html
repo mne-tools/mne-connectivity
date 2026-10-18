@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_connectivity.base &#8212; MNE-Connectivity 0.10.0.dev36+ga3d1005ac documentation</title>
+    <title>mne_connectivity.base &#8212; MNE-Connectivity 0.10.0.dev37+gc2171e018 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
 
-    <script src="../../_static/documentation_options.js?v=1b6e8940"></script>
+    <script src="../../_static/documentation_options.js?v=69644068"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -133,7 +133,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.10.0.dev36+ga3d1005ac documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.10.0.dev37+gc2171e018 documentation</p>
   
 </a></div>
     
@@ -466,11 +466,7 @@
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">SpectralMixin</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Mixin class for spectral connectivities.</span>
-
-<span class="sd">    Note: In mne-connectivity, we associate the word "spectral" with time-frequency.</span>
-<span class="sd">    Reference to eigenvalue structure is not captured in this mixin.</span>
-<span class="sd">    """</span>
+<span class="w">    </span><span class="sd">"""Mixin class for spectral connectivity."""</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">freqs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -483,6 +479,8 @@
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">TimeMixin</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Mixin class for temporal connectivity."""</span>
+
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">times</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""The time points of the connectivity data."""</span>
@@ -490,7 +488,13 @@
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">EpochMixin</span><span class="p">:</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_init_epochs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">events</span><span class="p">,</span> <span class="n">event_id</span><span class="p">,</span> <span class="n">on_missing</span><span class="o">=</span><span class="s2">"warn"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Mixin class for per-epoch connectivity."""</span>
+
+    <span class="n">is_epoched</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">events</span><span class="p">,</span> <span class="n">event_id</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
         <span class="c1"># Epochs should have the events array that informs user of</span>
         <span class="c1"># sample points at which each Epoch was taken from.</span>
         <span class="c1"># An empty list occurs when NetCDF stores empty arrays.</span>
@@ -500,39 +504,55 @@
             <span class="n">events</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
 
         <span class="n">event_id</span> <span class="o">=</span> <span class="n">_check_event_id</span><span class="p">(</span><span class="n">event_id</span><span class="p">,</span> <span class="n">events</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">event_id</span> <span class="o">=</span> <span class="n">event_id</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">events</span> <span class="o">=</span> <span class="n">events</span>
 
         <span class="c1"># see BaseEpochs init in MNE-Python</span>
         <span class="k">if</span> <span class="n">events</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">event_id</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">event_id</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="k">if</span> <span class="n">val</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">events</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]:</span>
                     <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"No matching events found for </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> (event id </span><span class="si">{</span><span class="n">val</span><span class="si">}</span><span class="s2">)"</span>
-                    <span class="n">_on_missing</span><span class="p">(</span><span class="n">on_missing</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
+                    <span class="n">_on_missing</span><span class="p">(</span><span class="s2">"warn"</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
 
             <span class="c1"># ensure metadata matches original events size</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">selection</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">events</span><span class="p">))</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">events</span> <span class="o">=</span> <span class="n">events</span>
-            <span class="k">del</span> <span class="n">events</span>
 
-            <span class="n">values</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">event_id</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
-            <span class="n">selected</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">events</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">values</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">event_id</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+            <span class="n">selected</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">events</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">values</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">events</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">events</span><span class="p">[</span><span class="n">selected</span><span class="p">]</span>
+            <span class="n">events</span> <span class="o">=</span> <span class="n">events</span><span class="p">[</span><span class="n">selected</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">"events"</span><span class="p">]</span> <span class="o">=</span> <span class="n">events</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">"event_id"</span><span class="p">]</span> <span class="o">=</span> <span class="n">event_id</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">n_epochs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""The number of epochs the connectivity data varies over."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">events</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""The events array, for those event types found in ``event_id``."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">xarray</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">"events"</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">event_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Mapping from condition descriptions (strings) to integer event codes."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">xarray</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">"event_id"</span><span class="p">]</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">epoch_conn</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""Append another connectivity structure.</span>
+<span class="w">        </span><span class="sd">"""Append another epoched connectivity structure, in place.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        epoch_conn : instance of Connectivity</span>
-<span class="sd">            The epoched Connectivity class to append.</span>
+<span class="sd">        epoch_conn : instance of EpochConnectivity | EpochTemporalConnectivity | EpochSpectralConnectivity | EpochSpectroTemporalConnectivity</span>
+<span class="sd">            The connectivity container to append. Must be of the same type as the</span>
+<span class="sd">            current container instance.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        self : instance of Connectivity</span>
-<span class="sd">            The altered epoched Connectivity class.</span>
-<span class="sd">        """</span>
+<span class="sd">        self : instance of EpochConnectivity | EpochTemporalConnectivity | EpochSpectralConnectivity | EpochSpectroTemporalConnectivity</span>
+<span class="sd">            The altered connectivity container with the new epochs appended. The</span>
+<span class="sd">            instance type matches that of the current container instance.</span>
+<span class="sd">        """</span>  <span class="c1"># noqa: E501</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">epoch_conn</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">"The type of the epoch connectivity to append is </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">epoch_conn</span><span class="p">)</span><span class="si">}</span><span class="s2">, "</span>
@@ -571,8 +591,8 @@
 
         <span class="c1"># now combine the xarray data, altered events and event ID</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">xarray</span><span class="p">,</span> <span class="n">epoch_conn</span><span class="o">.</span><span class="n">xarray</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="s2">"epochs"</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">events</span> <span class="o">=</span> <span class="n">events</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">event_id</span> <span class="o">=</span> <span class="n">event_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">"events"</span><span class="p">]</span> <span class="o">=</span> <span class="n">events</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">"event_id"</span><span class="p">]</span> <span class="o">=</span> <span class="n">event_id</span>
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">combine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combine</span><span class="o">=</span><span class="s2">"mean"</span><span class="p">):</span>
@@ -593,12 +613,6 @@
 <span class="sd">            input instance, without the epoch dimension.</span>
 <span class="sd">        """</span>  <span class="c1"># noqa: E501</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">_xarray_to_conn</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_epoched</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                <span class="s2">"Combine only works over Epoched connectivity. It does not work with "</span>
-                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2">"</span>
-            <span class="p">)</span>
 
         <span class="n">fun</span> <span class="o">=</span> <span class="n">_check_combine</span><span class="p">(</span><span class="n">combine</span><span class="p">,</span> <span class="n">valid</span><span class="o">=</span><span class="p">(</span><span class="s2">"mean"</span><span class="p">,</span> <span class="s2">"median"</span><span class="p">))</span>
 
@@ -625,7 +639,23 @@
         <span class="k">return</span> <span class="n">conn</span>
 
 
+<span class="k">class</span><span class="w"> </span><span class="nc">NonEpochMixin</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Mixin class for non-epoched connectivity."""</span>
+
+    <span class="n">is_epoched</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">n_epochs_used</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Number of epochs used in computation of connectivity.</span>
+
+<span class="sd">        Can be ``None``, if no epochs were used.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">"n_epochs_used"</span><span class="p">]</span>
+
+
 <span class="k">class</span><span class="w"> </span><span class="nc">DynamicMixin</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Mixin class for VAR models."""</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">_check_is_var</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">"^var(?:_dynamic)?$"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="p">):</span>
             <span class="n">warn</span><span class="p">(</span>
@@ -831,7 +861,7 @@
 
 
 <span class="nd">@fill_doc</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">BaseConnectivity</span><span class="p">(</span><span class="n">EpochMixin</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">BaseConnectivity</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Base class for connectivity data.</span>
 
 <span class="sd">    This class should not be instantiated directly, but should be used to do</span>
@@ -851,8 +881,6 @@
 <span class="sd">    %(indices)s</span>
 <span class="sd">    %(method)s</span>
 <span class="sd">    %(n_nodes)s</span>
-<span class="sd">    %(events)s</span>
-<span class="sd">    %(event_id)s</span>
 <span class="sd">    metadata : instance of pandas.DataFrame | None</span>
 <span class="sd">        The metadata data frame that would come from the :class:`mne.Epochs` class. See</span>
 <span class="sd">        :class:`mne.Epochs` docstring for details.</span>
@@ -883,8 +911,9 @@
 <span class="sd">    not transfer.</span>
 <span class="sd">    """</span>
 
-    <span class="c1"># whether or not the connectivity occurs over epochs</span>
-    <span class="n">is_epoched</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="c1"># Expected to be properly defined in the child classes</span>
+    <span class="n">is_epoched</span><span class="p">:</span> <span class="nb">bool</span>
+    <span class="n">n_epochs_used</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -893,8 +922,6 @@
         <span class="n">indices</span><span class="p">,</span>
         <span class="n">method</span><span class="p">,</span>
         <span class="n">n_nodes</span><span class="p">,</span>
-        <span class="n">events</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">event_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
@@ -924,14 +951,7 @@
                 <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_data_consistency</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="n">indices</span><span class="p">,</span> <span class="n">n_nodes</span><span class="o">=</span><span class="n">n_nodes</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_xarray</span><span class="p">(</span>
-            <span class="n">data</span><span class="p">,</span>
-            <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
-            <span class="n">indices</span><span class="o">=</span><span class="n">indices</span><span class="p">,</span>
-            <span class="n">n_nodes</span><span class="o">=</span><span class="n">n_nodes</span><span class="p">,</span>
-            <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
-            <span class="n">events</span><span class="o">=</span><span class="n">events</span><span class="p">,</span>
-            <span class="n">event_id</span><span class="o">=</span><span class="n">event_id</span><span class="p">,</span>
-            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+            <span class="n">data</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="n">indices</span><span class="p">,</span> <span class="n">n_nodes</span><span class="o">=</span><span class="n">n_nodes</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
         <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -951,7 +971,7 @@
         <span class="n">dim_info</span> <span class="o">=</span> <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dim_info</span><span class="p">)</span> <span class="o">+</span> <span class="s2">" | "</span>
         <span class="n">r</span> <span class="o">+=</span> <span class="n">dim_info</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_epochs_used</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_epoched</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_epoched</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_epochs_used</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">r</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">"nave: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_epochs_used</span><span class="si">}</span><span class="s2"> | "</span>
 
         <span class="n">r</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">"~</span><span class="si">{</span><span class="n">sizeof_fmt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_size</span><span class="p">)</span><span class="si">}</span><span class="s2">&gt;"</span>
@@ -967,15 +987,8 @@
             <span class="n">start_idx</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n_estimated_nodes</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">start_idx</span><span class="p">]</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_prepare_xarray</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">n_nodes</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">events</span><span class="p">,</span> <span class="n">event_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
-    <span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_prepare_xarray</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">n_nodes</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Prepare xarray data structure."""</span>
-        <span class="c1"># generate events and event_id that originate from Epochs class</span>
-        <span class="c1"># which stores the windows of Raw that were used to generate</span>
-        <span class="c1"># the corresponding connectivity data</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_init_epochs</span><span class="p">(</span><span class="n">events</span><span class="p">,</span> <span class="n">event_id</span><span class="p">,</span> <span class="n">on_missing</span><span class="o">=</span><span class="s2">"warn"</span><span class="p">)</span>
-
         <span class="c1"># set node names</span>
         <span class="k">if</span> <span class="n">names</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_nodes</span><span class="p">)))</span>
@@ -991,7 +1004,7 @@
         <span class="n">n_estimated_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_estimated_nodes</span><span class="p">)))</span>
         <span class="n">coords</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_epoched</span><span class="p">:</span>
-            <span class="n">coords</span><span class="p">[</span><span class="s2">"epochs"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])))</span>
+            <span class="n">coords</span><span class="p">[</span><span class="s2">"epochs"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
         <span class="n">coords</span><span class="p">[</span><span class="s2">"node_in -&gt; node_out"</span><span class="p">]</span> <span class="o">=</span> <span class="n">n_estimated_list</span>
         <span class="k">if</span> <span class="s2">"components"</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
             <span class="n">coords</span><span class="p">[</span><span class="s2">"components"</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"components"</span><span class="p">)</span>
@@ -1026,8 +1039,6 @@
         <span class="n">kwargs</span><span class="p">[</span><span class="s2">"method"</span><span class="p">]</span> <span class="o">=</span> <span class="n">method</span>
         <span class="n">kwargs</span><span class="p">[</span><span class="s2">"indices"</span><span class="p">]</span> <span class="o">=</span> <span class="n">indices</span>
         <span class="n">kwargs</span><span class="p">[</span><span class="s2">"n_nodes"</span><span class="p">]</span> <span class="o">=</span> <span class="n">n_nodes</span>
-        <span class="n">kwargs</span><span class="p">[</span><span class="s2">"events"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">events</span>
-        <span class="c1"># kwargs['event_id'] = self.event_id</span>
 
         <span class="c1"># create xarray object</span>
         <span class="n">xarray_obj</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">coords</span><span class="o">=</span><span class="n">coords</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="n">dims</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="n">kwargs</span><span class="p">)</span>
@@ -1092,19 +1103,8 @@
                 <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Return a deep copy of the connectivity container."""</span>
         <span class="k">return</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_epoch_annotations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">pass</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">n_epochs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""The number of epochs the connectivity data varies over."""</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_epoched</span><span class="p">:</span>
-            <span class="n">n_epochs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">n_epochs</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">return</span> <span class="n">n_epochs</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1171,15 +1171,6 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">xarray</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Xarray of the connectivity data."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">n_epochs_used</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""Number of epochs used in computation of connectivity.</span>
-
-<span class="sd">        Can be ``None``, if there was no epochs used. This is equivalent to the number</span>
-<span class="sd">        of epochs, if there is no combining of epochs.</span>
-<span class="sd">        """</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"n_epochs_used"</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1370,12 +1361,6 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(),</span> <span class="n">node_names</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
         <span class="p">)</span>
 
-    <span class="c1"># def plot_matrix(self):</span>
-    <span class="c1">#     pass</span>
-
-    <span class="c1"># def plot_3d(self):</span>
-    <span class="c1">#     pass</span>
-
     <span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fname</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Save connectivity data to disk.</span>
 
@@ -1427,10 +1412,58 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">xarray</span><span class="o">.</span><span class="n">attrs</span> <span class="o">=</span> <span class="n">old_attrs</span>
 
 
+<div class="viewcode-block" id="Connectivity">
+<a class="viewcode-back" href="../../generated/mne_connectivity.Connectivity.html#mne_connectivity.Connectivity">[docs]</a>
+<span class="nd">@fill_doc</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Connectivity</span><span class="p">(</span><span class="n">BaseConnectivity</span><span class="p">,</span> <span class="n">DynamicMixin</span><span class="p">,</span> <span class="n">NonEpochMixin</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Connectivity class without frequency or time component.</span>
+
+<span class="sd">    This is an array of shape ``(n_connections[, n_components])``, or ``(n_nodes,</span>
+<span class="sd">    n_nodes[, n_components])``. This describes a connectivity matrix/graph that does not</span>
+<span class="sd">    vary over time, frequency, or epochs. ``n_components`` is an optional dimension for</span>
+<span class="sd">    multivariate methods where each connection has multiple components of connectivity.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    %(data)s</span>
+<span class="sd">    %(n_nodes)s</span>
+<span class="sd">    %(names)s</span>
+<span class="sd">    %(indices)s</span>
+<span class="sd">    %(method)s</span>
+<span class="sd">    %(n_epochs_used)s</span>
+<span class="sd">    %(connectivity_kwargs)s</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    mne_connectivity.vector_auto_regression</span>
+<span class="sd">    """</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">,</span>
+        <span class="n">n_nodes</span><span class="p">,</span>
+        <span class="n">names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">indices</span><span class="o">=</span><span class="s2">"all"</span><span class="p">,</span>
+        <span class="n">method</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">n_epochs_used</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+            <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
+            <span class="n">n_nodes</span><span class="o">=</span><span class="n">n_nodes</span><span class="p">,</span>
+            <span class="n">indices</span><span class="o">=</span><span class="n">indices</span><span class="p">,</span>
+            <span class="n">n_epochs_used</span><span class="o">=</span><span class="n">n_epochs_used</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+
 <div class="viewcode-block" id="SpectralConnectivity">
 <a class="viewcode-back" href="../../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity">[docs]</a>
 <span class="nd">@fill_doc</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">SpectralConnectivity</span><span class="p">(</span><span class="n">BaseConnectivity</span><span class="p">,</span> <span class="n">SpectralMixin</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SpectralConnectivity</span><span class="p">(</span><span class="n">BaseConnectivity</span><span class="p">,</span> <span class="n">SpectralMixin</span><span class="p">,</span> <span class="n">NonEpochMixin</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Spectral connectivity class.</span>
 
 <span class="sd">    This class stores connectivity data that varies over frequencies. The underlying</span>
@@ -1458,8 +1491,6 @@
 <span class="sd">    mne_connectivity.spectral_connectivity_time</span>
 <span class="sd">    """</span>
 
-    <span class="n">expected_n_dim</span> <span class="o">=</span> <span class="mi">2</span>
-
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">data</span><span class="p">,</span>
@@ -1473,7 +1504,7 @@
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
-            <span class="n">data</span><span class="p">,</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
             <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
             <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
             <span class="n">indices</span><span class="o">=</span><span class="n">indices</span><span class="p">,</span>
@@ -1489,7 +1520,7 @@
 <div class="viewcode-block" id="TemporalConnectivity">
 <a class="viewcode-back" href="../../generated/mne_connectivity.TemporalConnectivity.html#mne_connectivity.TemporalConnectivity">[docs]</a>
 <span class="nd">@fill_doc</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">TemporalConnectivity</span><span class="p">(</span><span class="n">BaseConnectivity</span><span class="p">,</span> <span class="n">TimeMixin</span><span class="p">,</span> <span class="n">DynamicMixin</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TemporalConnectivity</span><span class="p">(</span><span class="n">BaseConnectivity</span><span class="p">,</span> <span class="n">TimeMixin</span><span class="p">,</span> <span class="n">DynamicMixin</span><span class="p">,</span> <span class="n">NonEpochMixin</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Temporal connectivity class.</span>
 
 <span class="sd">    This is an array of shape ``(n_connections, [n_components,] n_times)``, or</span>
@@ -1519,8 +1550,6 @@
 <span class="sd">    also be discontiguous.</span>
 <span class="sd">    """</span>
 
-    <span class="n">expected_n_dim</span> <span class="o">=</span> <span class="mi">2</span>
-
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">data</span><span class="p">,</span>
@@ -1533,7 +1562,7 @@
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
-            <span class="n">data</span><span class="p">,</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
             <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
             <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
             <span class="n">n_nodes</span><span class="o">=</span><span class="n">n_nodes</span><span class="p">,</span>
@@ -1548,7 +1577,9 @@
 <div class="viewcode-block" id="SpectroTemporalConnectivity">
 <a class="viewcode-back" href="../../generated/mne_connectivity.SpectroTemporalConnectivity.html#mne_connectivity.SpectroTemporalConnectivity">[docs]</a>
 <span class="nd">@fill_doc</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">SpectroTemporalConnectivity</span><span class="p">(</span><span class="n">BaseConnectivity</span><span class="p">,</span> <span class="n">SpectralMixin</span><span class="p">,</span> <span class="n">TimeMixin</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SpectroTemporalConnectivity</span><span class="p">(</span>
+    <span class="n">BaseConnectivity</span><span class="p">,</span> <span class="n">SpectralMixin</span><span class="p">,</span> <span class="n">TimeMixin</span><span class="p">,</span> <span class="n">NonEpochMixin</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Spectrotemporal connectivity class.</span>
 
 <span class="sd">    This class stores connectivity data that varies over both frequency and time. The</span>
@@ -1593,7 +1624,7 @@
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
-            <span class="n">data</span><span class="p">,</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
             <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
             <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
             <span class="n">indices</span><span class="o">=</span><span class="n">indices</span><span class="p">,</span>
@@ -1607,10 +1638,61 @@
 
 
 
+<div class="viewcode-block" id="EpochConnectivity">
+<a class="viewcode-back" href="../../generated/mne_connectivity.EpochConnectivity.html#mne_connectivity.EpochConnectivity">[docs]</a>
+<span class="nd">@fill_doc</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EpochConnectivity</span><span class="p">(</span><span class="n">EpochMixin</span><span class="p">,</span> <span class="n">BaseConnectivity</span><span class="p">,</span> <span class="n">DynamicMixin</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Epoch connectivity class.</span>
+
+<span class="sd">    This is an array of shape ``(n_epochs, n_connections[, n_components])``, or</span>
+<span class="sd">    ``(n_epochs, n_nodes, n_nodes[, n_components])``. This describes how connectivity</span>
+<span class="sd">    varies for different epochs. ``n_components`` is an optional dimension for</span>
+<span class="sd">    multivariate methods where each connection has multiple components of connectivity.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    %(data)s</span>
+<span class="sd">    %(n_nodes)s</span>
+<span class="sd">    %(names)s</span>
+<span class="sd">    %(indices)s</span>
+<span class="sd">    %(method)s</span>
+<span class="sd">    %(events)s</span>
+<span class="sd">    %(event_id)s</span>
+<span class="sd">    %(connectivity_kwargs)s</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    mne_connectivity.vector_auto_regression</span>
+<span class="sd">    """</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">,</span>
+        <span class="n">n_nodes</span><span class="p">,</span>
+        <span class="n">names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">indices</span><span class="o">=</span><span class="s2">"all"</span><span class="p">,</span>
+        <span class="n">method</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">events</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">event_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+            <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
+            <span class="n">n_nodes</span><span class="o">=</span><span class="n">n_nodes</span><span class="p">,</span>
+            <span class="n">indices</span><span class="o">=</span><span class="n">indices</span><span class="p">,</span>
+            <span class="n">events</span><span class="o">=</span><span class="n">events</span><span class="p">,</span>
+            <span class="n">event_id</span><span class="o">=</span><span class="n">event_id</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+
 <div class="viewcode-block" id="EpochSpectralConnectivity">
 <a class="viewcode-back" href="../../generated/mne_connectivity.EpochSpectralConnectivity.html#mne_connectivity.EpochSpectralConnectivity">[docs]</a>
 <span class="nd">@fill_doc</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">EpochSpectralConnectivity</span><span class="p">(</span><span class="n">SpectralConnectivity</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EpochSpectralConnectivity</span><span class="p">(</span><span class="n">EpochMixin</span><span class="p">,</span> <span class="n">BaseConnectivity</span><span class="p">,</span> <span class="n">SpectralMixin</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Spectral connectivity class over epochs.</span>
 
 <span class="sd">    This is an array of shape ``(n_epochs, n_connections, [n_components,] n_freqs)``, or</span>
@@ -1628,15 +1710,14 @@
 <span class="sd">    %(indices)s</span>
 <span class="sd">    %(method)s</span>
 <span class="sd">    %(spec_method)s</span>
+<span class="sd">    %(events)s</span>
+<span class="sd">    %(event_id)s</span>
 <span class="sd">    %(connectivity_kwargs)s</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    mne_connectivity.spectral_connectivity_time</span>
 <span class="sd">    """</span>
-
-    <span class="c1"># whether or not the connectivity occurs over epochs</span>
-    <span class="n">is_epoched</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -1647,16 +1728,20 @@
         <span class="n">indices</span><span class="o">=</span><span class="s2">"all"</span><span class="p">,</span>
         <span class="n">method</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">spec_method</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">events</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">event_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
-            <span class="n">data</span><span class="p">,</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
             <span class="n">freqs</span><span class="o">=</span><span class="n">freqs</span><span class="p">,</span>
             <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
             <span class="n">indices</span><span class="o">=</span><span class="n">indices</span><span class="p">,</span>
             <span class="n">n_nodes</span><span class="o">=</span><span class="n">n_nodes</span><span class="p">,</span>
             <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
             <span class="n">spec_method</span><span class="o">=</span><span class="n">spec_method</span><span class="p">,</span>
+            <span class="n">events</span><span class="o">=</span><span class="n">events</span><span class="p">,</span>
+            <span class="n">event_id</span><span class="o">=</span><span class="n">event_id</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span></div>
 
@@ -1665,7 +1750,7 @@
 <div class="viewcode-block" id="EpochTemporalConnectivity">
 <a class="viewcode-back" href="../../generated/mne_connectivity.EpochTemporalConnectivity.html#mne_connectivity.EpochTemporalConnectivity">[docs]</a>
 <span class="nd">@fill_doc</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">EpochTemporalConnectivity</span><span class="p">(</span><span class="n">TemporalConnectivity</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EpochTemporalConnectivity</span><span class="p">(</span><span class="n">EpochMixin</span><span class="p">,</span> <span class="n">BaseConnectivity</span><span class="p">,</span> <span class="n">TimeMixin</span><span class="p">,</span> <span class="n">DynamicMixin</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Temporal connectivity class over epochs.</span>
 
 <span class="sd">    This is an array of shape ``(n_epochs, n_connections, [n_components,] n_times)``, or</span>
@@ -1682,6 +1767,8 @@
 <span class="sd">    %(names)s</span>
 <span class="sd">    %(indices)s</span>
 <span class="sd">    %(method)s</span>
+<span class="sd">    %(events)s</span>
+<span class="sd">    %(event_id)s</span>
 <span class="sd">    %(connectivity_kwargs)s</span>
 
 <span class="sd">    See Also</span>
@@ -1690,19 +1777,27 @@
 <span class="sd">    mne_connectivity.vector_auto_regression</span>
 <span class="sd">    """</span>
 
-    <span class="c1"># whether or not the connectivity occurs over epochs</span>
-    <span class="n">is_epoched</span> <span class="o">=</span> <span class="kc">True</span>
-
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">n_nodes</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="s2">"all"</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">,</span>
+        <span class="n">times</span><span class="p">,</span>
+        <span class="n">n_nodes</span><span class="p">,</span>
+        <span class="n">names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">indices</span><span class="o">=</span><span class="s2">"all"</span><span class="p">,</span>
+        <span class="n">method</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">events</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">event_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
-            <span class="n">data</span><span class="p">,</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
             <span class="n">times</span><span class="o">=</span><span class="n">times</span><span class="p">,</span>
             <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
             <span class="n">indices</span><span class="o">=</span><span class="n">indices</span><span class="p">,</span>
             <span class="n">n_nodes</span><span class="o">=</span><span class="n">n_nodes</span><span class="p">,</span>
             <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
+            <span class="n">events</span><span class="o">=</span><span class="n">events</span><span class="p">,</span>
+            <span class="n">event_id</span><span class="o">=</span><span class="n">event_id</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span></div>
 
@@ -1711,7 +1806,9 @@
 <div class="viewcode-block" id="EpochSpectroTemporalConnectivity">
 <a class="viewcode-back" href="../../generated/mne_connectivity.EpochSpectroTemporalConnectivity.html#mne_connectivity.EpochSpectroTemporalConnectivity">[docs]</a>
 <span class="nd">@fill_doc</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">EpochSpectroTemporalConnectivity</span><span class="p">(</span><span class="n">SpectroTemporalConnectivity</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EpochSpectroTemporalConnectivity</span><span class="p">(</span>
+    <span class="n">EpochMixin</span><span class="p">,</span> <span class="n">BaseConnectivity</span><span class="p">,</span> <span class="n">SpectralMixin</span><span class="p">,</span> <span class="n">TimeMixin</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Spectrotemporal connectivity class over epochs.</span>
 
 <span class="sd">    This is an array of shape ``(n_epochs, n_connections, [n_components,] n_freqs,</span>
@@ -1730,11 +1827,10 @@
 <span class="sd">    %(indices)s</span>
 <span class="sd">    %(method)s</span>
 <span class="sd">    %(spec_method)s</span>
+<span class="sd">    %(events)s</span>
+<span class="sd">    %(event_id)s</span>
 <span class="sd">    %(connectivity_kwargs)s</span>
 <span class="sd">    """</span>
-
-    <span class="c1"># whether or not the connectivity occurs over epochs</span>
-    <span class="n">is_epoched</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -1746,10 +1842,12 @@
         <span class="n">indices</span><span class="o">=</span><span class="s2">"all"</span><span class="p">,</span>
         <span class="n">method</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">spec_method</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">events</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">event_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
-            <span class="n">data</span><span class="p">,</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
             <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
             <span class="n">freqs</span><span class="o">=</span><span class="n">freqs</span><span class="p">,</span>
             <span class="n">times</span><span class="o">=</span><span class="n">times</span><span class="p">,</span>
@@ -1757,105 +1855,8 @@
             <span class="n">n_nodes</span><span class="o">=</span><span class="n">n_nodes</span><span class="p">,</span>
             <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
             <span class="n">spec_method</span><span class="o">=</span><span class="n">spec_method</span><span class="p">,</span>
-            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-        <span class="p">)</span></div>
-
-
-
-<div class="viewcode-block" id="Connectivity">
-<a class="viewcode-back" href="../../generated/mne_connectivity.Connectivity.html#mne_connectivity.Connectivity">[docs]</a>
-<span class="nd">@fill_doc</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">Connectivity</span><span class="p">(</span><span class="n">BaseConnectivity</span><span class="p">,</span> <span class="n">DynamicMixin</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Connectivity class without frequency or time component.</span>
-
-<span class="sd">    This is an array of shape ``(n_connections[, n_components])``, or ``(n_nodes,</span>
-<span class="sd">    n_nodes[, n_components])``. This describes a connectivity matrix/graph that does not</span>
-<span class="sd">    vary over time, frequency, or epochs. ``n_components`` is an optional dimension for</span>
-<span class="sd">    multivariate methods where each connection has multiple components of connectivity.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    %(data)s</span>
-<span class="sd">    %(n_nodes)s</span>
-<span class="sd">    %(names)s</span>
-<span class="sd">    %(indices)s</span>
-<span class="sd">    %(method)s</span>
-<span class="sd">    %(n_epochs_used)s</span>
-<span class="sd">    %(connectivity_kwargs)s</span>
-
-<span class="sd">    See Also</span>
-<span class="sd">    --------</span>
-<span class="sd">    mne_connectivity.vector_auto_regression</span>
-<span class="sd">    """</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">data</span><span class="p">,</span>
-        <span class="n">n_nodes</span><span class="p">,</span>
-        <span class="n">names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">indices</span><span class="o">=</span><span class="s2">"all"</span><span class="p">,</span>
-        <span class="n">method</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">n_epochs_used</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
-            <span class="n">data</span><span class="p">,</span>
-            <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
-            <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
-            <span class="n">n_nodes</span><span class="o">=</span><span class="n">n_nodes</span><span class="p">,</span>
-            <span class="n">indices</span><span class="o">=</span><span class="n">indices</span><span class="p">,</span>
-            <span class="n">n_epochs_used</span><span class="o">=</span><span class="n">n_epochs_used</span><span class="p">,</span>
-            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-        <span class="p">)</span></div>
-
-
-
-<div class="viewcode-block" id="EpochConnectivity">
-<a class="viewcode-back" href="../../generated/mne_connectivity.EpochConnectivity.html#mne_connectivity.EpochConnectivity">[docs]</a>
-<span class="nd">@fill_doc</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">EpochConnectivity</span><span class="p">(</span><span class="n">Connectivity</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Epoch connectivity class.</span>
-
-<span class="sd">    This is an array of shape ``(n_epochs, n_connections[, n_components])``, or</span>
-<span class="sd">    ``(n_epochs, n_nodes, n_nodes[, n_components])``. This describes how connectivity</span>
-<span class="sd">    varies for different epochs. ``n_components`` is an optional dimension for</span>
-<span class="sd">    multivariate methods where each connection has multiple components of connectivity.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    %(data)s</span>
-<span class="sd">    %(n_nodes)s</span>
-<span class="sd">    %(names)s</span>
-<span class="sd">    %(indices)s</span>
-<span class="sd">    %(method)s</span>
-<span class="sd">    %(n_epochs_used)s</span>
-<span class="sd">    %(connectivity_kwargs)s</span>
-
-<span class="sd">    See Also</span>
-<span class="sd">    --------</span>
-<span class="sd">    mne_connectivity.vector_auto_regression</span>
-<span class="sd">    """</span>
-
-    <span class="c1"># whether or not the connectivity occurs over epochs</span>
-    <span class="n">is_epoched</span> <span class="o">=</span> <span class="kc">True</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">data</span><span class="p">,</span>
-        <span class="n">n_nodes</span><span class="p">,</span>
-        <span class="n">names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">indices</span><span class="o">=</span><span class="s2">"all"</span><span class="p">,</span>
-        <span class="n">method</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">n_epochs_used</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
-            <span class="n">data</span><span class="p">,</span>
-            <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
-            <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
-            <span class="n">n_nodes</span><span class="o">=</span><span class="n">n_nodes</span><span class="p">,</span>
-            <span class="n">indices</span><span class="o">=</span><span class="n">indices</span><span class="p">,</span>
-            <span class="n">n_epochs_used</span><span class="o">=</span><span class="n">n_epochs_used</span><span class="p">,</span>
+            <span class="n">events</span><span class="o">=</span><span class="n">events</span><span class="p">,</span>
+            <span class="n">event_id</span><span class="o">=</span><span class="n">event_id</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span></div>
 
