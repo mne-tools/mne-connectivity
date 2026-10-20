@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mne_connectivity.SpectralConnectivity &#8212; MNE-Connectivity 0.10.0.dev38+g1e76de4c7 documentation</title>
+    <title>mne_connectivity.SpectralConnectivity &#8212; MNE-Connectivity 0.10.0.dev39+gd79aa84c4 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
 
-    <script src="../_static/documentation_options.js?v=76ab85dc"></script>
+    <script src="../_static/documentation_options.js?v=fee2eee1"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -136,7 +136,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.10.0.dev38+g1e76de4c7 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.10.0.dev39+gd79aa84c4 documentation</p>
   
 </a></div>
     
@@ -588,19 +588,22 @@ these may include extra parameters that are stored as xarray <code class="docuti
 <p class="rubric">Methods</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#mne_connectivity.SpectralConnectivity.copy" title="mne_connectivity.SpectralConnectivity.copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mne_connectivity.SpectralConnectivity.combine_freqs" title="mne_connectivity.SpectralConnectivity.combine_freqs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">combine_freqs</span></code></a>([method, fmin, fmax])</p></td>
+<td><p>Aggregate connectivity data over frequencies.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mne_connectivity.SpectralConnectivity.copy" title="mne_connectivity.SpectralConnectivity.copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy</span></code></a>()</p></td>
 <td><p>Return a deep copy of the connectivity container.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#mne_connectivity.SpectralConnectivity.get_data" title="mne_connectivity.SpectralConnectivity.get_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_data</span></code></a>([output, missing])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mne_connectivity.SpectralConnectivity.get_data" title="mne_connectivity.SpectralConnectivity.get_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_data</span></code></a>([output, missing])</p></td>
 <td><p>Get connectivity data as a numpy array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#mne_connectivity.SpectralConnectivity.plot_circle" title="mne_connectivity.SpectralConnectivity.plot_circle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_circle</span></code></a>(**kwargs)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#mne_connectivity.SpectralConnectivity.plot_circle" title="mne_connectivity.SpectralConnectivity.plot_circle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_circle</span></code></a>(**kwargs)</p></td>
 <td><p>Visualize connectivity as a circular graph.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#mne_connectivity.SpectralConnectivity.rename_nodes" title="mne_connectivity.SpectralConnectivity.rename_nodes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rename_nodes</span></code></a>(mapping)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mne_connectivity.SpectralConnectivity.rename_nodes" title="mne_connectivity.SpectralConnectivity.rename_nodes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rename_nodes</span></code></a>(mapping)</p></td>
 <td><p>Rename nodes.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#mne_connectivity.SpectralConnectivity.save" title="mne_connectivity.SpectralConnectivity.save"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code></a>(fname)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#mne_connectivity.SpectralConnectivity.save" title="mne_connectivity.SpectralConnectivity.save"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code></a>(fname)</p></td>
 <td><p>Save connectivity data to disk.</p></td>
 </tr>
 </tbody>
@@ -619,6 +622,37 @@ these may include extra parameters that are stored as xarray <code class="docuti
 <span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">attrs</span></span><a class="headerlink" href="#mne_connectivity.SpectralConnectivity.attrs" title="Link to this definition">#</a></dt>
 <dd><p>Xarray attributes of connectivity.</p>
 <p>See <code class="docutils literal notranslate"><span class="pre">xarray</span></code>’s <code class="docutils literal notranslate"><span class="pre">attrs</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mne_connectivity.SpectralConnectivity.combine_freqs">
+<span class="sig-name descname"><span class="pre">combine_freqs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mean'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mne_connectivity.SpectralConnectivity.combine_freqs" title="Link to this definition">#</a></dt>
+<dd><p>Aggregate connectivity data over frequencies.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>method</strong><span class="classifier"><code class="docutils literal notranslate"><span class="pre">'mean'</span></code> | <code class="docutils literal notranslate"><span class="pre">'median'</span></code> | <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#callable" title="(in Python v3.15)"><code class="docutils literal notranslate"><span class="pre">callable()</span></code></a></span></dt><dd><p>How to aggregate the data across frequencies. If <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#callable" title="(in Python v3.15)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">callable</span></code></a>, must take a
+<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">NumPy</span> <span class="pre">array</span></code></a> of shape <code class="docutils literal notranslate"><span class="pre">(...,</span> <span class="pre">n_freqs,</span> <span class="pre">...)</span></code> as input and return an array
+collapsed over the frequency dimension. Default is <code class="docutils literal notranslate"><span class="pre">'mean'</span></code>.</p>
+</dd>
+<dt><strong>fmin, fmax</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>First and last frequencies to aggregate over, in Hz.  If <code class="docutils literal notranslate"><span class="pre">None</span></code> use the first or
+last frequencies in the data, respectively. Default is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl>
+<dt><strong>con</strong><span class="classifier">instance of <a class="reference internal" href="mne_connectivity.Connectivity.html#mne_connectivity.Connectivity" title="mne_connectivity.Connectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Connectivity</span></code></a> or <a class="reference internal" href="mne_connectivity.EpochConnectivity.html#mne_connectivity.EpochConnectivity" title="mne_connectivity.EpochConnectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EpochConnectivity</span></code></a> or <a class="reference internal" href="mne_connectivity.TemporalConnectivity.html#mne_connectivity.TemporalConnectivity" title="mne_connectivity.TemporalConnectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TemporalConnectivity</span></code></a> or <a class="reference internal" href="mne_connectivity.EpochTemporalConnectivity.html#mne_connectivity.EpochTemporalConnectivity" title="mne_connectivity.EpochTemporalConnectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EpochTemporalConnectivity</span></code></a></span></dt><dd><p>The connectivity data aggregated over the frequency dimension. Instance type reflects that
+of the current connectivity instance, without the frequency dimension.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Passing in <code class="docutils literal notranslate"><span class="pre">np.median</span></code> is considered unsafe for complex data. Pass the string
+<code class="docutils literal notranslate"><span class="pre">&quot;median&quot;</span></code> instead to compute the <em>marginal</em> median (i.e., the median of the
+real and imaginary components separately). See discussion here:
+<a class="github reference external" href="https://github.com/scipy/scipy/pull/12676#issuecomment-783370228">scipy/scipy#12676</a></p>
 </dd></dl>
 
 <dl class="py property">
@@ -1000,6 +1034,7 @@ extension).</p>
     <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_connectivity.SpectralConnectivity"><code class="docutils literal notranslate"><span class="pre">SpectralConnectivity</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_connectivity.SpectralConnectivity.attrs"><code class="docutils literal notranslate"><span class="pre">SpectralConnectivity.attrs</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_connectivity.SpectralConnectivity.combine_freqs"><code class="docutils literal notranslate"><span class="pre">SpectralConnectivity.combine_freqs()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_connectivity.SpectralConnectivity.coords"><code class="docutils literal notranslate"><span class="pre">SpectralConnectivity.coords</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_connectivity.SpectralConnectivity.copy"><code class="docutils literal notranslate"><span class="pre">SpectralConnectivity.copy()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_connectivity.SpectralConnectivity.dims"><code class="docutils literal notranslate"><span class="pre">SpectralConnectivity.dims</span></code></a></li>
@@ -1046,7 +1081,7 @@ extension).</p>
 
   <p class="copyright">
     
-      © Copyright 2021-2026, MNE Developers. Last updated on 2026-10-19.
+      © Copyright 2021-2026, MNE Developers. Last updated on 2026-10-20.
       <br/>
     
   </p>
@@ -1055,7 +1090,7 @@ extension).</p>
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.1.
   </p>
 </div>
       

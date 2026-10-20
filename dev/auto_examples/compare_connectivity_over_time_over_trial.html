@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Comparing spectral connectivity computed over time or over trials &#8212; MNE-Connectivity 0.10.0.dev38+g1e76de4c7 documentation</title>
+    <title>Comparing spectral connectivity computed over time or over trials &#8212; MNE-Connectivity 0.10.0.dev39+gd79aa84c4 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
 
-    <script src="../_static/documentation_options.js?v=76ab85dc"></script>
+    <script src="../_static/documentation_options.js?v=fee2eee1"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -136,7 +136,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.10.0.dev38+g1e76de4c7 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.10.0.dev39+gd79aa84c4 documentation</p>
   
 </a></div>
     
@@ -665,8 +665,7 @@ single timepoint resolution.</p>
 </span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">foi</span></a> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">Freq_Bands</span></a><span class="o">.</span><span class="n">keys</span><span class="p">(</span><span class="p">)</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">alpha</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># frequency of interest</span><span class="w">
 </span><span class="w">
 </span><span class="k">for</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity" title="mne_connectivity.SpectralConnectivity"><span class="n">con</span></a> <span class="ow">in</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../generated/mne_connectivity.TemporalConnectivity.html#mne_connectivity.TemporalConnectivity" title="mne_connectivity.TemporalConnectivity"><span class="n">con_epochs</span></a><span class="p">:</span><span class="w">
-</span>    <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">con_array</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method reference internal" href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.get_data" title="mne_connectivity.SpectralConnectivity.get_data"><span class="n">con</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(</span><span class="s2">&quot;</span><span class="s2">raveled</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
-</span>    <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">con_array</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.mean.html#numpy.mean" title="numpy.mean"><span class="n">np</span><span class="o">.</span><span class="n">mean</span></a><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">con_array</span></a><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>  <span class="c1"># average over timepoints</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">con_array</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity" title="mne_connectivity.SpectralConnectivity"><span class="n">con</span><span class="o">.</span><span class="n">combine_times</span></a><span class="p">(</span><span class="s2">&quot;</span><span class="s2">mean</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">raveled</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># average over times</span><span class="w">
 </span>    <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">con_array</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">con_array</span></a><span class="p">[</span><span class="o">.</span><span class="o">.</span><span class="o">.</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">foi</span></a><span class="p">]</span>  <span class="c1"># select frequency band of interest</span><span class="w">
 </span>    <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../generated/mne_connectivity.Connectivity.html#mne_connectivity.Connectivity" title="mne_connectivity.Connectivity"><span class="n">con_method</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class reference internal" href="../generated/mne_connectivity.Connectivity.html#mne_connectivity.Connectivity" title="mne_connectivity.Connectivity"><span class="n">Connectivity</span></a><span class="p">(</span><span class="w">
 </span>        <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">con_array</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property reference internal" href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.n_nodes" title="mne_connectivity.SpectralConnectivity.n_nodes"><span class="n">con</span><span class="o">.</span><span class="n">n_nodes</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property reference internal" href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.names" title="mne_connectivity.SpectralConnectivity.names"><span class="n">con</span><span class="o">.</span><span class="n">names</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property reference internal" href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.indices" title="mne_connectivity.SpectralConnectivity.indices"><span class="n">con</span><span class="o">.</span><span class="n">indices</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property reference internal" href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.method" title="mne_connectivity.SpectralConnectivity.method"><span class="n">con</span><span class="o">.</span><span class="n">method</span></a><span class="w">
@@ -772,8 +771,7 @@ No baseline correction applied
 </span><span class="p">)</span><span class="w">
 </span><span class="w">
 </span><span class="k">for</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity" title="mne_connectivity.SpectralConnectivity"><span class="n">con</span></a> <span class="ow">in</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../generated/mne_connectivity.TemporalConnectivity.html#mne_connectivity.TemporalConnectivity" title="mne_connectivity.TemporalConnectivity"><span class="n">con_epochs</span></a><span class="p">:</span><span class="w">
-</span>    <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">con_array</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method reference internal" href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.get_data" title="mne_connectivity.SpectralConnectivity.get_data"><span class="n">con</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(</span><span class="s2">&quot;</span><span class="s2">raveled</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
-</span>    <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">con_array</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.mean.html#numpy.mean" title="numpy.mean"><span class="n">np</span><span class="o">.</span><span class="n">mean</span></a><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">con_array</span></a><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>  <span class="c1"># average over timepoints</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">con_array</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity" title="mne_connectivity.SpectralConnectivity"><span class="n">con</span><span class="o">.</span><span class="n">combine_times</span></a><span class="p">(</span><span class="s2">&quot;</span><span class="s2">mean</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">raveled</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># average over times</span><span class="w">
 </span>    <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">con_array</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">con_array</span></a><span class="p">[</span><span class="o">.</span><span class="o">.</span><span class="o">.</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">foi</span></a><span class="p">]</span>  <span class="c1"># select frequency band of interest</span><span class="w">
 </span>    <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../generated/mne_connectivity.Connectivity.html#mne_connectivity.Connectivity" title="mne_connectivity.Connectivity"><span class="n">con_method</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class reference internal" href="../generated/mne_connectivity.Connectivity.html#mne_connectivity.Connectivity" title="mne_connectivity.Connectivity"><span class="n">Connectivity</span></a><span class="p">(</span><span class="w">
 </span>        <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">con_array</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property reference internal" href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.n_nodes" title="mne_connectivity.SpectralConnectivity.n_nodes"><span class="n">con</span><span class="o">.</span><span class="n">n_nodes</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property reference internal" href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.names" title="mne_connectivity.SpectralConnectivity.names"><span class="n">con</span><span class="o">.</span><span class="n">names</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property reference internal" href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.indices" title="mne_connectivity.SpectralConnectivity.indices"><span class="n">con</span><span class="o">.</span><span class="n">indices</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-property reference internal" href="../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity.method" title="mne_connectivity.SpectralConnectivity.method"><span class="n">con</span><span class="o">.</span><span class="n">method</span></a><span class="w">
@@ -1037,9 +1035,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header general-0a7e7ea5-808a-46a0-a1a5-c8e85defa9f4"
+<tr class="mne-repr-section-header general-26dbe105-d72c-41b1-ac22-a881464b0ad0"
      title="Hide section"
-    onclick="toggleVisibility('general-0a7e7ea5-808a-46a0-a1a5-c8e85defa9f4')">
+    onclick="toggleVisibility('general-26dbe105-d72c-41b1-ac22-a881464b0ad0')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -1051,26 +1049,26 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element general-0a7e7ea5-808a-46a0-a1a5-c8e85defa9f4 ">
+<tr class="repr-element general-26dbe105-d72c-41b1-ac22-a881464b0ad0 ">
     <td class="mne-repr-section-toggle"></td>
     <td>MNE object type</td>
     <td>Epochs</td>
 </tr>
-<tr class="repr-element general-0a7e7ea5-808a-46a0-a1a5-c8e85defa9f4 ">
+<tr class="repr-element general-26dbe105-d72c-41b1-ac22-a881464b0ad0 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Measurement date</td>
 
     <td>2002-12-03 at 19:01:10 UTC</td>
 
 </tr>
-<tr class="repr-element general-0a7e7ea5-808a-46a0-a1a5-c8e85defa9f4 ">
+<tr class="repr-element general-26dbe105-d72c-41b1-ac22-a881464b0ad0 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Participant</td>
 
     <td>Unknown</td>
 
 </tr>
-<tr class="repr-element general-0a7e7ea5-808a-46a0-a1a5-c8e85defa9f4 ">
+<tr class="repr-element general-26dbe105-d72c-41b1-ac22-a881464b0ad0 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Experimenter</td>
 
@@ -1085,9 +1083,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header acquisition-ce051a2a-567d-446f-ad37-d0361a1230fc"
+<tr class="mne-repr-section-header acquisition-d479b7d5-5ac6-48a7-ad81-e35a68ae16d2"
      title="Hide section"
-    onclick="toggleVisibility('acquisition-ce051a2a-567d-446f-ad37-d0361a1230fc')">
+    onclick="toggleVisibility('acquisition-d479b7d5-5ac6-48a7-ad81-e35a68ae16d2')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -1102,14 +1100,14 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="repr-element acquisition-ce051a2a-567d-446f-ad37-d0361a1230fc ">
+<tr class="repr-element acquisition-d479b7d5-5ac6-48a7-ad81-e35a68ae16d2 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Total number of events</td>
     <td>73</td>
 </tr>
 
 
-<tr class="repr-element acquisition-ce051a2a-567d-446f-ad37-d0361a1230fc ">
+<tr class="repr-element acquisition-d479b7d5-5ac6-48a7-ad81-e35a68ae16d2 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Events counts</td>
 
@@ -1123,35 +1121,35 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element acquisition-ce051a2a-567d-446f-ad37-d0361a1230fc ">
+<tr class="repr-element acquisition-d479b7d5-5ac6-48a7-ad81-e35a68ae16d2 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Time range</td>
     <td>-0.300 – 1.598 s</td>
 </tr>
 
 
-<tr class="repr-element acquisition-ce051a2a-567d-446f-ad37-d0361a1230fc ">
+<tr class="repr-element acquisition-d479b7d5-5ac6-48a7-ad81-e35a68ae16d2 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Baseline</td>
     <td>-0.300 – 0.000 s</td>
 </tr>
 
 
-<tr class="repr-element acquisition-ce051a2a-567d-446f-ad37-d0361a1230fc ">
+<tr class="repr-element acquisition-d479b7d5-5ac6-48a7-ad81-e35a68ae16d2 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Sampling frequency</td>
     <td>150.15 Hz</td>
 </tr>
 
 
-<tr class="repr-element acquisition-ce051a2a-567d-446f-ad37-d0361a1230fc ">
+<tr class="repr-element acquisition-d479b7d5-5ac6-48a7-ad81-e35a68ae16d2 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Time points</td>
     <td>286</td>
 </tr>
 
 
-<tr class="repr-element acquisition-ce051a2a-567d-446f-ad37-d0361a1230fc ">
+<tr class="repr-element acquisition-d479b7d5-5ac6-48a7-ad81-e35a68ae16d2 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Metadata</td>
     <td>No metadata set</td>
@@ -1165,9 +1163,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header channels-ed6284ea-cd4c-487b-bd93-81be6c1e1b1a"
+<tr class="mne-repr-section-header channels-fc752110-f2a4-4abf-86ea-25d6a779d36c"
      title="Hide section"
-    onclick="toggleVisibility('channels-ed6284ea-cd4c-487b-bd93-81be6c1e1b1a')">
+    onclick="toggleVisibility('channels-fc752110-f2a4-4abf-86ea-25d6a779d36c')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -1180,7 +1178,7 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="repr-element channels-ed6284ea-cd4c-487b-bd93-81be6c1e1b1a ">
+<tr class="repr-element channels-fc752110-f2a4-4abf-86ea-25d6a779d36c ">
     <td class="mne-repr-section-toggle"></td>
     <td>EEG</td>
     <td>
@@ -1193,7 +1191,7 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element channels-ed6284ea-cd4c-487b-bd93-81be6c1e1b1a ">
+<tr class="repr-element channels-fc752110-f2a4-4abf-86ea-25d6a779d36c ">
     <td class="mne-repr-section-toggle"></td>
     <td>Head & sensor digitization</td>
 
@@ -1208,9 +1206,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header filters-a27c0ca5-b7d1-4798-a0f8-6f6d65ec8d8b"
+<tr class="mne-repr-section-header filters-86bbbacc-f1bf-4c35-b878-8cd56ff114e5"
      title="Hide section"
-    onclick="toggleVisibility('filters-a27c0ca5-b7d1-4798-a0f8-6f6d65ec8d8b')">
+    onclick="toggleVisibility('filters-86bbbacc-f1bf-4c35-b878-8cd56ff114e5')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -1222,21 +1220,21 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element filters-a27c0ca5-b7d1-4798-a0f8-6f6d65ec8d8b ">
+<tr class="repr-element filters-86bbbacc-f1bf-4c35-b878-8cd56ff114e5 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Highpass</td>
     <td>0.10 Hz</td>
 </tr>
 
 
-<tr class="repr-element filters-a27c0ca5-b7d1-4798-a0f8-6f6d65ec8d8b ">
+<tr class="repr-element filters-86bbbacc-f1bf-4c35-b878-8cd56ff114e5 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Lowpass</td>
     <td>40.00 Hz</td>
 </tr>
 
 
-<tr class="repr-element filters-a27c0ca5-b7d1-4798-a0f8-6f6d65ec8d8b ">
+<tr class="repr-element filters-86bbbacc-f1bf-4c35-b878-8cd56ff114e5 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Projections</td>
     <td>
@@ -1425,7 +1423,7 @@ and plot the sensor connectivity of the 20 highest connections</p>
 </span></pre></div></div>
 <img src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_012.png" srcset="../_images/sphx_glr_compare_connectivity_over_time_over_trial_012.png" alt="EEG ~ EEG | wpli" class = "sphx-glr-single-img"/><img src="../_images/sphx_glr_compare_connectivity_over_time_over_trial_013.png" srcset="../_images/sphx_glr_compare_connectivity_over_time_over_trial_013.png" alt="compare connectivity over time over trial" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using pyvistaqt 3d backend.
 
-&lt;mne.viz.backends._pyvista.PyVistaFigure object at 0x7375a85b0980&gt;
+&lt;mne.viz.backends._pyvista.PyVistaFigure object at 0x72ffc59e4d70&gt;
 </pre></div>
 </div>
 </section>
@@ -1456,7 +1454,7 @@ at this timepoint were between occipital and frontal areas.</p>
 </aside>
 </aside>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 23.518 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 24.404 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-compare-connectivity-over-time-over-trial-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/3d83fa7689135afb6024c7a2851594fa/compare_connectivity_over_time_over_trial.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">compare_connectivity_over_time_over_trial.ipynb</span></code></a></p>
@@ -1551,7 +1549,7 @@ at this timepoint were between occipital and frontal areas.</p>
 
   <p class="copyright">
     
-      © Copyright 2021-2026, MNE Developers. Last updated on 2026-10-19.
+      © Copyright 2021-2026, MNE Developers. Last updated on 2026-10-20.
       <br/>
     
   </p>
@@ -1560,7 +1558,7 @@ at this timepoint were between occipital and frontal areas.</p>
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.1.
   </p>
 </div>
       
