@@ -492,13 +492,10 @@ class DynamicMixin:
         return data[10 * lags :, :].transpose()
 
 
-@fill_doc
 class BaseConnectivity:
     """Base class for connectivity data.
 
-    This class should not be instantiated directly, but should be used to do
-    type-checking. All connectivity classes will be returned from corresponding
-    connectivity computing functions.
+    This class should not be instantiated directly.
 
     Connectivity data is anything that represents "connections" between nodes as a
     ``(N, N)`` array. It can be symmetric, or asymmetric. If it is symmetric (or
@@ -506,37 +503,20 @@ class BaseConnectivity:
     based on the existing (e.g., lower-triangular) elements), we can optimise memory
     demand for storage.
 
-    Parameters
-    ----------
-    %(data)s
-    %(names)s
-    %(indices)s
-    %(method)s
-    %(n_nodes)s
-    metadata : instance of pandas.DataFrame | None
-        The metadata data frame that would come from the :class:`mne.Epochs` class. See
-        :class:`mne.Epochs` docstring for details.
-    %(connectivity_kwargs)s
-
     Notes
     -----
     Connectivity data can be generally represented as a square matrix with values
-    intending the connectivity function value between two nodes. We store connectivity
-    data as a raveled ``(n_estimated_nodes, ...)`` array, where ``n_estimated_nodes``
-    can be ``n_nodes_in * n_nodes_out`` if a full connectivity structure is computed, or
-    a subset of the nodes (equal to the length of the indices passed in).
+    intending the connectivity function value between two nodes. The underlying data
+    structure is an ``xarray.DataArray``, with a similar API to ``xarray``.#
+
+    We store connectivity data as a raveled ``(n_connections, ...)`` array, where
+    ``n_connections`` can be ``n_nodes * n_nodes`` if a full connectivity structure is
+    computed, or a subset of the nodes (equal to the length of the indices passed in).
 
     Since we store connectivity data as a raveled array, one can easily optimize the
     storage of "symmetric" connectivity data by storing only the lower-triangular (or
     upper-triangular) elements, and filling these in when the user requests the full
-    connectivity matrix. How to fill in the missing values is determined based on the
-    ``method`` parameter.
-
-    The underlying data structure is an :class:`xarray.DataArray`, with a similar API to
-    ``xarray``. We provide support for storing connectivity data in a subset of nodes.
-    Thus the underlying data structure instead of a ``(n_nodes_in, n_nodes_out)`` 2D
-    array would be a ``(n_nodes_in * n_nodes_out,)`` raveled 1D array. This allows us to
-    optimize storage also for "symmetric" connectivity.
+    connectivity matrix.
 
     Storage optimisation will not occur for multivariate connectivity, as computing
     connectivity in the same lower-/upper-triangular manner for "symmetric" methods does
@@ -593,7 +573,7 @@ class BaseConnectivity:
         dim_info = []
         for dim in ("epochs", "connections", "components", "freqs", "times"):
             if dim == "connections":
-                dim_info.append(f"{self.n_estimated_nodes} connections")
+                dim_info.append(f"{self.n_connections} connections")
             elif dim == "freqs" and dim in self.dims:
                 dim_info.append(f"{self.freqs[0]}-{self.freqs[-1]} Hz")
             elif dim == "times" and dim in self.dims:
@@ -610,34 +590,20 @@ class BaseConnectivity:
 
         return r
 
-    def _get_num_connections(self, data):
-        """Compute the number of estimated nodes' connectivity."""
-        # account for epoch data structures
-        if self.is_epoched:
-            start_idx = 1
-        else:
-            start_idx = 0
-        self.n_estimated_nodes = data.shape[start_idx]
-
     def _prepare_xarray(self, data, names, indices, n_nodes, method, **kwargs):
         """Prepare xarray data structure."""
         # set node names
         if names is None:
             names = list(map(str, range(n_nodes)))
 
-        # the names of each first few dimensions of
-        # the data depending if data is epoched or not
+        # the dimensions and their coordinates
+        dims = ["connections"]
         if self.is_epoched:
-            dims = ["epochs", "node_in -> node_out"]
-        else:
-            dims = ["node_in -> node_out"]
-
-        # the coordinates of each dimension
-        n_estimated_list = list(map(str, range(self.n_estimated_nodes)))
+            dims = ["epochs"] + dims
         coords = dict()
         if self.is_epoched:
             coords["epochs"] = list(range(data.shape[0]))
-        coords["node_in -> node_out"] = n_estimated_list
+        coords["connections"] = list(range(self.n_connections))
         if "components" in kwargs:
             coords["components"] = kwargs.pop("components")
             dims.append("components")
@@ -696,8 +662,8 @@ class BaseConnectivity:
                     "shape."
                 )
 
-        # get the number of estimated nodes
-        self._get_num_connections(data)
+        # get the number of connections
+        self.n_connections = data.shape[1] if self.is_epoched else data.shape[0]
 
         if isinstance(indices, tuple):
             # check that the indices passed in are of the same length
@@ -707,30 +673,30 @@ class BaseConnectivity:
                     f"are right now {len(indices[0])} and {len(indices[1])}."
                 )
             # indices length should match the data length
-            if len(indices[0]) != self.n_estimated_nodes:
+            if len(indices[0]) != self.n_connections:
                 raise ValueError(
                     f"The number of indices, {len(indices[0])} should match the "
-                    f"raveled data length passed in of {self.n_estimated_nodes}."
+                    f"raveled data length passed in of {self.n_connections}."
                 )
 
         elif indices in ["lower", "upper"]:
             expected_len = n_nodes * (n_nodes - 1) // 2
-            if self.n_estimated_nodes != expected_len:
+            if self.n_connections != expected_len:
                 raise ValueError(
                     "If `indices` is 'lower' or 'upper', then connectivity data should "
                     "be the lower- or upper-triangular part of the connectivity "
                     f"matrix, respectively. Expected {expected_len} connections from "
-                    f"the {n_nodes} nodes, but got {self.n_estimated_nodes} "
+                    f"the {n_nodes} nodes, but got {self.n_connections} "
                     "connections."
                 )
 
         else:  # indices = "all"
             expected_len = n_nodes**2
-            if self.n_estimated_nodes != expected_len:
+            if self.n_connections != expected_len:
                 raise ValueError(
                     "If `indices` is 'all', then connectivity data should be the full "
                     f"connectivity matrix. Expected {expected_len} connections from "
-                    f"the {n_nodes} nodes, but got {self.n_estimated_nodes} "
+                    f"the {n_nodes} nodes, but got {self.n_connections} "
                     "connections."
                 )
 
@@ -824,9 +790,9 @@ class BaseConnectivity:
             How to format the output:
 
             - ``'raveled'`` will represent each connectivity matrix as a
-              ``(..., n_nodes_in * n_nodes_out, ...)`` array.
-            - ``'dense'`` will return each connectivity matrix as a ``(..., n_nodes_in,
-              n_nodes_out, ...)`` array.
+              ``(..., n_connections, ...)`` array.
+            - ``'dense'`` will return each connectivity matrix as a ``(..., n_seeds,
+              n_targets, ...)`` array.
             - ``'compact'`` (default) will return ``'raveled'`` if ``indices`` is
               a tuple of arrays, or ``'dense'`` if ``indices`` is ``'all'``,
               ``'lower'``, or ``'upper'``.
@@ -1046,16 +1012,14 @@ class BaseConnectivity:
 
 @fill_doc
 class Connectivity(BaseConnectivity, DynamicMixin, NonEpochMixin):
-    """Connectivity class without frequency or time component.
+    """Connectivity class without additional dimensions.
 
-    This is an array of shape ``(n_connections[, n_components])``, or ``(n_nodes,
-    n_nodes[, n_components])``. This describes a connectivity matrix/graph that does not
-    vary over time, frequency, or epochs. ``n_components`` is an optional dimension for
-    multivariate methods where each connection has multiple components of connectivity.
+    The underlying data is an array of shape
+    ``%(data_shape_Connectivity)s``.%(optional_components_dim)s
 
     Parameters
     ----------
-    %(data)s
+    %(data_Connectivity)s
     %(n_nodes)s
     %(names)s
     %(indices)s
@@ -1091,17 +1055,14 @@ class Connectivity(BaseConnectivity, DynamicMixin, NonEpochMixin):
 
 @fill_doc
 class SpectralConnectivity(BaseConnectivity, SpectralMixin, NonEpochMixin):
-    """Spectral connectivity class.
+    """Connectivity class with frequency dimension.
 
-    This class stores connectivity data that varies over frequencies. The underlying
-    data is an array of shape ``(n_connections, [n_components,] n_freqs)``, or
-    ``(n_nodes, n_nodes, [n_components,] n_freqs)``. ``n_components`` is an optional
-    dimension for multivariate methods where each connection has multiple components of
-    connectivity.
+    The underlying data is an array of shape
+    ``%(data_shape_SpectralConnectivity)s``.%(optional_components_dim)s
 
     Parameters
     ----------
-    %(data)s
+    %(data_SpectralConnectivity)s
     %(freqs)s
     %(n_nodes)s
     %(names)s
@@ -1145,18 +1106,14 @@ class SpectralConnectivity(BaseConnectivity, SpectralMixin, NonEpochMixin):
 
 @fill_doc
 class TemporalConnectivity(BaseConnectivity, TimeMixin, DynamicMixin, NonEpochMixin):
-    """Temporal connectivity class.
+    """Connectivity class with time dimension.
 
-    This is an array of shape ``(n_connections, [n_components,] n_times)``, or
-    ``(n_nodes, n_nodes, [n_components,] n_times)``. This describes how connectivity
-    varies over time. It describes sample-by-sample time-varying connectivity (usually
-    on the order of milliseconds). Here time (t=0) is the same for all connectivity
-    measures. ``n_components`` is an optional dimension for multivariate methods where
-    each connection has multiple components of connectivity.
+    The underlying data is an array of shape
+    ``%(data_shape_TemporalConnectivity)s``.%(optional_components_dim)s
 
     Parameters
     ----------
-    %(data)s
+    %(data_TemporalConnectivity)s
     %(times)s
     %(n_nodes)s
     %(names)s
@@ -1164,14 +1121,6 @@ class TemporalConnectivity(BaseConnectivity, TimeMixin, DynamicMixin, NonEpochMi
     %(method)s
     %(n_epochs_used)s
     %(connectivity_kwargs)s
-
-    Notes
-    -----
-    :class:`mne_connectivity.EpochConnectivity` is a similar connectivity class to this
-    one. However, that describes one connectivity snapshot for each epoch. These epochs
-    might be chunks of time that have different meaning for time ``t=0``. Epochs can
-    mean separate trials, where the beginning of the trial implies t=0. These epochs may
-    also be discontiguous.
     """
 
     def __init__(
@@ -1201,20 +1150,14 @@ class TemporalConnectivity(BaseConnectivity, TimeMixin, DynamicMixin, NonEpochMi
 class SpectroTemporalConnectivity(
     BaseConnectivity, SpectralMixin, TimeMixin, NonEpochMixin
 ):
-    """Spectrotemporal connectivity class.
+    """Connectivity class with frequency and time dimensions.
 
-    This class stores connectivity data that varies over both frequency and time. The
-    temporal part describes sample-by-sample time-varying connectivity (usually on the
-    order of milliseconds). Note the difference relative to epochs.
-
-    The underlying data is an array of shape ``(n_connections, [n_components,] n_freqs,
-    n_times)``, or ``(n_nodes, n_nodes, [n_components,] n_freqs, n_times)``.
-    ``n_components`` is an optional dimension for multivariate methods where each
-    connection has multiple components of connectivity.
+    The underlying data is an array of shape
+    ``%(data_shape_SpectroTemporalConnectivity)s``.%(optional_components_dim)s
 
     Parameters
     ----------
-    %(data)s
+    %(data_SpectroTemporalConnectivity)s
     %(freqs)s
     %(times)s
     %(n_nodes)s
@@ -1260,16 +1203,14 @@ class SpectroTemporalConnectivity(
 
 @fill_doc
 class EpochConnectivity(EpochMixin, BaseConnectivity, DynamicMixin):
-    """Epoch connectivity class.
+    """Connectivity class with epoch dimension.
 
-    This is an array of shape ``(n_epochs, n_connections[, n_components])``, or
-    ``(n_epochs, n_nodes, n_nodes[, n_components])``. This describes how connectivity
-    varies for different epochs. ``n_components`` is an optional dimension for
-    multivariate methods where each connection has multiple components of connectivity.
+    This underlying data is an array of shape
+    ``%(data_shape_EpochConnectivity)s``.%(optional_components_dim)s
 
     Parameters
     ----------
-    %(data)s
+    %(data_EpochConnectivity)s
     %(n_nodes)s
     %(names)s
     %(indices)s
@@ -1308,17 +1249,14 @@ class EpochConnectivity(EpochMixin, BaseConnectivity, DynamicMixin):
 
 @fill_doc
 class EpochSpectralConnectivity(EpochMixin, BaseConnectivity, SpectralMixin):
-    """Spectral connectivity class over epochs.
+    """Connectivity class with epoch and frequency dimensions.
 
-    This is an array of shape ``(n_epochs, n_connections, [n_components,] n_freqs)``, or
-    ``(n_epochs, n_nodes, n_nodes, [n_components,] n_freqs)``. This describes how
-    connectivity varies over frequencies for different epochs. ``n_components`` is an
-    optional dimension for multivariate methods where each connection has multiple
-    components of connectivity.
+    The underlying data is an array of shape
+    ``%(data_shape_EpochSpectralConnectivity)s``.%(optional_components_dim)s
 
     Parameters
     ----------
-    %(data)s
+    %(data_EpochSpectralConnectivity)s
     %(freqs)s
     %(n_nodes)s
     %(names)s
@@ -1363,17 +1301,14 @@ class EpochSpectralConnectivity(EpochMixin, BaseConnectivity, SpectralMixin):
 
 @fill_doc
 class EpochTemporalConnectivity(EpochMixin, BaseConnectivity, TimeMixin, DynamicMixin):
-    """Temporal connectivity class over epochs.
+    """Connectivity class with epoch and time dimensions.
 
-    This is an array of shape ``(n_epochs, n_connections, [n_components,] n_times)``, or
-    ``(n_epochs, n_nodes, n_nodes, [n_components,] n_times)``. This describes how
-    connectivity varies over time for different epochs. ``n_components`` is an optional
-    dimension for multivariate methods where each connection has multiple components of
-    connectivity.
+    The underlying data is an array of shape
+    ``%(data_shape_EpochTemporalConnectivity)s``.%(optional_components_dim)s
 
     Parameters
     ----------
-    %(data)s
+    %(data_EpochTemporalConnectivity)s
     %(times)s
     %(n_nodes)s
     %(names)s
@@ -1418,17 +1353,14 @@ class EpochTemporalConnectivity(EpochMixin, BaseConnectivity, TimeMixin, Dynamic
 class EpochSpectroTemporalConnectivity(
     EpochMixin, BaseConnectivity, SpectralMixin, TimeMixin
 ):
-    """Spectrotemporal connectivity class over epochs.
+    """Connectivity class with epoch, frequency, and time dimensions.
 
-    This is an array of shape ``(n_epochs, n_connections, [n_components,] n_freqs,
-    n_times)``, or ``(n_epochs, n_nodes, n_nodes, [n_components,] n_freqs, n_times)``.
-    This describes how connectivity varies over frequencies and time for different
-    epochs. ``n_components`` is an optional dimension for multivariate methods where
-    each connection has multiple components of connectivity.
+    The underlying data is an array of shape
+    ``%(data_shape_EpochSpectroTemporalConnectivity)s``.%(optional_components_dim)s
 
     Parameters
     ----------
-    %(data)s
+    %(data_EpochSpectroTemporalConnectivity)s
     %(freqs)s
     %(times)s
     %(n_nodes)s

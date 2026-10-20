@@ -14,13 +14,50 @@ from mne.utils.docs import _indentcount_lines
 docdict = dict()
 
 # Connectivity
-docdict["data"] = """
-data : array, shape ([epochs,] n_estimated_nodes[, components, freqs, times])
-    The connectivity data that is a raveled array of ``(..., n_estimated_nodes, ...)``
-    shape. The ``n_estimated_nodes`` is equal to ``n_nodes_in * n_nodes_out`` if one has
-    computed the full connectivity, or a subset of nodes equal to the length of the
-    arrays in ``indices`` passed in.
+data_base = """
+data : array, shape {}
+    The connectivity data. ``n_connections`` is equal to ``n_nodes * n_nodes`` if
+    ``indices='all'``, ``n_nodes * (n_nodes - 1) / 2`` if ``indices`` is ``'lower'`` or
+    ``'upper'``, or the length of the arrays in ``indices`` if a tuple of arrays.
 """
+docdict["data_shape_Connectivity"] = "(n_connections,[ n_components])"
+docdict["data_shape_SpectralConnectivity"] = "(n_connections[, n_components], n_freqs)"
+docdict["data_shape_TemporalConnectivity"] = "(n_connections[, n_components], n_times)"
+docdict["data_shape_SpectroTemporalConnectivity"] = (
+    "(n_connections[, n_components], n_freqs, n_times)"
+)
+docdict["data_shape_EpochConnectivity"] = "(n_epochs, n_connections[, n_components])"
+docdict["data_shape_EpochSpectralConnectivity"] = (
+    "(n_epochs, n_connections[, n_components], n_freqs)"
+)
+docdict["data_shape_EpochTemporalConnectivity"] = (
+    "(n_epochs, n_connections[, n_components], n_times)"
+)
+docdict["data_shape_EpochSpectroTemporalConnectivity"] = (
+    "(n_epochs, n_connections[, n_components], n_freqs, n_times)"
+)
+docdict["data_Connectivity"] = data_base.format(docdict["data_shape_Connectivity"])
+docdict["data_SpectralConnectivity"] = data_base.format(
+    docdict["data_shape_SpectralConnectivity"]
+)
+docdict["data_TemporalConnectivity"] = data_base.format(
+    docdict["data_shape_TemporalConnectivity"]
+)
+docdict["data_SpectroTemporalConnectivity"] = data_base.format(
+    docdict["data_shape_SpectroTemporalConnectivity"]
+)
+docdict["data_EpochConnectivity"] = data_base.format(
+    docdict["data_shape_EpochConnectivity"]
+)
+docdict["data_EpochSpectralConnectivity"] = data_base.format(
+    docdict["data_shape_EpochSpectralConnectivity"]
+)
+docdict["data_EpochTemporalConnectivity"] = data_base.format(
+    docdict["data_shape_EpochTemporalConnectivity"]
+)
+docdict["data_EpochSpectroTemporalConnectivity"] = data_base.format(
+    docdict["data_shape_EpochSpectroTemporalConnectivity"]
+)
 
 docdict["names"] = """
 names : array_like | None
@@ -184,6 +221,11 @@ freqs : list | array
 docdict["times"] = """
 times : list | array
     The times at which the connectivity data is computed over.
+"""
+
+docdict["optional_components_dim"] = """
+``n_components`` is an optional dimension for multivariate methods where each connection
+has multiple components of connectivity.
 """
 
 docdict["method"] = """
