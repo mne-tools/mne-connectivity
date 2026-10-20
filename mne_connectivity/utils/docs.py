@@ -231,13 +231,13 @@ docdict["combine_method_times"] = combine_method_base.format(
 
 docdict["combine_fmin_fmax"] = """
 fmin, fmax : float | None
-    First and last frequencies to aggregate over, in Hz.  If ``None`` use the first/last
-    frequencies in the data, respectively. Default is ``None``.
+    First and last frequencies to aggregate over, in Hz.  If ``None`` use the first or
+    last frequencies in the data, respectively. Default is ``None``.
 """
 docdict["combine_tmin_tmax"] = """
 tmin, tmax : float | None
-    First and last times to aggregate over, in seconds.  If ``None`` use the first/last
-    times in the data, respectively. Default is ``None``.
+    First and last times to aggregate over, in seconds.  If ``None`` use the first or
+    last times in the data, respectively. Default is ``None``.
 """
 
 combine_out_base = """
@@ -366,14 +366,14 @@ ci : float | ``'sd'`` | ``'range'`` | None
 
 docdict["viz_tmin_tmax"] = """
 tmin, tmax : float | None
-    First and last times to plot, in seconds. If ``None`` take the first/last time
+    First and last times to plot, in seconds. If ``None`` take the first or last time
     in the data, respectively. Default is ``None``.
 """
 
 docdict["viz_fmin_fmax"] = """
 fmin, fmax : float | None
-    First and last frequencies to plot, in Hz. If ``None`` take the first/last frequency
-    in the data, respectively. Default is ``None``.
+    First and last frequencies to plot, in Hz. If ``None`` take the first or last
+    frequency in the data, respectively. Default is ``None``.
 """
 
 docdict["viz_colors_line"] = """
