@@ -1,4 +1,5 @@
 import re
+from collections.abc import Callable
 from copy import copy, deepcopy
 
 import numpy as np
@@ -40,6 +41,42 @@ class SpectralMixin:
         """
         return self.xarray.coords.get("freqs").values.tolist()
 
+    @fill_doc
+    def combine_freqs(self, method="mean", fmin=None, fmax=None):
+        """Aggregate connectivity data over frequencies.
+
+        Parameters
+        ----------
+        %(combine_method_freqs)s
+        %(combine_fmin_fmax)s
+
+        Returns
+        -------
+        %(combine_out_freqs)s
+
+        Notes
+        -----
+        %(combine_median_note)s
+        """
+        data, fmin, fmax, cls_kwargs = _combine(
+            self, method=method, vmin=fmin, vmax=fmax, combine_dim="freqs"
+        )
+
+        cls_kwargs["fmin"], cls_kwargs["fmax"] = fmin, fmax
+        match type(self).__name__:
+            case "SpectralConnectivity":
+                con_cls = Connectivity
+            case "SpectroTemporalConnectivity":
+                con_cls = TemporalConnectivity
+                cls_kwargs["times"] = self.times
+            case "EpochSpectralConnectivity":
+                con_cls = EpochConnectivity
+            case "EpochSpectroTemporalConnectivity":
+                con_cls = EpochTemporalConnectivity
+                cls_kwargs["times"] = self.times
+
+        return con_cls(data=data, metadata=self.metadata, **cls_kwargs)
+
 
 class TimeMixin:
     """Mixin class for temporal connectivity."""
@@ -48,6 +85,42 @@ class TimeMixin:
     def times(self):
         """The time points of the connectivity data."""
         return self.xarray.coords.get("times").values.tolist()
+
+    @fill_doc
+    def combine_times(self, method="mean", tmin=None, tmax=None):
+        """Aggregate connectivity data over times.
+
+        Parameters
+        ----------
+        %(combine_method_times)s
+        %(combine_tmin_tmax)s
+
+        Returns
+        -------
+        %(combine_out_times)s
+
+        Notes
+        -----
+        %(combine_median_note)s
+        """
+        data, tmin, tmax, cls_kwargs = _combine(
+            self, method=method, vmin=tmin, vmax=tmax, combine_dim="times"
+        )
+
+        cls_kwargs["tmin"], cls_kwargs["tmax"] = tmin, tmax
+        match type(self).__name__:
+            case "TemporalConnectivity":
+                con_cls = Connectivity
+            case "SpectroTemporalConnectivity":
+                con_cls = SpectralConnectivity
+                cls_kwargs["freqs"] = self.freqs
+            case "EpochTemporalConnectivity":
+                con_cls = EpochConnectivity
+            case "EpochSpectroTemporalConnectivity":
+                con_cls = EpochSpectralConnectivity
+                cls_kwargs["freqs"] = self.freqs
+
+        return con_cls(data=data, metadata=self.metadata, **cls_kwargs)
 
 
 class EpochMixin:
@@ -106,13 +179,13 @@ class EpochMixin:
 
         Parameters
         ----------
-        epoch_conn : instance of EpochConnectivity | EpochTemporalConnectivity | EpochSpectralConnectivity | EpochSpectroTemporalConnectivity
+        epoch_conn : instance of EpochConnectivity or EpochTemporalConnectivity or EpochSpectralConnectivity or EpochSpectroTemporalConnectivity
             The connectivity container to append. Must be of the same type as the
             current container instance.
 
         Returns
         -------
-        self : instance of EpochConnectivity | EpochTemporalConnectivity | EpochSpectralConnectivity | EpochSpectroTemporalConnectivity
+        self : instance of EpochConnectivity or EpochTemporalConnectivity or EpochSpectralConnectivity or EpochSpectroTemporalConnectivity
             The altered connectivity container with the new epochs appended. The
             instance type matches that of the current container instance.
         """  # noqa: E501
@@ -158,48 +231,44 @@ class EpochMixin:
         self._obj.attrs["event_id"] = event_id
         return self
 
-    def combine(self, combine="mean"):
-        """Combine connectivity data over epochs.
+    @fill_doc
+    def combine_epochs(self, method="mean"):
+        """Aggregate connectivity data over epochs.
 
         Parameters
         ----------
-        combine : ``'mean'`` | ``'median'`` | callable
-            How to combine correlation estimates across epochs. Default is ``'mean'``.
-            If callable, it must accept one positional input. For example::
-
-                combine = lambda data: np.median(data, axis=0)
+        %(combine_method_epochs)s
 
         Returns
         -------
-        conn : instance of Connectivity
-            The combined connectivity data structure. Instance type reflects that of the
-            input instance, without the epoch dimension.
-        """  # noqa: E501
-        from .io import _xarray_to_conn
+        %(combine_out_epochs)s
 
-        fun = _check_combine(combine, valid=("mean", "median"))
-
-        # get a copy of metadata into attrs as a dictionary
-        self = _prepare_xarray_mne_data_structures(self)
-
-        # apply function over the  array
-        new_xr = xr.apply_ufunc(
-            fun, self.xarray, input_core_dims=[["epochs"]], vectorize=True
+        Notes
+        -----
+        %(combine_median_note)s
+        """
+        data, _, _, cls_kwargs = _combine(
+            self, method=method, vmin=None, vmax=None, combine_dim="epochs"
         )
-        new_xr.attrs = self.xarray.attrs
+        cls_kwargs["n_epochs_used"] = self.n_epochs
+        del cls_kwargs["events"]
+        del cls_kwargs["event_id"]
 
-        # map class name to its actual class
-        conn_cls = {
-            "EpochConnectivity": Connectivity,
-            "EpochTemporalConnectivity": TemporalConnectivity,
-            "EpochSpectralConnectivity": SpectralConnectivity,
-            "EpochSpectroTemporalConnectivity": SpectroTemporalConnectivity,
-        }
-        cls_func = conn_cls[self.__class__.__name__]
+        match type(self).__name__:
+            case "EpochConnectivity":
+                con_cls = Connectivity
+            case "EpochTemporalConnectivity":
+                con_cls = TemporalConnectivity
+                cls_kwargs["times"] = self.times
+            case "EpochSpectralConnectivity":
+                con_cls = SpectralConnectivity
+                cls_kwargs["freqs"] = self.freqs
+            case "EpochSpectroTemporalConnectivity":
+                con_cls = SpectroTemporalConnectivity
+                cls_kwargs["freqs"] = self.freqs
+                cls_kwargs["times"] = self.times
 
-        # convert new xarray to non-Epoch data structure
-        conn = _xarray_to_conn(new_xr, cls_func)
-        return conn
+        return con_cls(data=data, metadata=self.metadata, **cls_kwargs)
 
 
 class NonEpochMixin:
@@ -1399,3 +1468,50 @@ class EpochSpectroTemporalConnectivity(
             event_id=event_id,
             **kwargs,
         )
+
+
+def _combine(
+    con: BaseConnectivity,
+    method: str | Callable,
+    vmin: float | None,
+    vmax: float | None,
+    combine_dim: str,
+) -> np.ndarray:
+    expected_shape = tuple(
+        n for n, dim in zip(con.shape, con.dims) if dim != combine_dim
+    )
+    dim_axis = con.dims.index(combine_dim)
+    func = _check_combine(method, valid=("mean", "median"), axis=dim_axis)
+    dim_vals = np.array(con.coords[combine_dim])
+    vmin = -np.inf if vmin is None else vmin
+    vmax = np.inf if vmax is None else vmax
+    dim_indices = np.argwhere((dim_vals >= vmin) & (dim_vals <= vmax))[..., 0]
+    if dim_indices.size == 0:
+        raise ValueError(
+            f"No values found in the {combine_dim} dimension between {vmin} and {vmax}."
+        )
+
+    if con.method in ["cohy", "imcoh", "cacoh", "mic"] and not np.allclose(
+        con.xarray.data, np.abs(con.xarray.data)
+    ):
+        warn(
+            "To ensure the interpretability of the connectivity data, consider taking "
+            f"the absolute value of the connectivity data for the '{con.method}' "
+            f"method before combining along the {combine_dim} dimension."
+        )
+
+    data = func(np.take(con.xarray.data, dim_indices, axis=dim_axis))
+    vmin, vmax = dim_vals[dim_indices][[0, -1]]
+
+    if data.shape != expected_shape:
+        raise RuntimeError(
+            f"`combine_{combine_dim}` got a method that resulted in data of shape "
+            f"{data.shape}, expected {expected_shape}."
+        )
+
+    cls_kwargs = copy(con.attrs)
+    cls_kwargs["names"] = cls_kwargs.pop("node_names")
+    if "components" in con.dims:
+        cls_kwargs["components"] = con.coords["components"].values.tolist()
+
+    return data, vmin, vmax, cls_kwargs

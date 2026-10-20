@@ -212,6 +212,62 @@ event_id : dict | None
     ``None``.
 """
 
+# Container methods
+combine_method_base = """
+method : ``'mean'`` | ``'median'`` | callable
+    How to aggregate the data across {}. If `callable`, must take a
+    :class:`NumPy array<numpy.ndarray>` of shape {} as input and return an array
+    collapsed over the {} dimension. Default is ``'mean'``.
+"""
+docdict["combine_method_epochs"] = combine_method_base.format(
+    "epochs", "``(n_epochs, ...)``", "epoch"
+)
+docdict["combine_method_freqs"] = combine_method_base.format(
+    "frequencies", "``(..., n_freqs, ...)``", "frequency"
+)
+docdict["combine_method_times"] = combine_method_base.format(
+    "times", "``(..., n_times)``", "time"
+)
+
+docdict["combine_fmin_fmax"] = """
+fmin, fmax : float | None
+    First and last frequencies to aggregate over, in Hz.  If ``None`` use the first or
+    last frequencies in the data, respectively. Default is ``None``.
+"""
+docdict["combine_tmin_tmax"] = """
+tmin, tmax : float | None
+    First and last times to aggregate over, in seconds.  If ``None`` use the first or
+    last times in the data, respectively. Default is ``None``.
+"""
+
+combine_out_base = """
+con : instance of {}
+    The connectivity data aggregated over the {} dimension. Instance type reflects that
+    of the current connectivity instance, without the {} dimension.
+"""
+docdict["combine_out_epochs"] = combine_out_base.format(
+    "Connectivity or SpectralConnectivity or TemporalConnectivity or SpectroTemporalConnectivity",  # noqa: E501
+    "epoch",
+    "epoch",
+)
+docdict["combine_out_freqs"] = combine_out_base.format(
+    "Connectivity or EpochConnectivity or TemporalConnectivity or EpochTemporalConnectivity",  # noqa: E501
+    "frequency",
+    "frequency",
+)
+docdict["combine_out_times"] = combine_out_base.format(
+    "Connectivity or EpochConnectivity or SpectralConnectivity or EpochSpectralConnectivity",  # noqa: E501
+    "time",
+    "time",
+)
+
+docdict["combine_median_note"] = """
+Passing in ``np.median`` is considered unsafe for complex data. Pass the string
+``"median"`` instead to compute the *marginal* median (i.e., the median of the
+real and imaginary components separately). See discussion here:
+https://github.com/scipy/scipy/pull/12676#issuecomment-783370228
+"""
+
 # Verbose
 docdict["verbose"] = """
 verbose : bool | str | int | None
@@ -310,14 +366,14 @@ ci : float | ``'sd'`` | ``'range'`` | None
 
 docdict["viz_tmin_tmax"] = """
 tmin, tmax : float | None
-    First and last times to plot, in seconds. If ``None`` take the first/last time
+    First and last times to plot, in seconds. If ``None`` take the first or last time
     in the data, respectively. Default is ``None``.
 """
 
 docdict["viz_fmin_fmax"] = """
 fmin, fmax : float | None
-    First and last frequencies to plot, in Hz. If ``None`` take the first/last frequency
-    in the data, respectively. Default is ``None``.
+    First and last frequencies to plot, in Hz. If ``None`` take the first or last
+    frequency in the data, respectively. Default is ``None``.
 """
 
 docdict["viz_colors_line"] = """

@@ -62,7 +62,7 @@ def envelope_correlation(
     :footcite:`HippEtAl2012,KhanEtAl2018`.
 
     If you would like to combine epochs after the fact using some function over the
-    epochs axis, see the :meth:`~mne_connectivity.EpochConnectivity.combine`
+    epochs axis, see the :meth:`~mne_connectivity.EpochConnectivity.combine_epochs`
     method of the :class:`~mne_connectivity.EpochConnectivity` class.
 
     References
