@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_connectivity.base &#8212; MNE-Connectivity 0.10.0.dev39+gd79aa84c4 documentation</title>
+    <title>mne_connectivity.base &#8212; MNE-Connectivity 0.10.0.dev40+gcd846ca75 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
 
-    <script src="../../_static/documentation_options.js?v=fee2eee1"></script>
+    <script src="../../_static/documentation_options.js?v=d6a7de5b"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -133,7 +133,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.10.0.dev39+gd79aa84c4 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.10.0.dev40+gcd846ca75 documentation</p>
   
 </a></div>
     
@@ -929,13 +929,10 @@
         <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="mi">10</span> <span class="o">*</span> <span class="n">lags</span> <span class="p">:,</span> <span class="p">:]</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
 
 
-<span class="nd">@fill_doc</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">BaseConnectivity</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Base class for connectivity data.</span>
 
-<span class="sd">    This class should not be instantiated directly, but should be used to do</span>
-<span class="sd">    type-checking. All connectivity classes will be returned from corresponding</span>
-<span class="sd">    connectivity computing functions.</span>
+<span class="sd">    This class should not be instantiated directly.</span>
 
 <span class="sd">    Connectivity data is anything that represents "connections" between nodes as a</span>
 <span class="sd">    ``(N, N)`` array. It can be symmetric, or asymmetric. If it is symmetric (or</span>
@@ -943,37 +940,20 @@
 <span class="sd">    based on the existing (e.g., lower-triangular) elements), we can optimise memory</span>
 <span class="sd">    demand for storage.</span>
 
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    %(data)s</span>
-<span class="sd">    %(names)s</span>
-<span class="sd">    %(indices)s</span>
-<span class="sd">    %(method)s</span>
-<span class="sd">    %(n_nodes)s</span>
-<span class="sd">    metadata : instance of pandas.DataFrame | None</span>
-<span class="sd">        The metadata data frame that would come from the :class:`mne.Epochs` class. See</span>
-<span class="sd">        :class:`mne.Epochs` docstring for details.</span>
-<span class="sd">    %(connectivity_kwargs)s</span>
-
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    Connectivity data can be generally represented as a square matrix with values</span>
-<span class="sd">    intending the connectivity function value between two nodes. We store connectivity</span>
-<span class="sd">    data as a raveled ``(n_estimated_nodes, ...)`` array, where ``n_estimated_nodes``</span>
-<span class="sd">    can be ``n_nodes_in * n_nodes_out`` if a full connectivity structure is computed, or</span>
-<span class="sd">    a subset of the nodes (equal to the length of the indices passed in).</span>
+<span class="sd">    intending the connectivity function value between two nodes. The underlying data</span>
+<span class="sd">    structure is an ``xarray.DataArray``, with a similar API to ``xarray``.</span>
+
+<span class="sd">    We store connectivity data as a raveled ``(n_connections, ...)`` array, where</span>
+<span class="sd">    ``n_connections`` can be ``n_nodes * n_nodes`` if a full connectivity structure is</span>
+<span class="sd">    computed, or a subset of the nodes (equal to the length of the indices passed in).</span>
 
 <span class="sd">    Since we store connectivity data as a raveled array, one can easily optimize the</span>
 <span class="sd">    storage of "symmetric" connectivity data by storing only the lower-triangular (or</span>
 <span class="sd">    upper-triangular) elements, and filling these in when the user requests the full</span>
-<span class="sd">    connectivity matrix. How to fill in the missing values is determined based on the</span>
-<span class="sd">    ``method`` parameter.</span>
-
-<span class="sd">    The underlying data structure is an :class:`xarray.DataArray`, with a similar API to</span>
-<span class="sd">    ``xarray``. We provide support for storing connectivity data in a subset of nodes.</span>
-<span class="sd">    Thus the underlying data structure instead of a ``(n_nodes_in, n_nodes_out)`` 2D</span>
-<span class="sd">    array would be a ``(n_nodes_in * n_nodes_out,)`` raveled 1D array. This allows us to</span>
-<span class="sd">    optimize storage also for "symmetric" connectivity.</span>
+<span class="sd">    connectivity matrix.</span>
 
 <span class="sd">    Storage optimisation will not occur for multivariate connectivity, as computing</span>
 <span class="sd">    connectivity in the same lower-/upper-triangular manner for "symmetric" methods does</span>
@@ -1030,7 +1010,7 @@
         <span class="n">dim_info</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">dim</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"epochs"</span><span class="p">,</span> <span class="s2">"connections"</span><span class="p">,</span> <span class="s2">"components"</span><span class="p">,</span> <span class="s2">"freqs"</span><span class="p">,</span> <span class="s2">"times"</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">dim</span> <span class="o">==</span> <span class="s2">"connections"</span><span class="p">:</span>
-                <span class="n">dim_info</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_estimated_nodes</span><span class="si">}</span><span class="s2"> connections"</span><span class="p">)</span>
+                <span class="n">dim_info</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_connections</span><span class="si">}</span><span class="s2"> connections"</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">dim</span> <span class="o">==</span> <span class="s2">"freqs"</span> <span class="ow">and</span> <span class="n">dim</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dims</span><span class="p">:</span>
                 <span class="n">dim_info</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">freqs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">freqs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> Hz"</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">dim</span> <span class="o">==</span> <span class="s2">"times"</span> <span class="ow">and</span> <span class="n">dim</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dims</span><span class="p">:</span>
@@ -1047,34 +1027,20 @@
 
         <span class="k">return</span> <span class="n">r</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_get_num_connections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""Compute the number of estimated nodes' connectivity."""</span>
-        <span class="c1"># account for epoch data structures</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_epoched</span><span class="p">:</span>
-            <span class="n">start_idx</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">start_idx</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">n_estimated_nodes</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">start_idx</span><span class="p">]</span>
-
     <span class="k">def</span><span class="w"> </span><span class="nf">_prepare_xarray</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">n_nodes</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Prepare xarray data structure."""</span>
         <span class="c1"># set node names</span>
         <span class="k">if</span> <span class="n">names</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_nodes</span><span class="p">)))</span>
 
-        <span class="c1"># the names of each first few dimensions of</span>
-        <span class="c1"># the data depending if data is epoched or not</span>
+        <span class="c1"># the dimensions and their coordinates</span>
+        <span class="n">dims</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"connections"</span><span class="p">]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_epoched</span><span class="p">:</span>
-            <span class="n">dims</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"epochs"</span><span class="p">,</span> <span class="s2">"node_in -&gt; node_out"</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">dims</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"node_in -&gt; node_out"</span><span class="p">]</span>
-
-        <span class="c1"># the coordinates of each dimension</span>
-        <span class="n">n_estimated_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_estimated_nodes</span><span class="p">)))</span>
+            <span class="n">dims</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"epochs"</span><span class="p">]</span> <span class="o">+</span> <span class="n">dims</span>
         <span class="n">coords</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_epoched</span><span class="p">:</span>
             <span class="n">coords</span><span class="p">[</span><span class="s2">"epochs"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
-        <span class="n">coords</span><span class="p">[</span><span class="s2">"node_in -&gt; node_out"</span><span class="p">]</span> <span class="o">=</span> <span class="n">n_estimated_list</span>
+        <span class="n">coords</span><span class="p">[</span><span class="s2">"connections"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_connections</span><span class="p">))</span>
         <span class="k">if</span> <span class="s2">"components"</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
             <span class="n">coords</span><span class="p">[</span><span class="s2">"components"</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"components"</span><span class="p">)</span>
             <span class="n">dims</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"components"</span><span class="p">)</span>
@@ -1133,8 +1099,8 @@
                     <span class="s2">"shape."</span>
                 <span class="p">)</span>
 
-        <span class="c1"># get the number of estimated nodes</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_get_num_connections</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="c1"># get the number of connections</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_connections</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_epoched</span> <span class="k">else</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
             <span class="c1"># check that the indices passed in are of the same length</span>
@@ -1144,30 +1110,30 @@
                     <span class="sa">f</span><span class="s2">"are right now </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="si">}</span><span class="s2">."</span>
                 <span class="p">)</span>
             <span class="c1"># indices length should match the data length</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_estimated_nodes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_connections</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s2">"The number of indices, </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="si">}</span><span class="s2"> should match the "</span>
-                    <span class="sa">f</span><span class="s2">"raveled data length passed in of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_estimated_nodes</span><span class="si">}</span><span class="s2">."</span>
+                    <span class="sa">f</span><span class="s2">"raveled data length passed in of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_connections</span><span class="si">}</span><span class="s2">."</span>
                 <span class="p">)</span>
 
         <span class="k">elif</span> <span class="n">indices</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"lower"</span><span class="p">,</span> <span class="s2">"upper"</span><span class="p">]:</span>
             <span class="n">expected_len</span> <span class="o">=</span> <span class="n">n_nodes</span> <span class="o">*</span> <span class="p">(</span><span class="n">n_nodes</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_estimated_nodes</span> <span class="o">!=</span> <span class="n">expected_len</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_connections</span> <span class="o">!=</span> <span class="n">expected_len</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                     <span class="s2">"If `indices` is 'lower' or 'upper', then connectivity data should "</span>
                     <span class="s2">"be the lower- or upper-triangular part of the connectivity "</span>
                     <span class="sa">f</span><span class="s2">"matrix, respectively. Expected </span><span class="si">{</span><span class="n">expected_len</span><span class="si">}</span><span class="s2"> connections from "</span>
-                    <span class="sa">f</span><span class="s2">"the </span><span class="si">{</span><span class="n">n_nodes</span><span class="si">}</span><span class="s2"> nodes, but got </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_estimated_nodes</span><span class="si">}</span><span class="s2"> "</span>
+                    <span class="sa">f</span><span class="s2">"the </span><span class="si">{</span><span class="n">n_nodes</span><span class="si">}</span><span class="s2"> nodes, but got </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_connections</span><span class="si">}</span><span class="s2"> "</span>
                     <span class="s2">"connections."</span>
                 <span class="p">)</span>
 
         <span class="k">else</span><span class="p">:</span>  <span class="c1"># indices = "all"</span>
             <span class="n">expected_len</span> <span class="o">=</span> <span class="n">n_nodes</span><span class="o">**</span><span class="mi">2</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_estimated_nodes</span> <span class="o">!=</span> <span class="n">expected_len</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_connections</span> <span class="o">!=</span> <span class="n">expected_len</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                     <span class="s2">"If `indices` is 'all', then connectivity data should be the full "</span>
                     <span class="sa">f</span><span class="s2">"connectivity matrix. Expected </span><span class="si">{</span><span class="n">expected_len</span><span class="si">}</span><span class="s2"> connections from "</span>
-                    <span class="sa">f</span><span class="s2">"the </span><span class="si">{</span><span class="n">n_nodes</span><span class="si">}</span><span class="s2"> nodes, but got </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_estimated_nodes</span><span class="si">}</span><span class="s2"> "</span>
+                    <span class="sa">f</span><span class="s2">"the </span><span class="si">{</span><span class="n">n_nodes</span><span class="si">}</span><span class="s2"> nodes, but got </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_connections</span><span class="si">}</span><span class="s2"> "</span>
                     <span class="s2">"connections."</span>
                 <span class="p">)</span>
 
@@ -1261,9 +1227,9 @@
 <span class="sd">            How to format the output:</span>
 
 <span class="sd">            - ``'raveled'`` will represent each connectivity matrix as a</span>
-<span class="sd">              ``(..., n_nodes_in * n_nodes_out, ...)`` array.</span>
-<span class="sd">            - ``'dense'`` will return each connectivity matrix as a ``(..., n_nodes_in,</span>
-<span class="sd">              n_nodes_out, ...)`` array.</span>
+<span class="sd">              ``(..., n_connections, ...)`` array.</span>
+<span class="sd">            - ``'dense'`` will return each connectivity matrix as a ``(..., n_nodes,</span>
+<span class="sd">              n_nodes, ...)`` array.</span>
 <span class="sd">            - ``'compact'`` (default) will return ``'raveled'`` if ``indices`` is</span>
 <span class="sd">              a tuple of arrays, or ``'dense'`` if ``indices`` is ``'all'``,</span>
 <span class="sd">              ``'lower'``, or ``'upper'``.</span>
@@ -1485,16 +1451,14 @@
 <a class="viewcode-back" href="../../generated/mne_connectivity.Connectivity.html#mne_connectivity.Connectivity">[docs]</a>
 <span class="nd">@fill_doc</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">Connectivity</span><span class="p">(</span><span class="n">BaseConnectivity</span><span class="p">,</span> <span class="n">DynamicMixin</span><span class="p">,</span> <span class="n">NonEpochMixin</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Connectivity class without frequency or time component.</span>
+<span class="w">    </span><span class="sd">"""Connectivity class without additional dimensions.</span>
 
-<span class="sd">    This is an array of shape ``(n_connections[, n_components])``, or ``(n_nodes,</span>
-<span class="sd">    n_nodes[, n_components])``. This describes a connectivity matrix/graph that does not</span>
-<span class="sd">    vary over time, frequency, or epochs. ``n_components`` is an optional dimension for</span>
-<span class="sd">    multivariate methods where each connection has multiple components of connectivity.</span>
+<span class="sd">    The underlying data is an array of shape</span>
+<span class="sd">    ``%(data_shape_Connectivity)s``.%(optional_components_dim)s</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(data)s</span>
+<span class="sd">    %(data_Connectivity)s</span>
 <span class="sd">    %(n_nodes)s</span>
 <span class="sd">    %(names)s</span>
 <span class="sd">    %(indices)s</span>
@@ -1533,17 +1497,14 @@
 <a class="viewcode-back" href="../../generated/mne_connectivity.SpectralConnectivity.html#mne_connectivity.SpectralConnectivity">[docs]</a>
 <span class="nd">@fill_doc</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">SpectralConnectivity</span><span class="p">(</span><span class="n">BaseConnectivity</span><span class="p">,</span> <span class="n">SpectralMixin</span><span class="p">,</span> <span class="n">NonEpochMixin</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Spectral connectivity class.</span>
+<span class="w">    </span><span class="sd">"""Connectivity class with frequency dimension.</span>
 
-<span class="sd">    This class stores connectivity data that varies over frequencies. The underlying</span>
-<span class="sd">    data is an array of shape ``(n_connections, [n_components,] n_freqs)``, or</span>
-<span class="sd">    ``(n_nodes, n_nodes, [n_components,] n_freqs)``. ``n_components`` is an optional</span>
-<span class="sd">    dimension for multivariate methods where each connection has multiple components of</span>
-<span class="sd">    connectivity.</span>
+<span class="sd">    The underlying data is an array of shape</span>
+<span class="sd">    ``%(data_shape_SpectralConnectivity)s``.%(optional_components_dim)s</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(data)s</span>
+<span class="sd">    %(data_SpectralConnectivity)s</span>
 <span class="sd">    %(freqs)s</span>
 <span class="sd">    %(n_nodes)s</span>
 <span class="sd">    %(names)s</span>
@@ -1590,18 +1551,14 @@
 <a class="viewcode-back" href="../../generated/mne_connectivity.TemporalConnectivity.html#mne_connectivity.TemporalConnectivity">[docs]</a>
 <span class="nd">@fill_doc</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">TemporalConnectivity</span><span class="p">(</span><span class="n">BaseConnectivity</span><span class="p">,</span> <span class="n">TimeMixin</span><span class="p">,</span> <span class="n">DynamicMixin</span><span class="p">,</span> <span class="n">NonEpochMixin</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Temporal connectivity class.</span>
+<span class="w">    </span><span class="sd">"""Connectivity class with time dimension.</span>
 
-<span class="sd">    This is an array of shape ``(n_connections, [n_components,] n_times)``, or</span>
-<span class="sd">    ``(n_nodes, n_nodes, [n_components,] n_times)``. This describes how connectivity</span>
-<span class="sd">    varies over time. It describes sample-by-sample time-varying connectivity (usually</span>
-<span class="sd">    on the order of milliseconds). Here time (t=0) is the same for all connectivity</span>
-<span class="sd">    measures. ``n_components`` is an optional dimension for multivariate methods where</span>
-<span class="sd">    each connection has multiple components of connectivity.</span>
+<span class="sd">    The underlying data is an array of shape</span>
+<span class="sd">    ``%(data_shape_TemporalConnectivity)s``.%(optional_components_dim)s</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(data)s</span>
+<span class="sd">    %(data_TemporalConnectivity)s</span>
 <span class="sd">    %(times)s</span>
 <span class="sd">    %(n_nodes)s</span>
 <span class="sd">    %(names)s</span>
@@ -1609,14 +1566,6 @@
 <span class="sd">    %(method)s</span>
 <span class="sd">    %(n_epochs_used)s</span>
 <span class="sd">    %(connectivity_kwargs)s</span>
-
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    :class:`mne_connectivity.EpochConnectivity` is a similar connectivity class to this</span>
-<span class="sd">    one. However, that describes one connectivity snapshot for each epoch. These epochs</span>
-<span class="sd">    might be chunks of time that have different meaning for time ``t=0``. Epochs can</span>
-<span class="sd">    mean separate trials, where the beginning of the trial implies t=0. These epochs may</span>
-<span class="sd">    also be discontiguous.</span>
 <span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -1649,20 +1598,14 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">SpectroTemporalConnectivity</span><span class="p">(</span>
     <span class="n">BaseConnectivity</span><span class="p">,</span> <span class="n">SpectralMixin</span><span class="p">,</span> <span class="n">TimeMixin</span><span class="p">,</span> <span class="n">NonEpochMixin</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Spectrotemporal connectivity class.</span>
+<span class="w">    </span><span class="sd">"""Connectivity class with frequency and time dimensions.</span>
 
-<span class="sd">    This class stores connectivity data that varies over both frequency and time. The</span>
-<span class="sd">    temporal part describes sample-by-sample time-varying connectivity (usually on the</span>
-<span class="sd">    order of milliseconds). Note the difference relative to epochs.</span>
-
-<span class="sd">    The underlying data is an array of shape ``(n_connections, [n_components,] n_freqs,</span>
-<span class="sd">    n_times)``, or ``(n_nodes, n_nodes, [n_components,] n_freqs, n_times)``.</span>
-<span class="sd">    ``n_components`` is an optional dimension for multivariate methods where each</span>
-<span class="sd">    connection has multiple components of connectivity.</span>
+<span class="sd">    The underlying data is an array of shape</span>
+<span class="sd">    ``%(data_shape_SpectroTemporalConnectivity)s``.%(optional_components_dim)s</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(data)s</span>
+<span class="sd">    %(data_SpectroTemporalConnectivity)s</span>
 <span class="sd">    %(freqs)s</span>
 <span class="sd">    %(times)s</span>
 <span class="sd">    %(n_nodes)s</span>
@@ -1711,16 +1654,14 @@
 <a class="viewcode-back" href="../../generated/mne_connectivity.EpochConnectivity.html#mne_connectivity.EpochConnectivity">[docs]</a>
 <span class="nd">@fill_doc</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">EpochConnectivity</span><span class="p">(</span><span class="n">EpochMixin</span><span class="p">,</span> <span class="n">BaseConnectivity</span><span class="p">,</span> <span class="n">DynamicMixin</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Epoch connectivity class.</span>
+<span class="w">    </span><span class="sd">"""Connectivity class with epoch dimension.</span>
 
-<span class="sd">    This is an array of shape ``(n_epochs, n_connections[, n_components])``, or</span>
-<span class="sd">    ``(n_epochs, n_nodes, n_nodes[, n_components])``. This describes how connectivity</span>
-<span class="sd">    varies for different epochs. ``n_components`` is an optional dimension for</span>
-<span class="sd">    multivariate methods where each connection has multiple components of connectivity.</span>
+<span class="sd">    This underlying data is an array of shape</span>
+<span class="sd">    ``%(data_shape_EpochConnectivity)s``.%(optional_components_dim)s</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(data)s</span>
+<span class="sd">    %(data_EpochConnectivity)s</span>
 <span class="sd">    %(n_nodes)s</span>
 <span class="sd">    %(names)s</span>
 <span class="sd">    %(indices)s</span>
@@ -1762,17 +1703,14 @@
 <a class="viewcode-back" href="../../generated/mne_connectivity.EpochSpectralConnectivity.html#mne_connectivity.EpochSpectralConnectivity">[docs]</a>
 <span class="nd">@fill_doc</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">EpochSpectralConnectivity</span><span class="p">(</span><span class="n">EpochMixin</span><span class="p">,</span> <span class="n">BaseConnectivity</span><span class="p">,</span> <span class="n">SpectralMixin</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Spectral connectivity class over epochs.</span>
+<span class="w">    </span><span class="sd">"""Connectivity class with epoch and frequency dimensions.</span>
 
-<span class="sd">    This is an array of shape ``(n_epochs, n_connections, [n_components,] n_freqs)``, or</span>
-<span class="sd">    ``(n_epochs, n_nodes, n_nodes, [n_components,] n_freqs)``. This describes how</span>
-<span class="sd">    connectivity varies over frequencies for different epochs. ``n_components`` is an</span>
-<span class="sd">    optional dimension for multivariate methods where each connection has multiple</span>
-<span class="sd">    components of connectivity.</span>
+<span class="sd">    The underlying data is an array of shape</span>
+<span class="sd">    ``%(data_shape_EpochSpectralConnectivity)s``.%(optional_components_dim)s</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(data)s</span>
+<span class="sd">    %(data_EpochSpectralConnectivity)s</span>
 <span class="sd">    %(freqs)s</span>
 <span class="sd">    %(n_nodes)s</span>
 <span class="sd">    %(names)s</span>
@@ -1820,17 +1758,14 @@
 <a class="viewcode-back" href="../../generated/mne_connectivity.EpochTemporalConnectivity.html#mne_connectivity.EpochTemporalConnectivity">[docs]</a>
 <span class="nd">@fill_doc</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">EpochTemporalConnectivity</span><span class="p">(</span><span class="n">EpochMixin</span><span class="p">,</span> <span class="n">BaseConnectivity</span><span class="p">,</span> <span class="n">TimeMixin</span><span class="p">,</span> <span class="n">DynamicMixin</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Temporal connectivity class over epochs.</span>
+<span class="w">    </span><span class="sd">"""Connectivity class with epoch and time dimensions.</span>
 
-<span class="sd">    This is an array of shape ``(n_epochs, n_connections, [n_components,] n_times)``, or</span>
-<span class="sd">    ``(n_epochs, n_nodes, n_nodes, [n_components,] n_times)``. This describes how</span>
-<span class="sd">    connectivity varies over time for different epochs. ``n_components`` is an optional</span>
-<span class="sd">    dimension for multivariate methods where each connection has multiple components of</span>
-<span class="sd">    connectivity.</span>
+<span class="sd">    The underlying data is an array of shape</span>
+<span class="sd">    ``%(data_shape_EpochTemporalConnectivity)s``.%(optional_components_dim)s</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(data)s</span>
+<span class="sd">    %(data_EpochTemporalConnectivity)s</span>
 <span class="sd">    %(times)s</span>
 <span class="sd">    %(n_nodes)s</span>
 <span class="sd">    %(names)s</span>
@@ -1878,17 +1813,14 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">EpochSpectroTemporalConnectivity</span><span class="p">(</span>
     <span class="n">EpochMixin</span><span class="p">,</span> <span class="n">BaseConnectivity</span><span class="p">,</span> <span class="n">SpectralMixin</span><span class="p">,</span> <span class="n">TimeMixin</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Spectrotemporal connectivity class over epochs.</span>
+<span class="w">    </span><span class="sd">"""Connectivity class with epoch, frequency, and time dimensions.</span>
 
-<span class="sd">    This is an array of shape ``(n_epochs, n_connections, [n_components,] n_freqs,</span>
-<span class="sd">    n_times)``, or ``(n_epochs, n_nodes, n_nodes, [n_components,] n_freqs, n_times)``.</span>
-<span class="sd">    This describes how connectivity varies over frequencies and time for different</span>
-<span class="sd">    epochs. ``n_components`` is an optional dimension for multivariate methods where</span>
-<span class="sd">    each connection has multiple components of connectivity.</span>
+<span class="sd">    The underlying data is an array of shape</span>
+<span class="sd">    ``%(data_shape_EpochSpectroTemporalConnectivity)s``.%(optional_components_dim)s</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(data)s</span>
+<span class="sd">    %(data_EpochSpectroTemporalConnectivity)s</span>
 <span class="sd">    %(freqs)s</span>
 <span class="sd">    %(times)s</span>
 <span class="sd">    %(n_nodes)s</span>
