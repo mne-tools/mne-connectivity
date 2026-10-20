@@ -1470,6 +1470,18 @@ class EpochSpectroTemporalConnectivity(
         )
 
 
+def _warn_combine_data(con: BaseConnectivity, combine_dim: str) -> None:
+    """Warn if combining data where the absolute value should likely be taken first."""
+    if con.method in ["cohy", "imcoh", "cacoh", "mic"] and not np.allclose(
+        con.xarray.data, np.abs(con.xarray.data)
+    ):
+        warn(
+            "To ensure the interpretability of the connectivity data, consider taking "
+            f"the absolute value of the connectivity data for the '{con.method}' "
+            f"method before combining along the {combine_dim} dimension."
+        )
+
+
 def _combine(
     con: BaseConnectivity,
     method: str | Callable,
@@ -1490,6 +1502,7 @@ def _combine(
         raise ValueError(
             f"No values found in the {combine_dim} dimension between {vmin} and {vmax}."
         )
+    _warn_combine_data(con, combine_dim)
     data = func(np.take(con.xarray.data, dim_indices, axis=dim_axis))
     vmin, vmax = dim_vals[dim_indices][[0, -1]]
 

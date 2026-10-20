@@ -844,3 +844,21 @@ def test_combine_errors(conn_cls, aggr_dim):
         match=f"`combine_{aggr_dim}` got a method that resulted in data of shape",
     ):
         combine_meth(bad_callable)
+
+    # Check combining over non-abs data for coherency-based methods warns
+    for con_method in ["cohy", "imcoh", "cacoh", "mic"]:
+        is_complex = con_method in ["cohy", "cacoh"]
+        warn_data = data.copy()
+        warn_data = warn_data - warn_data * 1j if is_complex else warn_data
+        con = conn_cls(
+            data=(warn_data - np.mean(warn_data)),
+            n_nodes=n_nodes,
+            method=con_method,
+            **extra_kwargs,
+        )
+        combine_meth = getattr(con, f"combine_{aggr_dim}")
+        with pytest.warns(
+            RuntimeWarning,
+            match="To ensure the interpretability of the connectivity data",
+        ):
+            combine_meth("mean")
