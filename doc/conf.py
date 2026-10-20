@@ -129,7 +129,7 @@ numpydoc_xref_ignore = {
     "lists",
     "func",
     "n_nodes",
-    "n_estimated_nodes",
+    "n_connections",
     "n_samples",
     "n_channels",
     "n_patterns",
