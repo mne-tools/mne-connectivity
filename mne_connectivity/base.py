@@ -507,7 +507,7 @@ class BaseConnectivity:
     -----
     Connectivity data can be generally represented as a square matrix with values
     intending the connectivity function value between two nodes. The underlying data
-    structure is an ``xarray.DataArray``, with a similar API to ``xarray``.#
+    structure is an ``xarray.DataArray``, with a similar API to ``xarray``.
 
     We store connectivity data as a raveled ``(n_connections, ...)`` array, where
     ``n_connections`` can be ``n_nodes * n_nodes`` if a full connectivity structure is
@@ -791,8 +791,8 @@ class BaseConnectivity:
 
             - ``'raveled'`` will represent each connectivity matrix as a
               ``(..., n_connections, ...)`` array.
-            - ``'dense'`` will return each connectivity matrix as a ``(..., n_seeds,
-              n_targets, ...)`` array.
+            - ``'dense'`` will return each connectivity matrix as a ``(..., n_nodes,
+              n_nodes, ...)`` array.
             - ``'compact'`` (default) will return ``'raveled'`` if ``indices`` is
               a tuple of arrays, or ``'dense'`` if ``indices`` is ``'all'``,
               ``'lower'``, or ``'upper'``.
