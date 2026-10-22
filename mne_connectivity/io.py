@@ -1,6 +1,6 @@
 import numpy as np
 import xarray as xr
-from mne.utils import _prepare_read_metadata
+from mne.utils import _prepare_read_metadata, warn
 
 from .base import (
     Connectivity,
@@ -106,6 +106,37 @@ def read_connectivity(fname):
         "EpochSpectroTemporalConnectivity": EpochSpectroTemporalConnectivity,
     }
     cls_func = conn_cls[data_structure_name]
+
+    # map deprecated method names to their current names
+    method_map = {
+        "phase-slope-index": "psi",
+        "envelope correlation": "env_corr_orth",  # orth is default option
+        "SMI": "smi",
+        "wSMI": "wsmi",
+        "VAR(p)": "var",
+        "VAR(1)": "var",
+        "Time-varying VAR(1)": "var_dynamic",
+        "Time-varying VAR(p)": "var_dynamic",
+    }
+    if conn_da.attrs["method"] in method_map:
+        if conn_da.attrs["method"] == "envelope correlation":
+            warn(
+                "The 'envelope correlation' method name was deprecated in v1.0 in "
+                "favour of 'env_corr' and 'env_corr_orth' to distinguish whether the "
+                "data was orthogonalized or not. Setting the method name to "
+                "'env_corr_orth' to reflect the default behavior of the envelope "
+                "correlation function. If the data was not orthogonalized, you should "
+                "consider renaming the method to 'env_corr' and saving the updated "
+                "container."
+            )
+        else:
+            warn(
+                f"The '{conn_da.attrs['method']}' method name was deprecated in v1.0 "
+                f"in favour of '{method_map[conn_da.attrs['method']]}'. To avoid this "
+                "warning, consider saving this connectivity container with the updated "
+                "method name."
+            )
+        conn_da.attrs["method"] = method_map[conn_da.attrs["method"]]
 
     # get the data as a new connectivity container
     conn = _xarray_to_conn(conn_da, cls_func)

@@ -25,7 +25,6 @@ from .base import (
 )
 from .datasets import (
     make_signals_in_freq_bands,
-    make_surrogate_data,
     make_surrogate_evoked_data,
     make_surrogate_resting_data,
 )
@@ -36,10 +35,17 @@ from .graph_learning import learn_graph
 from .io import read_connectivity
 from .spectral import spectral_connectivity_epochs, spectral_connectivity_time
 from .utils import (
-    check_indices,
     degree,
     seed_target_indices,
     seed_target_multivariate_indices,
 )
 from .vector_ar import select_order, vector_auto_regression
+from .viz import (
+    plot_connectivity,
+    plot_connectivity_circle,
+    plot_sensors_connectivity,
+    plot_spectral_connectivity,
+    plot_spectrotemporal_connectivity,
+    plot_temporal_connectivity,
+)
 from .wsmi import wsmi

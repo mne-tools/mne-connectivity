@@ -92,7 +92,6 @@ Post-processing on connectivity
    degree
    seed_target_indices
    seed_target_multivariate_indices
-   check_indices
    select_order
 
 Visualization functions
@@ -103,8 +102,12 @@ Visualization functions
 .. autosummary::
    :toctree: generated/
 
+   plot_connectivity
    plot_sensors_connectivity
    plot_connectivity_circle
+   plot_spectral_connectivity
+   plot_temporal_connectivity
+   plot_spectrotemporal_connectivity
 
 Dataset functions
 =================
@@ -117,4 +120,3 @@ Dataset functions
    make_signals_in_freq_bands
    make_surrogate_resting_data
    make_surrogate_evoked_data
-   make_surrogate_data

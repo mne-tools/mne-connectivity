@@ -4,6 +4,8 @@
 
 PYTHON ?= python
 PYTESTS ?= pytest
+# pytest-xdist workers; JOBS=0 runs in-process, e.g. for --pdb
+JOBS ?= auto
 CTAGS ?= ctags
 CODESPELL_SKIPS ?= "*.fif,*.eve,*.gz,*.tgz,*.zip,*.mat,*.stc,*.label,*.w,*.bz2,*.annot,*.sulc,*.log,*.local-copy,*.orig_avg,*.inflated_avg,*.gii,*.pyc,*.doctree,*.pickle,*.inv,*.png,*.edf,*.touch,*.thickness,*.nofix,*.volume,*.defect_borders,*.mgh,lh.*,rh.*,COR-*,FreeSurferColorLUT.txt,*.examples,.xdebug_mris_calc,bad.segments,BadChannels,*.hist,empty_file,*.orig,*.js,*.map,*.ipynb,searchindex.dat,plot_*.rst,*.rst.txt,*.html,gdf_encodes.txt"
 CODESPELL_DIRS ?= mne_connectivity/ doc/ examples/ benchmarks/
@@ -41,7 +43,7 @@ pytest: test
 
 test: in
 	rm -f .coverage
-	$(PYTESTS) mne_connectivity
+	$(PYTESTS) -n $(JOBS) mne_connectivity
 
 test-fast: in
 	rm -f .coverage
@@ -60,14 +62,14 @@ test-no-testing-data: in
 
 test-no-sample-with-coverage: in testing_data
 	rm -rf coverage .coverage
-	$(PYTESTS) --cov=mne_connectivity --cov-report html:coverage
+	$(PYTESTS) -n $(JOBS) --cov=mne_connectivity --cov-report html:coverage
 
 test-doc: sample_data testing_data
 	$(PYTESTS) --doctest-modules --doctest-ignore-import-errors --doctest-glob='*.rst' ./doc/
 
 test-coverage: testing_data
 	rm -rf coverage .coverage
-	$(PYTESTS) --cov=mne_connectivity --cov-report html:coverage
+	$(PYTESTS) -n $(JOBS) --cov=mne_connectivity --cov-report html:coverage
 # what's the difference with test-no-sample-with-coverage?
 
 test-mem: in testing_data

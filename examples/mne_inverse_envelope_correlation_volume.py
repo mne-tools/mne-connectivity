@@ -89,7 +89,7 @@ corr = envelope_correlation(stcs, verbose=True)
 del stcs, epochs, filters
 
 # average over epochs
-corr = corr.combine()
+corr = corr.combine_epochs("mean")
 
 ##############################################################################
 # Compute the degree and plot it

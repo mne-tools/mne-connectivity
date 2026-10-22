@@ -21,7 +21,7 @@ from .utils import fill_doc
 def phase_slope_index(
     data,
     names=None,
-    indices=None,
+    indices="lower",
     sfreq=None,
     *,
     mode="multitaper",
@@ -43,7 +43,7 @@ def phase_slope_index(
 
     The PSI is an effective connectivity measure, i.e., a measure which can give an
     indication of the direction of the information flow (causality). For two time
-    series, and one computes the PSI between the first and the second time series as
+    series, one computes the PSI between the first and the second time series as
     follows::
 
         indices = (np.array([0]), np.array([1]))
@@ -80,19 +80,14 @@ def phase_slope_index(
         .. versionchanged:: 0.8
            Fourier coefficients stored in an :class:`mne.time_frequency.EpochsSpectrum`
            or :class:`mne.time_frequency.EpochsTFR` object can also be passed in as
-           data. Storing Fourier coefficients in
-           :class:`mne.time_frequency.EpochsSpectrum` objects requires ``mne >= 1.8``.
-           Storing multitaper weights in :class:`mne.time_frequency.EpochsTFR` objects
-           requires ``mne >= 1.10``.
+           data. Storing multitaper weights in :class:`mne.time_frequency.EpochsTFR`
+           objects requires ``mne >= 1.10``.
     %(names)s
-    indices : tuple of array_like | None
-        Two array-likes with indices of connections for which to compute connectivity.
-        If ``None``, all connections are computed. See Notes of
-        :func:`~mne_connectivity.spectral_connectivity_epochs` for details.
+    %(indices_with_str_only_bivar)s
     sfreq : float | None
         The sampling frequency. Required if ``data`` is not an :class:`mne.Epochs`,
-            :class:`mne.time_frequency.EpochsSpectrum`, or
-            :class:`mne.time_frequency.EpochsTFR` object.
+        :class:`mne.time_frequency.EpochsSpectrum`, or
+        :class:`mne.time_frequency.EpochsTFR` object.
     mode : ``'multitaper'`` | ``'fourier'`` | ``'cwt_morlet'``
         Spectrum estimation mode. Ignored if ``data`` is an
         :class:`mne.time_frequency.EpochsSpectrum` or
@@ -156,8 +151,10 @@ def phase_slope_index(
 
         - ``(n_cons, n_bands)`` for ``'multitaper'`` or ``'fourier'`` modes
         - ``(n_cons, n_bands, n_times)`` for ``'cwt_morlet'`` mode
-        - ``n_cons = n_signals ** 2`` when ``indices=None``
-        - ``n_cons = len(indices[0])`` when ``indices`` is supplied
+        - ``n_cons = n_signals ** 2`` when ``indices='all'``
+        - ``n_cons = n_signals * (n_signals - 1) / 2`` when ``indices`` is ``'lower'``
+          or ``'upper'``
+        - ``n_cons = len(indices[0])`` when ``indices`` is supplied as a tuple of arrays
         - ``n_bands`` is the number of frequency bands defined by ``fmin`` and ``fmax``
 
     See Also
@@ -166,6 +163,11 @@ def phase_slope_index(
     mne_connectivity.phase_slope_index_time
     mne_connectivity.SpectralConnectivity
     mne_connectivity.SpectroTemporalConnectivity
+
+    Notes
+    -----
+    %(tri_indices_efficiency_note)s
+    %(tuple_bivar_indices_note)s
 
     References
     ----------
@@ -205,11 +207,9 @@ def phase_slope_index(
     freqs = np.array(cohy.freqs)
     names = cohy.names
     n_tapers = cohy.attrs.get("n_tapers")
-    n_epochs_used = cohy.n_epochs
+    n_epochs_used = cohy.n_epochs_used
     n_nodes = cohy.n_nodes
     metadata = cohy.metadata
-    events = cohy.events
-    event_id = cohy.event_id
 
     logger.info(f"Computing PSI from estimated Coherency: {cohy}")
     # compute PSI in the requested bands
@@ -232,15 +232,13 @@ def phase_slope_index(
             names=names,
             freqs=freq_bands,
             n_nodes=n_nodes,
-            method="phase-slope-index",
+            method="psi",
             spec_method=mode,
             indices=indices,
             freqs_computed=freqs_computed,
             n_epochs_used=n_epochs_used,
             n_tapers=n_tapers,
             metadata=metadata,
-            events=events,
-            event_id=event_id,
         )
     else:
         # spectrotemporal
@@ -250,25 +248,24 @@ def phase_slope_index(
             freqs=freq_bands,
             times=times,
             n_nodes=n_nodes,
-            method="phase-slope-index",
+            method="psi",
             spec_method=mode,
             indices=indices,
             freqs_computed=freqs_computed,
             n_epochs_used=n_epochs_used,
             n_tapers=n_tapers,
             metadata=metadata,
-            events=events,
-            event_id=event_id,
         )
 
     return psi
 
 
 @verbose
+@fill_doc
 def phase_slope_index_time(
     data,
     freqs=None,
-    indices=None,
+    indices="lower",
     sfreq=None,
     *,
     mode="cwt_morlet",
@@ -326,9 +323,7 @@ def phase_slope_index_time(
         ``data`` is an array-like or :class:`mne.Epochs` object, the frequencies must
         be specified. If ``data`` is an :class:`mne.time_frequency.EpochsTFR` object,
         ``data.freqs`` is used and this parameter is ignored.
-    indices : tuple of array_like | None
-        Two array-likes with indices of connections for which to compute connectivity.
-        If ``None`` (default), all connections are computed.
+    %(indices_with_str_only_bivar)s
     sfreq : float | None
         The sampling frequency. Required if ``data`` is not an :class:`mne.Epochs` or
         :class:`mne.time_frequency.EpochsTFR` object.
@@ -398,8 +393,10 @@ def phase_slope_index_time(
 
         - The epoch dimension is present when ``average=False``, and absent when
           ``average=True``.
-        - When ``indices`` is ``None``, ``n_cons = n_signals ** 2``
-        - When ``indices`` is specified, ``n_con = len(indices[0])``
+        - ``n_cons = n_signals ** 2`` when ``indices='all'``
+        - ``n_cons = n_signals * (n_signals - 1) / 2`` when ``indices`` is ``'lower'``
+          or ``'upper'``
+        - ``n_cons = len(indices[0])`` when ``indices`` is supplied as a tuple of arrays
         - ``n_bands`` is the number of frequency bands defined by ``fmin`` and ``fmax``
 
     See Also
@@ -411,6 +408,9 @@ def phase_slope_index_time(
 
     Notes
     -----
+    %(tri_indices_efficiency_note)s
+    %(tuple_bivar_indices_note)s
+
     .. versionadded:: 0.8
 
     References
@@ -449,7 +449,7 @@ def phase_slope_index_time(
     freqs = np.array(cohy.freqs)
     names = cohy.names
     n_tapers = cohy.attrs.get("n_tapers")
-    n_epochs_used = cohy.n_epochs
+    n_epochs = cohy.n_epochs
     n_nodes = cohy.n_nodes
     metadata = cohy.metadata
     events = cohy.events
@@ -472,22 +472,22 @@ def phase_slope_index_time(
         names=names,
         freqs=freq_bands,
         n_nodes=n_nodes,
-        method="phase-slope-index",
+        method="psi",
         spec_method=mode,
         indices=indices,
         freqs_computed=freqs_computed,
         n_tapers=n_tapers,
         metadata=metadata,
-        events=events,
-        event_id=event_id,
     )
     if average:
         # average over epochs
         psi = SpectralConnectivity(
-            data=psi.mean(axis=0), n_epochs_used=n_epochs_used, **conn_kwargs
+            data=psi.mean(axis=0), n_epochs_used=n_epochs, **conn_kwargs
         )
     else:
-        psi = EpochSpectralConnectivity(data=psi, **conn_kwargs)
+        psi = EpochSpectralConnectivity(
+            data=psi, events=events, event_id=event_id, **conn_kwargs
+        )
 
     return psi
 
@@ -495,7 +495,8 @@ def phase_slope_index_time(
 def _compute_psi(cohy, freqs, bands, freq_dim):
     """Compute Phase Slope Index (PSI) from coherency data."""
     # Allocate space for output
-    out_shape = list(cohy.shape)
+    data = cohy.get_data("raveled")
+    out_shape = list(data.shape)
     out_shape[freq_dim] = len(bands)
     psi = np.zeros(out_shape, dtype=np.float64)
 
@@ -518,9 +519,7 @@ def _compute_psi(cohy, freqs, bands, freq_dim):
         for fi, fj in zip(freq_idx, freq_idx[1:]):
             idx_fi[freq_dim] = fi
             idx_fj[freq_dim] = fj
-            acc += (
-                np.conj(cohy.get_data()[tuple(idx_fi)]) * cohy.get_data()[tuple(idx_fj)]
-            )
+            acc += np.conj(data[tuple(idx_fi)]) * data[tuple(idx_fj)]
 
         idx_fi[freq_dim] = band_idx
         psi[tuple(idx_fi)] = np.imag(acc)

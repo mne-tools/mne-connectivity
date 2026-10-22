@@ -1,0 +1,1 @@
+Update minimum Python version to 3.11, by `Thomas Binns`_.

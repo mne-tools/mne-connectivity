@@ -1,0 +1,1 @@
+Make :func:`~mne_connectivity.envelope_correlation` return an :class:`~mne_connectivity.EpochConnectivity` object instead of a :class:`~mne_connectivity.EpochTemporalConnectivity` object, by `Thomas Binns`_. 

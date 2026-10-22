@@ -1,15 +1,12 @@
 .. -*- mode: rst -*-
 
-|GH|_ |Circle|_ |Azure|_ |Codecov|_ |PyPI|_ |PyPI_Release|_ |conda-forge|_ 
+|GH|_ |Circle|_ |Codecov|_ |PyPI|_ |PyPI_Release|_ |conda-forge|_ 
 
 .. |GH| image:: https://github.com/mne-tools/mne-connectivity/actions/workflows/unit_tests.yml/badge.svg
 .. _GH: https://github.com/mne-tools/mne-connectivity/actions/workflows/unit_tests.yml
 
 .. |Circle| image:: https://circleci.com/gh/mne-tools/mne-connectivity.svg?style=shield
 .. _Circle: https://circleci.com/gh/mne-tools/mne-connectivity
-
-.. |Azure| image:: https://dev.azure.com/mne-tools/mne-connectivity/_apis/build/status/mne-tools.mne-connectivity?branchName=main
-.. _Azure: https://dev.azure.com/mne-tools/mne-connectivity/_build/latest?definitionId=1&branchName=main
 
 .. |Codecov| image:: https://codecov.io/gh/mne-tools/mne-connectivity/branch/main/graph/badge.svg
 .. _Codecov: https://codecov.io/gh/mne-tools/mne-connectivity
@@ -82,6 +79,26 @@ To get the latest code using `git <https://git-scm.com/>`__, open a terminal and
 
 Alternatively, you can also download a
 `zip file of the latest development version <https://github.com/mne-tools/mne-connectivity/archive/main.zip>`__.
+
+
+Dependencies
+^^^^^^^^^^^^
+
+The minimum required dependencies to run MNE-Connectivity are:
+
+.. ↓↓↓ BEGIN CORE DEPS LIST. DO NOT EDIT! HANDLED BY MNE-TOOLS ↓↓↓
+
+- `Python <https://www.python.org>`__ ≥ 3.11
+- `MNE <https://mne.tools/>`__ ≥ 1.8
+- `netcdf4 <https://unidata.github.io/netcdf4-python/>`__ ≥ 1.6.5
+- `NumPy <https://numpy.org>`__ ≥ 2.1
+- `pandas <https://pandas.pydata.org>`__ ≥ 2.2
+- `scikit-learn <https://scikit-learn.org>`__ ≥ 1.5
+- `SciPy <https://scipy.org/>`__ ≥ 1.14
+- `tqdm <https://tqdm.github.io>`__
+- `xarray <https://xarray.dev/>`__ ≥ 2023.11.0
+
+.. ↑↑↑ END CORE DEPS LIST. DO NOT EDIT! HANDLED BY MNE-TOOLS ↑↑↑
 
 
 Citing MNE-Connectivity

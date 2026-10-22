@@ -39,6 +39,13 @@ Now you can finally run the tests by running `pytest` in the
     $ cd mne-connectivity
     $ pytest
 
+Tests can be spread over CPU cores with [pytest-xdist](https://pytest-xdist.readthedocs.io),
+which our CI does. Use `-n 0` to run everything in a single process, which is what you
+want for `--pdb`:
+
+    $ pytest -n auto
+    $ pytest -n 0 --pdb
+
 ## Building the documentation
 
 The documentation can be built using sphinx. For that, please additionally
@@ -50,6 +57,9 @@ To build the documentation locally, one can run:
 
     $ cd doc/
     $ make html
+
+The examples and the HTML pages are built in parallel (`sphinx-build -j auto`, plus
+Sphinx-Gallery workers), so a build can use every core on the machine.
 
 or
 
@@ -105,13 +115,15 @@ If the procedure is followed correctly, there is no need to set any version info
 
     b. Create the changelog file for the new version based on the entries in `doc/changes/dev/`:
     
-       towncrier --version X.Y.Z
+       towncrier build --version X.Y.Z
     
     where `X.Y.Z` is the new major-minor-micro version number (e.g., `0.8.0`). The current date will be added to the file by default, but you can specify a different date with the `--date` parameter if needed.
     
-    The changelog entries will be written to `doc/changes/dev.rst`. Move the **additions** to that file to a new file `doc/changes/vX.Y.rst`. There are existing contents in `doc/changes/dev.rst` that should not be copied over to the new file. After the additions have been moved, the diff should show no changes to `doc/changes/dev.rst`.
+    The changelog entries will be written to `doc/changes/dev.rst`. Move the **additions** to that file to a new file `doc/changes/vX.Y.rst`. There are existing contents in `doc/changes/dev.rst` that should not be copied over to the new file. After the additions have been moved, the diff should show no changes to `doc/changes/dev.rst`. Delete the `doc/changes/dev.rst` file to prevent it from being included in the documentation for the new version.
 
-    c. Run the `tools/generate_citation.py` script with the new major-minor-micro version number as an argument (e.g., `0.8.0`) to update the information in `CITATION.cff` (and in turn the package citation in `doc/references.bib`). Note, this will use the current date for the release date field.
+    c. Update the contents tree in the `doc/whats_new.rst` file to include the changelog file for the new version (e.g., `/changes/v0.8.rst`), and remove the changelog file for the development version (e.g., `/changes/dev.rst`).
+
+    d. Run the `tools/generate_citation.py` script with the new major-minor-micro version number as an argument (e.g., `0.8.0`) to update the information in `CITATION.cff` (and in turn the package citation in `doc/references.bib`). Note, this will use the current date for the release date field.
 
 3. With the pull request merged, create a release tag for the new major-minor-micro version number (e.g., `v0.8.0`) on the `main` branch, and publish the release on GitHub.
 
@@ -119,6 +131,12 @@ If the procedure is followed correctly, there is no need to set any version info
 
 5. Trusted publishing action (`.github/workflows/release.yml`) will automatically add the new release to PyPI, which will in turn be picked up by the [conda-forge feedstock](https://github.com/conda-forge/mne-connectivity-feedstock).
 
+
+## Post major-minor version release
+
+1. Copy the `doc/changes/dev.rst.template` file and rename it to `doc/changes/dev.rst`. This file will be used to store the changelog entries for the development version.
+
+2. Update the contents tree in the `doc/whats_new.rst` file to include the changelog file for the development version (e.g., `/changes/dev.rst`).
 
 ## Releasing a micro version
 

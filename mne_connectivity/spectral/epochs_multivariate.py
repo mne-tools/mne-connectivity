@@ -10,7 +10,6 @@
 # License: BSD (3-clause)
 
 import copy
-import inspect
 
 import numpy as np
 from mne.epochs import BaseEpochs
@@ -18,6 +17,8 @@ from mne.parallel import parallel_func
 from mne.time_frequency import EpochsSpectrum, EpochsTFR
 from mne.time_frequency.multitaper import _psd_from_mt
 from mne.utils import ProgressBar, _validate_type, logger
+
+from mne_connectivity.utils import _correct_signs
 
 
 def _check_rank_input(rank, data, indices):
@@ -27,11 +28,7 @@ def _check_rank_input(rank, data, indices):
         rank = np.zeros((2, len(indices[0])), dtype=int)
 
         if isinstance(data, BaseEpochs):
-            # XXX: remove logic once support for mne<1.6 is dropped
-            kwargs = dict()
-            if "copy" in inspect.getfullargspec(data.get_data).kwonlyargs:
-                kwargs["copy"] = False
-            data_arr = data.get_data(**kwargs)
+            data_arr = data.get_data()
         elif isinstance(data, EpochsSpectrum):
             # Spectrum objs will drop bad channels, so specify picking all channels
             data_arr = data.get_data(picks=np.arange(data.info["nchan"]))
@@ -341,7 +338,7 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
 
         # Eqs. 32 (Ewald et al.) & 15 (Vidaurre et al.)
         if seed_rank != n_seeds:
-            U_aa = np.linalg.svd(np.real(C_aa), full_matrices=False)[0]
+            U_aa = _correct_signs(np.linalg.svd(np.real(C_aa), full_matrices=False)[0])
             U_bar_aa = U_aa[..., :seed_rank]
         else:
             U_bar_aa = np.broadcast_to(
@@ -349,7 +346,7 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
             )
 
         if target_rank != n_targets:
-            U_bb = np.linalg.svd(np.real(C_bb), full_matrices=False)[0]
+            U_bb = _correct_signs(np.linalg.svd(np.real(C_bb), full_matrices=False)[0])
             U_bar_bb = U_bb[..., :target_rank]
         else:
             U_bar_bb = np.broadcast_to(
@@ -432,6 +429,7 @@ class _MultivariateCohEstBase(_EpochMeanMultivariateConEstBase):
 
         for chans in (seeds, targets):
             eigvals, eigvects = np.linalg.eigh(C_r[np.ix_(times, freqs, chans, chans)])
+            eigvects = _correct_signs(eigvects)
             n_zero = (eigvals == 0).sum()
             if n_zero:  # sign of non-full rank data
                 raise np.linalg.LinAlgError(
@@ -490,14 +488,10 @@ class _MultivariateImCohEstBase(_MultivariateCohEstBase):
 
         # Eigendecomp. to find spatial filters for seeds and targets
         # (flip to get components in descending eigvals. order)
-        alpha = np.flip(
-            np.linalg.eigh(E @ E.transpose(0, 1, 3, 2))[1][..., -n_components:],
-            axis=-1,
-        )
-        beta = np.flip(
-            np.linalg.eigh(E.transpose(0, 1, 3, 2) @ E)[1][..., -n_components:],
-            axis=-1,
-        )
+        alpha = _correct_signs(np.linalg.eigh(E @ E.transpose(0, 1, 3, 2))[1])
+        alpha = np.flip(alpha[..., -n_components:], axis=-1)
+        beta = _correct_signs(np.linalg.eigh(E.transpose(0, 1, 3, 2) @ E)[1])
+        beta = np.flip(beta[..., -n_components:], axis=-1)
         if len(seed_idcs) == len(target_idcs) and np.all(
             np.sort(seed_idcs) == np.sort(target_idcs)
         ):
@@ -717,8 +711,8 @@ class _CaCohEst(_MultivariateCohEstBase):
         D = T_aa @ (C_ab @ T_bb)
 
         # Eq. 12
-        a = np.linalg.eigh(D @ D.transpose(0, 1, 3, 2))[1][..., -1]
-        b = np.linalg.eigh(D.transpose(0, 1, 3, 2) @ D)[1][..., -1]
+        a = _correct_signs(np.linalg.eigh(D @ D.transpose(0, 1, 3, 2))[1])[..., -1]
+        b = _correct_signs(np.linalg.eigh(D.transpose(0, 1, 3, 2) @ D)[1])[..., -1]
 
         # Eq. 8
         numerator = np.einsum("ijk,ijk->ij", a, (D @ np.expand_dims(b, axis=3))[..., 0])
@@ -747,8 +741,8 @@ class _CaCohEst(_MultivariateCohEstBase):
         """Compute CaCoh spatial filters and patterns for the optimised phi."""
         C_bar_ab = np.real(np.exp(-1j * np.expand_dims(phis, axis=(2, 3))) * C_bar_ab)
         D = T_aa @ (C_bar_ab @ T_bb)
-        a = np.linalg.eigh(D @ D.transpose(0, 1, 3, 2))[1][..., -1]
-        b = np.linalg.eigh(D.transpose(0, 1, 3, 2) @ D)[1][..., -1]
+        a = _correct_signs(np.linalg.eigh(D @ D.transpose(0, 1, 3, 2))[1])[..., -1]
+        b = _correct_signs(np.linalg.eigh(D.transpose(0, 1, 3, 2) @ D)[1])[..., -1]
 
         # Eq. 7 rearranged - multiply both sides by sqrt(inv(real(C_aa/bb)))
         # (project filters back to pre-whitening space)
@@ -795,8 +789,8 @@ class _CaCohEst(_MultivariateCohEstBase):
         """
         # get orthogonal basis space for filters
         # (streamlined version of scipy.linalg.null_space() suited for our purposes)
-        B_a = np.linalg.svd(W_a)[0][..., W_a.shape[3] :]
-        B_b = np.linalg.svd(W_b)[0][..., W_b.shape[3] :]
+        B_a = _correct_signs(np.linalg.svd(W_a)[0])[..., W_a.shape[3] :]
+        B_b = _correct_signs(np.linalg.svd(W_b)[0])[..., W_b.shape[3] :]
 
         # apply orthogonal basis to CSD
         C_redux = np.append(
@@ -892,13 +886,17 @@ class _GCEstBase(_EpochMeanMultivariateConEstBase):
         cov_bb = cov[n_seeds:, n_seeds:]
 
         if seed_rank != n_seeds:
-            U_aa = np.linalg.svd(np.real(cov_aa), full_matrices=False)[0]
+            U_aa = _correct_signs(
+                np.linalg.svd(np.real(cov_aa), full_matrices=False)[0]
+            )
             U_bar_aa = U_aa[:, :seed_rank]
         else:
             U_bar_aa = np.identity(n_seeds)
 
         if target_rank != n_targets:
-            U_bb = np.linalg.svd(np.real(cov_bb), full_matrices=False)[0]
+            U_bb = _correct_signs(
+                np.linalg.svd(np.real(cov_bb), full_matrices=False)[0]
+            )
             U_bar_bb = U_bb[:, :target_rank]
         else:
             U_bar_bb = np.identity(n_targets)

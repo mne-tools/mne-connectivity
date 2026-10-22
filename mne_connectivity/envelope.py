@@ -5,7 +5,6 @@
 #
 # License: BSD (3-clause)
 
-import inspect
 
 import numpy as np
 from mne import BaseEpochs
@@ -14,14 +13,15 @@ from mne.filter import next_fast_len
 from mne.source_estimate import _BaseSourceEstimate
 from mne.utils import _check_option, _ensure_int, _validate_type, logger, verbose, warn
 
-from .base import EpochTemporalConnectivity
+from .base import EpochConnectivity
+from .utils import _correct_signs
 
 
 @verbose
 def envelope_correlation(
     data, names=None, orthogonalize="pairwise", log=False, absolute=True, verbose=None
 ):
-    """Compute the envelope correlation.
+    """Compute the envelope correlation between all signals.
 
     Parameters
     ----------
@@ -49,14 +49,13 @@ def envelope_correlation(
 
     Returns
     -------
-    corr : instance of EpochTemporalConnectivity
-        The pairwise orthogonal envelope correlations. This matrix is symmetric. The
-        array will have three dimensions, the first of which is ``n_epochs``. The data
-        shape is ``(n_epochs, (n_nodes + 1) * n_nodes / 2)``.
+    corr : instance of EpochConnectivity
+        The pairwise orthogonal envelope correlations. The lower-triangular part of the
+        full matrix is returned.
 
     See Also
     --------
-    mne_connectivity.EpochTemporalConnectivity
+    mne_connectivity.EpochConnectivity
 
     Notes
     -----
@@ -64,8 +63,8 @@ def envelope_correlation(
     :footcite:`HippEtAl2012,KhanEtAl2018`.
 
     If you would like to combine epochs after the fact using some function over the
-    epochs axis, see the :meth:`~mne_connectivity.EpochTemporalConnectivity.combine`
-    method of the :class:`~mne_connectivity.EpochTemporalConnectivity` class.
+    epochs axis, see the :meth:`~mne_connectivity.EpochConnectivity.combine_epochs`
+    method of the :class:`~mne_connectivity.EpochConnectivity` class.
 
     References
     ----------
@@ -103,11 +102,7 @@ def envelope_correlation(
             data.add_annotations_to_metadata(overwrite=True)
         metadata = data.metadata
         # get the actual data in numpy
-        # XXX: remove logic once support for mne<1.6 is dropped
-        kwargs = dict()
-        if "copy" in inspect.getfullargspec(data.get_data).kwonlyargs:
-            kwargs["copy"] = False
-        data = data.get_data(**kwargs)
+        data = data.get_data()
     else:
         metadata = None
 
@@ -193,31 +188,20 @@ def envelope_correlation(
     if n_nodes is None:
         raise RuntimeError("Passing in empty epochs object is not allowed.")
 
-    # apply function on correlation structure
-    n_epochs = len(corrs)
-
     # ravel from 2D connectivity into 1D array
     # over all epochs
     corr = np.array([_corr.flatten() for _corr in corrs])
 
-    # create the connectivity container
-    times = None
+    # only get the lower-triangular indices
+    tril_inds = np.tril_indices(n_nodes, k=-1)
+    raveled_tril_inds = np.ravel_multi_index(tril_inds, dims=(n_nodes, n_nodes))
+    corr = corr[:, raveled_tril_inds]
 
-    # create time axis
-    corr = corr[..., np.newaxis]
-
-    # only get the upper-triu indices
-    triu_inds = np.triu_indices(n_nodes, k=0)
-    raveled_triu_inds = np.ravel_multi_index(triu_inds, dims=(n_nodes, n_nodes))
-    corr = corr[:, raveled_triu_inds, ...]
-
-    conn = EpochTemporalConnectivity(
+    conn = EpochConnectivity(
         data=corr,
         names=names,
-        times=times,
-        method="envelope correlation",
-        indices="symmetric",
-        n_epochs_used=n_epochs,
+        method="env_corr_orth" if orthogonalize else "env_corr",
+        indices="lower",
         n_nodes=n_nodes,
         events=events,
         event_id=event_id,
@@ -299,6 +283,7 @@ def _gen_sym_orth(data, n_iter, tol):
         for ii in range(n_iter):
             # eq. 4: UΣVᵀ = SVD(ZD), but our Z is transposed
             U, s, Vh = np.linalg.svd(Z.T * d, full_matrices=False)
+            U, Vh = _correct_signs(U, Vh)
             this_rank = (s >= s[0] * 1e-6).sum()
             if rank is None:
                 rank = this_rank
