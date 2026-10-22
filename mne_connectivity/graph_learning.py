@@ -211,8 +211,8 @@ def learn_graph(
     -------
     graph : instance of Connectivity or EpochConnectivity
         The learned graph(s): a symmetric, zero-diagonal, non-negative
-        weighted adjacency, stored as the upper-triangular-including-diagonal
-        raveled values (diagonal entries are always exactly ``0``). A single
+        weighted adjacency, stored as the raveled upper-triangular values
+        (``indices='upper'``); the diagonal is always ``0``. A single
         :class:`~mne_connectivity.Connectivity` is returned if ``data`` was a
         bare 2D array; otherwise an
         :class:`~mne_connectivity.EpochConnectivity` is returned with one
@@ -347,21 +347,16 @@ def learn_graph(
     )
 
     n_epochs = len(results)
-    triu_full = np.triu_indices(n_nodes, k=0)
-    raveled_triu = np.ravel_multi_index(triu_full, dims=(n_nodes, n_nodes))
-
-    con = np.zeros((n_epochs, n_nodes, n_nodes))
-    for ei, (w, _, _) in enumerate(results):
-        con[ei, iu, ju] = w
-        con[ei, ju, iu] = w
-    con = con.reshape(n_epochs, -1)[:, raveled_triu]
+    # edge weights are already ordered as np.triu_indices(n_nodes, k=1), i.e., the
+    # upper-triangular storage expected by indices="upper"
+    con = np.array([w for w, _, _ in results])
 
     logger.info("[learn_graph Done]")
 
     con_kwargs = dict(
         names=names,
-        method="graph learning (Kalofolias)",
-        indices="symmetric",
+        method="learn_graph",
+        indices="upper",
         n_nodes=n_nodes,
     )
     if single_epoch:

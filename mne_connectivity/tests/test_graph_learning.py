@@ -116,7 +116,7 @@ def test_learn_graph_epochs_input():
     assert conn.n_nodes == n_nodes
     assert conn.get_data(output="raveled").shape == (
         n_epochs,
-        (n_nodes + 1) * n_nodes // 2,
+        n_nodes * (n_nodes - 1) // 2,
     )
     assert conn.get_data(output="dense").shape == (n_epochs, n_nodes, n_nodes)
 
