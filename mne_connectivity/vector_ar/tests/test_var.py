@@ -6,9 +6,10 @@ from numpy.testing import (
     assert_almost_equal,
     assert_array_almost_equal,
     assert_array_equal,
+    assert_array_less,
 )
 
-from mne_connectivity import select_order, vector_auto_regression
+from mne_connectivity import Connectivity, select_order, vector_auto_regression
 
 warning_str = dict(
     sm_depr="ignore:Using or importing*.:DeprecationWarning",  # noqa
@@ -288,27 +289,29 @@ def test_vector_auto_regression():
     # compute residuals
     residuals = data - parr_conn.predict(data)
     assert residuals.shape == data.shape
+    # TODO: Add checks about properties of residuals
 
-    # Dynamic "Connectivity" errors
-    with pytest.raises(ValueError, match="Data passed in must be"):
-        parr_conn.predict(np.zeros((4,)))
-    with pytest.raises(RuntimeError, match="If there is a VAR model"):
-        parr_conn.predict(np.zeros((4, 4)))
-    with pytest.raises(RuntimeError, match="If there is a single VAR"):
-        single_conn.predict(data)
 
-    # prediction should work with a 2D array when non epoched
-    single_conn.predict(rng.randn(n_signals, n_times))
+@pytest.mark.parametrize("lags", [1, 2])
+def test_vector_auto_regression_residuals(lags):
+    """Test the residuals of a fitted VAR model."""
+    rng = np.random.default_rng(0)
+    n_epochs, n_signals, n_times = 5, 3, 64
+    data = rng.standard_normal(size=(n_epochs, n_signals, n_times))
 
-    # simulate data
-    sim_data = parr_conn.simulate(n_samples=100)
-    sim_data = parr_conn.simulate(n_samples=100, noise_func=np.random.normal)
-    assert sim_data.shape == (4, 100)
+    # Compute VAR models
+    var_dyn = vector_auto_regression(data, model="dynamic", lags=lags)
+    var_avg = vector_auto_regression(data, model="avg-epochs", lags=lags)
 
-    # simulate data over many epochs
-    big_epoch_data = rng.randn(n_times * 2, n_signals, n_times)
-    parr_conn = vector_auto_regression(big_epoch_data, times=times, n_jobs=-1)
-    parr_conn.predict(big_epoch_data)
+    # Compute residuals
+    res_dyn = data - var_dyn.predict(data)
+    res_avg = data - var_avg.predict(data)
+
+    # Check residuals for each channel are smaller for the dynamic model
+    assert_array_less(
+        np.abs(res_dyn[:, :, lags:]).mean((0, -1)),
+        np.abs(res_avg[:, :, lags:]).mean((0, -1)),
+    )
 
 
 @pytest.mark.parametrize("model", ["avg-epochs", "dynamic"])
@@ -329,3 +332,134 @@ def test_vector_auto_regression_bad_channels(model):
     assert corr.names == data.ch_names
     assert_array_equal(corr_data[[0, 2, 1, 1, 1], [1, 1, 0, 1, 2]], 0)  # bads indices
     assert corr_data.shape == (n_signals, n_signals)
+
+
+@pytest.mark.parametrize("model", ["avg-epochs", "dynamic"])
+@pytest.mark.parametrize("lags", [1, 2])
+def test_dynamic_mixin(model, lags):
+    """Test the `DynamicMixin` for VAR models."""
+    # Generate random data
+    rng = np.random.default_rng(0)
+    n_epochs, n_signals, n_times = 5, 3, 64
+    data = rng.standard_normal(size=(n_epochs, n_signals, n_times))
+
+    # Create a VAR model
+    var = vector_auto_regression(data, model=model, lags=lags)
+
+    # Check predictions can be made from the VAR model (using epoched data)
+    prediction = var.predict(data)
+    assert prediction.shape == data.shape
+    assert_array_equal(prediction[..., :lags], 0)  # predictions for lags should be zero
+
+    # Check predictions from a static model can be made from non-epoched data
+    if model == "avg-epochs":
+        prediction = var.predict(data[0])
+        assert prediction.shape == data.shape[1:]
+        assert_array_equal(prediction[..., :lags], 0)  # predictions for lags
+
+    # Check data can be simulated from the VAR model
+    n_samples = 10
+    simulation = var.simulate(n_samples=n_samples)
+    assert simulation.shape == (n_signals, n_samples)
+
+    # Check the companion matrix can be computed for the VAR model
+    companion = var.companion
+    if lags == 1:
+        expected_shape = (n_signals, n_signals)
+    else:
+        expected_shape = (n_signals * lags, n_signals * lags)
+    if model == "dynamic":
+        expected_shape = (n_epochs, *expected_shape)
+    assert companion.shape == expected_shape
+    if lags == 1:
+        assert_array_equal(companion, var.get_data(output="dense"))
+
+
+def test_dynamic_mixin_errors():
+    """Test error handling in the `DynamicMixin` for VAR models."""
+    # Generate random data
+    rng = np.random.default_rng(0)
+    n_epochs, n_signals, n_times = 5, 3, 64
+    data = rng.standard_normal(size=(n_epochs, n_signals, n_times))
+
+    # Create a dynamic VAR model
+    dynamic_var = vector_auto_regression(data, model="dynamic")
+
+    # Check non-epoched data can't be predicted from a dynamic VAR model
+    with pytest.raises(
+        ValueError, match="For a time-varying VAR model, `data` must be a 3D array"
+    ):
+        dynamic_var.predict(data[0])
+
+    # Check the number of epochs in the data to predict matches the number in the model
+    with pytest.raises(
+        ValueError,
+        match=(
+            r"The number of epochs in `data`.*does not match the number of VAR models.*"
+        ),
+    ):
+        dynamic_var.predict(data[:3])
+
+    # Check bad number of data dims gets caught
+    with pytest.raises(ValueError, match="`data` must be either 2D or 3D"):
+        dynamic_var.predict(data[0, 0])
+
+    # Check bad number of channels to predict gets caught
+    with pytest.raises(
+        ValueError,
+        match=(
+            r"The number of signals in `data`.*does not match the number of signals in "
+            r"the VAR model.*"
+        ),
+    ):
+        dynamic_var.predict(data[:, : n_signals - 1])
+
+    # Check components in the connectivity data get caught
+    n_comps = 2
+    mv_var_data = rng.standard_normal(size=(n_signals**2, n_comps))
+    mv_var = Connectivity(
+        mv_var_data, n_nodes=n_signals, method="VAR(p)", lags=1, components=n_comps
+    )
+    with pytest.raises(
+        NotImplementedError,
+        match=(
+            "Prediction is not currently supported from VAR models with multiple "
+            "components."
+        ),
+    ):
+        mv_var.predict(data)
+    with pytest.raises(
+        NotImplementedError,
+        match=(
+            "Simulation is not currently supported from VAR models with multiple "
+            "components."
+        ),
+    ):
+        mv_var.simulate(n_samples=10)
+    with pytest.raises(
+        NotImplementedError,
+        match=(
+            "Companion matrix generation is not currently supported for VAR models "
+            "with multiple components."
+        ),
+    ):
+        mv_var.companion
+
+    # Check a warning is raised when a non-VAR model is used for prediction
+    n_nodes = 3
+    non_var_data = rng.standard_normal(size=(n_nodes**2,))
+    non_var = Connectivity(
+        non_var_data, n_nodes=n_nodes, method="not a var model", lags=1
+    )
+    expected_warning = (
+        rf"The connectivity data comes from a method \({non_var.method}\) that is not "
+        r"a recognised vector autoregressive \(VAR\) model."
+    )
+    with pytest.warns(UserWarning, match=expected_warning):
+        non_var.predict(data)
+    # ... for simulation
+    with pytest.warns(UserWarning, match=expected_warning):
+        non_var.simulate(n_samples=10)
+    # ... for companion matrix
+    with pytest.warns(UserWarning, match=expected_warning):
+        non_var.companion
