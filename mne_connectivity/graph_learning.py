@@ -5,12 +5,13 @@
 import numpy as np
 from mne import BaseEpochs
 from mne._fiff.pick import _picks_to_idx
+from mne.parallel import parallel_func
 from mne.source_estimate import _BaseSourceEstimate
 from mne.utils import _validate_type, logger, verbose, warn
 from scipy.spatial.distance import pdist
 
 from .base import Connectivity, EpochConnectivity
-from .utils import fill_doc, parallel_loop
+from .utils import fill_doc
 
 
 def _op_S(w, iu, ju, n_nodes):
@@ -30,7 +31,7 @@ def _solve_primal_dual(z, n_nodes, iu, ju, alpha, beta, max_iter, tol, step_size
 
     Forward-backward-forward primal-dual splitting (Combettes & Pesquet 2011;
     Komodakis & Pesquet 2014), following "Algorithm 1" of
-    :footcite:`kalofolias2016learn`.
+    :footcite:`Kalofolias2016`.
     """
     m = z.size
     w = np.zeros(m)
@@ -71,7 +72,9 @@ def _solve_primal_dual(z, n_nodes, iu, ju, alpha, beta, max_iter, tol, step_size
             n_iter = it + 1
             break
 
-    return w, n_iter, converged
+    # return the projected primal point rather than the iterate ``w``: they
+    # coincide at the fixed point, but only ``p`` has exact zeros (sparsity)
+    return p, n_iter, converged
 
 
 def _learn_graph_one_epoch(
@@ -141,13 +144,13 @@ def learn_graph(
     where ``z`` is the vector of pairwise distances between nodes (rows of
     ``data``) and ``S`` maps an edge-weight vector to the corresponding
     vector of node degrees. This is the model proposed in
-    :footcite:`kalofolias2016learn`, and is the same model used on real MEG data
+    :footcite:`Kalofolias2016`, and is the same model used on real MEG data
     (with parameters named ``sigma``, ``rho``) in
-    :footcite:`shabestari2026shared`, where it was found to be more robust than
+    :footcite:`ShabestariEtAl2026`, where it was found to be more robust than
     Phase Lag Index for short recordings and to better capture
     individual-specific connectivity. The default ``alpha=0.5, beta=0.5`` is
     one of the parameter combinations swept in the robustness analysis of
-    :footcite:`shabestari2026shared`. See Notes for details.
+    :footcite:`ShabestariEtAl2026`. See Notes for details.
 
     Parameters
     ----------
@@ -178,8 +181,8 @@ def learn_graph(
         Distance metric passed to :func:`scipy.spatial.distance.pdist` to
         build the pairwise dissimilarity vector between nodes. Must yield
         only non-negative values. Default ``'sqeuclidean'`` (squared
-        Euclidean distance), matching :footcite:`kalofolias2016learn` and
-        :footcite:`shabestari2026shared`.
+        Euclidean distance), matching :footcite:`Kalofolias2016` and
+        :footcite:`ShabestariEtAl2026`.
     normalize : bool
         If ``True`` (default), rescale the pairwise-distance vector by its
         mean before solving, so that the default ``alpha``/``beta`` behave
@@ -222,9 +225,9 @@ def learn_graph(
 
     Notes
     -----
-    This implements the model of eq. 12 in :footcite:`kalofolias2016learn` (their
+    This implements the model of eq. 12 in :footcite:`Kalofolias2016` (their
     ``alpha``, ``beta``), identical to the model used in
-    :footcite:`shabestari2026shared` (that paper's ``sigma``, ``rho``). The
+    :footcite:`ShabestariEtAl2026` (that paper's ``sigma``, ``rho``). The
     log-barrier term on node degrees (rather than on individual edge
     weights) is what distinguishes this model from a plain Gaussian-kernel
     graph construction: it guarantees every node has at least one edge,
@@ -242,7 +245,7 @@ def learn_graph(
     When ``beta=0``, the learned graph is the sparsest one consistent with
     keeping every node connected, and changing ``alpha`` alone only rescales
     the overall magnitude of the learned weights, not the sparsity pattern
-    (see Proposition 2 of :footcite:`kalofolias2016learn`). However, ``beta=0``
+    (see Proposition 2 of :footcite:`Kalofolias2016`). However, ``beta=0``
     removes the only strongly-convex term in the objective, so this primal-dual
     solver converges much more slowly in that regime (often thousands of
     iterations) and the relative-change stopping criterion (``tol``) is a
@@ -323,7 +326,9 @@ def learn_graph(
 
     iu, ju = np.triu_indices(n_nodes, k=1)
 
-    parallel, my_learn_one = parallel_loop(_learn_graph_one_epoch, n_jobs=n_jobs)
+    parallel, my_learn_one, _ = parallel_func(
+        _learn_graph_one_epoch, n_jobs, verbose=verbose
+    )
     results = parallel(
         my_learn_one(
             epoch_data,
