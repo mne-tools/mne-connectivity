@@ -58,7 +58,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip setuptools wheel
-          pip install --upgrade --upgrade-strategy eager .[test]
+          pip install --upgrade --upgrade-strategy eager --group test .
       - name: Install MNE (stable)
         if: matrix.mne-version == 'mne-stable'
         run: pip install --upgrade mne
