@@ -611,10 +611,7 @@ class BaseConnectivity:
             coords["freqs"] = kwargs.pop("freqs")
             dims.append("freqs")
         if "times" in kwargs:
-            times = kwargs.pop("times")
-            if times is None:
-                times = list(range(data.shape[-1]))
-            coords["times"] = list(times)
+            coords["times"] = kwargs.pop("times")
             dims.append("times")
 
         # convert all numpy arrays to lists
