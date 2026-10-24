@@ -23,7 +23,7 @@ Bugfixes
 
 - Fix bug where the :meth:`get_data() <mne_connectivity.Connectivity.get_data>` method of connectivity containers discarded the imaginary part of complex-valued data when ``output="dense"``, by `Thomas Binns`_. (`#412 <https://github.com/mne-tools/mne-connectivity/pull/412>`__)
 - Fix bug where connectivity in :func:`~mne_connectivity.make_signals_in_freq_bands` could be simulated outside of the epoch duration, by `Thomas Binns`_. (`#418 <https://github.com/mne-tools/mne-connectivity/pull/418>`__)
-- Fix bug where the :meth:`~mne_connectivity.TemporalConnectivity.predict` and :meth:`~mne_connectivity.TemporalConnectivity.simulate` methods of connectivity containers could not be used with VAR models with multiple lags, by `Thomas Binns`_. (`#420 <https://github.com/mne-tools/mne-connectivity/pull/420>`__)
+- Fix bug where the :meth:`~mne_connectivity.VARConnectivity.predict` and :meth:`~mne_connectivity.VARConnectivity.simulate` methods of connectivity containers could not be used with VAR models with multiple lags, by `Thomas Binns`_. (`#420 <https://github.com/mne-tools/mne-connectivity/pull/420>`__)
 - Fix a bug in :func:`~mne_connectivity.make_surrogate_evoked_data` where sampled cutpoints were interpreted as numbers of sections instead of split indices, by `Rebecca Stevenson`_. (`#447 <https://github.com/mne-tools/mne-connectivity/pull/447>`__)
 
 
@@ -42,7 +42,7 @@ New features
 - Add ``imcoh`` as a method to :func:`~mne_connectivity.spectral_connectivity_time`, by `Thomas Binns`_. (`#404 <https://github.com/mne-tools/mne-connectivity/pull/404>`__)
 - Add :func:`~mne_connectivity.make_surrogate_evoked_data` function for generating surrogates from evoked data, and add support for :class:`mne.Epochs` data in :func:`~mne_connectivity.make_surrogate_resting_data`, by `Thomas Binns`_. (`#415 <https://github.com/mne-tools/mne-connectivity/pull/415>`__)
 - Add ``connection_time`` parameter to :func:`~mne_connectivity.make_signals_in_freq_bands`, enabling connectivity to be simulated in a specific time range, by `Thomas Binns`_. (`#418 <https://github.com/mne-tools/mne-connectivity/pull/418>`__)
-- Allow epoched data as input to the :meth:`~mne_connectivity.Connectivity.predict` method of connectivity containers storing a non-dynamic VAR model, by `Thomas Binns`_. (`#420 <https://github.com/mne-tools/mne-connectivity/pull/420>`__)
+- Allow epoched data as input to the :meth:`~mne_connectivity.VARConnectivity.predict` method of connectivity containers storing a non-dynamic VAR model, by `Thomas Binns`_. (`#420 <https://github.com/mne-tools/mne-connectivity/pull/420>`__)
 
 
 Authors

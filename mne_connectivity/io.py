@@ -8,9 +8,11 @@ from .base import (
     EpochSpectralConnectivity,
     EpochSpectroTemporalConnectivity,
     EpochTemporalConnectivity,
+    EpochVARConnectivity,
     SpectralConnectivity,
     SpectroTemporalConnectivity,
     TemporalConnectivity,
+    VARConnectivity,
 )
 
 
@@ -35,11 +37,13 @@ def _xarray_to_conn(array, cls_func):
     # get the dimensions
     coords = array.coords
 
-    # attach times and frequencies
+    # attach times/frequencies/lags
     if "times" in coords:
         array.attrs["times"] = coords.get("times")
     if "freqs" in coords:
         array.attrs["freqs"] = coords.get("freqs")
+    if "lags" in coords:
+        array.attrs["lags"] = coords.get("lags")
 
     # get the names
     names = array.attrs["node_names"]
@@ -60,6 +64,10 @@ def _xarray_to_conn(array, cls_func):
     # (only multivariate connectivity indices saved as arrays)
     if isinstance(array.attrs["indices"], np.ndarray):
         array.attrs["indices"] = tuple(np.ma.masked_values(array.attrs["indices"], -1))
+
+    # remove indices for VAR containers (will be set to 'all' in the constructor)
+    if cls_func in [VARConnectivity, EpochVARConnectivity]:
+        array.attrs.pop("indices")
 
     # create the connectivity class
     conn = cls_func(data=data, names=names, metadata=metadata, **array.attrs)
@@ -100,14 +108,16 @@ def read_connectivity(fname):
         "TemporalConnectivity": TemporalConnectivity,
         "SpectralConnectivity": SpectralConnectivity,
         "SpectroTemporalConnectivity": SpectroTemporalConnectivity,
+        "VARConnectivity": VARConnectivity,
         "EpochConnectivity": EpochConnectivity,
         "EpochTemporalConnectivity": EpochTemporalConnectivity,
         "EpochSpectralConnectivity": EpochSpectralConnectivity,
         "EpochSpectroTemporalConnectivity": EpochSpectroTemporalConnectivity,
+        "EpochVARConnectivity": EpochVARConnectivity,
     }
     cls_func = conn_cls[data_structure_name]
 
-    # map deprecated method names to their current names
+    # map deprecated method names to their current names (and classes)
     method_map = {
         "phase-slope-index": "psi",
         "envelope correlation": "env_corr_orth",  # orth is default option
@@ -115,10 +125,17 @@ def read_connectivity(fname):
         "wSMI": "wsmi",
         "VAR(p)": "var",
         "VAR(1)": "var",
-        "Time-varying VAR(1)": "var_dynamic",
-        "Time-varying VAR(p)": "var_dynamic",
+        "Time-varying VAR(1)": "var",
+        "Time-varying VAR(p)": "var",
+    }
+    method_class_map = {
+        "VAR(p)": VARConnectivity,
+        "VAR(1)": VARConnectivity,
+        "Time-varying VAR(1)": EpochVARConnectivity,
+        "Time-varying VAR(p)": EpochVARConnectivity,
     }
     if conn_da.attrs["method"] in method_map:
+        # warn about name changing
         if conn_da.attrs["method"] == "envelope correlation":
             warn(
                 "The 'envelope correlation' method name was deprecated in v1.0 in "
@@ -136,6 +153,23 @@ def read_connectivity(fname):
                 "warning, consider saving this connectivity container with the updated "
                 "method name."
             )
+
+        # warn about class changing
+        if conn_da.attrs["method"] in method_class_map:
+            cls_func = method_class_map[conn_da.attrs["method"]]
+            warn(
+                "Storing VAR models outside of the VARConnectivity and "
+                "EpochVARConnectivity classes was deprecated in v1.0. To avoid this "
+                "warning, consider saving this connectivity container with the updated "
+                "class."
+            )
+            n_lags = conn_da.attrs.pop("lags")
+            if n_lags > 1:
+                conn_da = conn_da.rename({"times": "lags"})
+            else:
+                conn_da = conn_da.expand_dims("lags", axis=-1)
+            conn_da.coords["lags"] = np.arange(n_lags)
+
         conn_da.attrs["method"] = method_map[conn_da.attrs["method"]]
 
     # get the data as a new connectivity container
