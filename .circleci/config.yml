@@ -85,7 +85,7 @@ jobs:
           name: Check Qt
           command: |
             set -x
-            curl -fsSL https://raw.githubusercontent.com/mne-tools/mne-tools/main/tools/check_qt_import.sh | bash -s -- PySide6
+            curl -fsSL https://raw.githubusercontent.com/mne-tools/mne-tools/main/tools/check_qt_import.sh | bash -s -- $MNE_QT_BACKEND
 
       # Look at what we have and fail early if there is some library conflict
       - run:
