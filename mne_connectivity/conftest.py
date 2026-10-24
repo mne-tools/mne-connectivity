@@ -11,6 +11,7 @@ import numpy as np
 import pytest
 from mne import EpochsArray, create_info
 from mne.utils import _check_qt_version
+from packaging.version import Version
 
 
 @pytest.fixture()
@@ -95,6 +96,20 @@ def pytest_configure(config):
         warning_line = warning_line.strip()
         if warning_line and not warning_line.startswith("#"):
             config.addinivalue_line("filterwarnings", warning_line)
+
+    try:
+        import pandas
+    except ImportError:
+        pass
+    else:
+        if Version(pandas.__version__) >= Version("3.1.0.dev0"):
+            # TODO VERSION drop when MNE 1.14 is minimum (gh/mne-python/14446)
+            config.addinivalue_line(
+                "filterwarnings",
+                "ignore:"
+                ".+ is deprecated and will be removed in a future version.*:"
+                "pandas.errors.Pandas4Warning",
+            )
 
 
 @pytest.fixture(autouse=True)

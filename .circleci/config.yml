@@ -57,7 +57,7 @@ jobs:
             cd mne-python
             ./tools/circleci_dependencies.sh
             cd ..
-            pip install -ve .[doc]
+            pip install --group doc -ve .
 
       - save_cache:
           key: pip-cache-312
@@ -82,8 +82,10 @@ jobs:
             - data-cache-epilepsy-ecog
 
       - run:
-          name: Check PyQt6
-          command: LD_DEBUG=libs python -c "from PyQt6.QtWidgets import QApplication, QWidget; app = QApplication([])"
+          name: Check Qt
+          command: |
+            set -x
+            curl -fsSL https://raw.githubusercontent.com/mne-tools/mne-tools/main/tools/check_qt_import.sh | bash -s -- $MNE_QT_BACKEND
 
       # Look at what we have and fail early if there is some library conflict
       - run:
