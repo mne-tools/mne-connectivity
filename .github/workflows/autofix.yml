@@ -67,7 +67,7 @@ jobs:
         uses: mne-tools/mne-tools/actions/sync-dependencies-to-environment-file@main
         with:
           project-root: ${{ github.workspace }}
-          extras: full
+          extras: full,full-no-qt
           additional-dependencies: pip
           # install lighter mne-base; pin vtk and pyside6 to speed up env resolution
           requirements-overrides: mne->mne-base,vtk==9.6.2,PySide6==6.11.1
