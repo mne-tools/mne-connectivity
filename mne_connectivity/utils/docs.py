@@ -103,10 +103,9 @@ n_nodes : int
 
 docdict["connectivity_kwargs"] = """
 **kwargs : dict
-    Extra connectivity parameters. These may include ``freqs`` for spectral
-    connectivity, ``times`` for connectivity over time, or ``components`` for
-    multivariate connectivity with multiple components per connection. In addition,
-    these may include extra parameters that are stored as xarray ``attrs``.
+    Extra connectivity parameters, like ``components`` for multivariate connectivity
+    with multiple components per connection, or extra parameters to be stored as xarray
+    ``attrs``.
 """
 
 docdict["mode"] = """
