@@ -14,6 +14,7 @@ from mne.source_estimate import _BaseSourceEstimate
 from mne.utils import _check_option, _ensure_int, _validate_type, logger, verbose, warn
 
 from .base import EpochConnectivity
+from .utils import _correct_signs
 
 
 @verbose
@@ -62,7 +63,7 @@ def envelope_correlation(
     :footcite:`HippEtAl2012,KhanEtAl2018`.
 
     If you would like to combine epochs after the fact using some function over the
-    epochs axis, see the :meth:`~mne_connectivity.EpochConnectivity.combine`
+    epochs axis, see the :meth:`~mne_connectivity.EpochConnectivity.combine_epochs`
     method of the :class:`~mne_connectivity.EpochConnectivity` class.
 
     References
@@ -282,6 +283,7 @@ def _gen_sym_orth(data, n_iter, tol):
         for ii in range(n_iter):
             # eq. 4: UΣVᵀ = SVD(ZD), but our Z is transposed
             U, s, Vh = np.linalg.svd(Z.T * d, full_matrices=False)
+            U, Vh = _correct_signs(U, Vh)
             this_rank = (s >= s[0] * 1e-6).sum()
             if rank is None:
                 rank = this_rank

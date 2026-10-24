@@ -174,8 +174,7 @@ con_epochs = spectral_connectivity_epochs(
 foi = list(Freq_Bands.keys()).index("alpha")  # frequency of interest
 
 for con in con_epochs:
-    con_array = con.get_data("raveled")
-    con_array = np.mean(con_array, axis=2)  # average over timepoints
+    con_array = con.combine_times("mean").get_data("raveled")  # average over times
     con_array = con_array[..., foi]  # select frequency band of interest
     con_method = Connectivity(
         con_array, con.n_nodes, con.names, con.indices, con.method
@@ -272,8 +271,7 @@ con_epochs = spectral_connectivity_epochs(
 )
 
 for con in con_epochs:
-    con_array = con.get_data("raveled")
-    con_array = np.mean(con_array, axis=2)  # average over timepoints
+    con_array = con.combine_times("mean").get_data("raveled")  # average over times
     con_array = con_array[..., foi]  # select frequency band of interest
     con_method = Connectivity(
         con_array, con.n_nodes, con.names, con.indices, con.method

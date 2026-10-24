@@ -14,13 +14,65 @@ from mne.utils.docs import _indentcount_lines
 docdict = dict()
 
 # Connectivity
-docdict["data"] = """
-data : array, shape ([epochs,] n_estimated_nodes[, components, freqs, times])
-    The connectivity data that is a raveled array of ``(..., n_estimated_nodes, ...)``
-    shape. The ``n_estimated_nodes`` is equal to ``n_nodes_in * n_nodes_out`` if one has
-    computed the full connectivity, or a subset of nodes equal to the length of the
-    arrays in ``indices`` passed in.
+data_base = """
+data : array, shape {}
+    The connectivity data. ``n_connections`` is equal to ``n_nodes * n_nodes`` if
+    ``indices='all'``, ``n_nodes * (n_nodes - 1) / 2`` if ``indices`` is ``'lower'`` or
+    ``'upper'``, or the length of the arrays in ``indices`` if a tuple of arrays.
 """
+docdict["data_shape_Connectivity"] = "(n_connections,[ n_components])"
+docdict["data_shape_SpectralConnectivity"] = "(n_connections[, n_components], n_freqs)"
+docdict["data_shape_TemporalConnectivity"] = "(n_connections[, n_components], n_times)"
+docdict["data_shape_SpectroTemporalConnectivity"] = (
+    "(n_connections[, n_components], n_freqs, n_times)"
+)
+docdict["data_shape_EpochConnectivity"] = "(n_epochs, n_connections[, n_components])"
+docdict["data_shape_EpochSpectralConnectivity"] = (
+    "(n_epochs, n_connections[, n_components], n_freqs)"
+)
+docdict["data_shape_EpochTemporalConnectivity"] = (
+    "(n_epochs, n_connections[, n_components], n_times)"
+)
+docdict["data_shape_EpochSpectroTemporalConnectivity"] = (
+    "(n_epochs, n_connections[, n_components], n_freqs, n_times)"
+)
+docdict["data_Connectivity"] = data_base.format(docdict["data_shape_Connectivity"])
+docdict["data_SpectralConnectivity"] = data_base.format(
+    docdict["data_shape_SpectralConnectivity"]
+)
+docdict["data_TemporalConnectivity"] = data_base.format(
+    docdict["data_shape_TemporalConnectivity"]
+)
+docdict["data_SpectroTemporalConnectivity"] = data_base.format(
+    docdict["data_shape_SpectroTemporalConnectivity"]
+)
+docdict["data_EpochConnectivity"] = data_base.format(
+    docdict["data_shape_EpochConnectivity"]
+)
+docdict["data_EpochSpectralConnectivity"] = data_base.format(
+    docdict["data_shape_EpochSpectralConnectivity"]
+)
+docdict["data_EpochTemporalConnectivity"] = data_base.format(
+    docdict["data_shape_EpochTemporalConnectivity"]
+)
+docdict["data_EpochSpectroTemporalConnectivity"] = data_base.format(
+    docdict["data_shape_EpochSpectroTemporalConnectivity"]
+)
+
+data_var_base = """
+data : array, shape {}
+    The connectivity data. ``n_connections`` is equal to ``n_nodes * n_nodes``, as the
+    data is expected to represent the interactions between all channels, i.e.,
+    ``indices='all'`` in other :class:`~mne_connectivity.Connectivity` containers.
+"""
+docdict["data_shape_VARConnectivity"] = "(n_connections, n_lags)"
+docdict["data_shape_EpochVARConnectivity"] = "(n_epochs, n_connections, n_lags)"
+docdict["data_VARConnectivity"] = data_var_base.format(
+    docdict["data_shape_VARConnectivity"]
+)
+docdict["data_EpochVARConnectivity"] = data_var_base.format(
+    docdict["data_shape_EpochVARConnectivity"]
+)
 
 docdict["names"] = """
 names : array_like | None
@@ -191,6 +243,11 @@ lags : list | array
     The lags at which the connectivity data is computed over.
 """
 
+docdict["optional_components_dim"] = """
+``n_components`` is an optional dimension for multivariate methods where each connection
+has multiple components of connectivity.
+"""
+
 docdict["method"] = """
 method : str | None
     The method name used to compute connectivity (default ``None``).
@@ -215,6 +272,62 @@ docdict["event_id"] = """
 event_id : dict | None
     Mapping from condition descriptions (strings) to integer event codes. Default is
     ``None``.
+"""
+
+# Container methods
+combine_method_base = """
+method : ``'mean'`` | ``'median'`` | callable
+    How to aggregate the data across {}. If `callable`, must take a
+    :class:`NumPy array<numpy.ndarray>` of shape {} as input and return an array
+    collapsed over the {} dimension. Default is ``'mean'``.
+"""
+docdict["combine_method_epochs"] = combine_method_base.format(
+    "epochs", "``(n_epochs, ...)``", "epoch"
+)
+docdict["combine_method_freqs"] = combine_method_base.format(
+    "frequencies", "``(..., n_freqs, ...)``", "frequency"
+)
+docdict["combine_method_times"] = combine_method_base.format(
+    "times", "``(..., n_times)``", "time"
+)
+
+docdict["combine_fmin_fmax"] = """
+fmin, fmax : float | None
+    First and last frequencies to aggregate over, in Hz.  If ``None`` use the first or
+    last frequencies in the data, respectively. Default is ``None``.
+"""
+docdict["combine_tmin_tmax"] = """
+tmin, tmax : float | None
+    First and last times to aggregate over, in seconds.  If ``None`` use the first or
+    last times in the data, respectively. Default is ``None``.
+"""
+
+combine_out_base = """
+con : instance of {}
+    The connectivity data aggregated over the {} dimension. Instance type reflects that
+    of the current connectivity instance, without the {} dimension.
+"""
+docdict["combine_out_epochs"] = combine_out_base.format(
+    "Connectivity or SpectralConnectivity or TemporalConnectivity or SpectroTemporalConnectivity",  # noqa: E501
+    "epoch",
+    "epoch",
+)
+docdict["combine_out_freqs"] = combine_out_base.format(
+    "Connectivity or EpochConnectivity or TemporalConnectivity or EpochTemporalConnectivity",  # noqa: E501
+    "frequency",
+    "frequency",
+)
+docdict["combine_out_times"] = combine_out_base.format(
+    "Connectivity or EpochConnectivity or SpectralConnectivity or EpochSpectralConnectivity",  # noqa: E501
+    "time",
+    "time",
+)
+
+docdict["combine_median_note"] = """
+Passing in ``np.median`` is considered unsafe for complex data. Pass the string
+``"median"`` instead to compute the *marginal* median (i.e., the median of the
+real and imaginary components separately). See discussion here:
+https://github.com/scipy/scipy/pull/12676#issuecomment-783370228
 """
 
 # Verbose
@@ -315,14 +428,14 @@ ci : float | ``'sd'`` | ``'range'`` | None
 
 docdict["viz_tmin_tmax"] = """
 tmin, tmax : float | None
-    First and last times to plot, in seconds. If ``None`` take the first/last time
+    First and last times to plot, in seconds. If ``None`` take the first or last time
     in the data, respectively. Default is ``None``.
 """
 
 docdict["viz_fmin_fmax"] = """
 fmin, fmax : float | None
-    First and last frequencies to plot, in Hz. If ``None`` take the first/last frequency
-    in the data, respectively. Default is ``None``.
+    First and last frequencies to plot, in Hz. If ``None`` take the first or last
+    frequency in the data, respectively. Default is ``None``.
 """
 
 docdict["viz_colors_line"] = """
