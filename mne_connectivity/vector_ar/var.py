@@ -214,8 +214,6 @@ def vector_auto_regression(
                 times_used=times,
                 method="var",
                 metadata=metadata,
-                events=events,
-                event_id=event_id,
                 **model_params,
             )
         else:
@@ -228,8 +226,6 @@ def vector_auto_regression(
                 times_used=times,
                 method="var",
                 metadata=metadata,
-                events=events,
-                event_id=event_id,
                 **model_params,
             )
     else:
@@ -260,7 +256,6 @@ def vector_auto_regression(
                 n_nodes=n_nodes,
                 names=names,
                 indices="all",
-                n_epochs_used=n_epochs,
                 times_used=times,
                 method="var_dynamic",
                 metadata=metadata,
@@ -274,7 +269,6 @@ def vector_auto_regression(
                 n_nodes=n_nodes,
                 names=names,
                 indices="all",
-                n_epochs_used=n_epochs,
                 times_used=times,
                 method="var_dynamic",
                 metadata=metadata,

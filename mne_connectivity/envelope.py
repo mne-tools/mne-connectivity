@@ -14,6 +14,7 @@ from mne.source_estimate import _BaseSourceEstimate
 from mne.utils import _check_option, _ensure_int, _validate_type, logger, verbose, warn
 
 from .base import EpochConnectivity
+from .utils import _correct_signs
 
 
 @verbose
@@ -62,7 +63,7 @@ def envelope_correlation(
     :footcite:`HippEtAl2012,KhanEtAl2018`.
 
     If you would like to combine epochs after the fact using some function over the
-    epochs axis, see the :meth:`~mne_connectivity.EpochConnectivity.combine`
+    epochs axis, see the :meth:`~mne_connectivity.EpochConnectivity.combine_epochs`
     method of the :class:`~mne_connectivity.EpochConnectivity` class.
 
     References
@@ -187,9 +188,6 @@ def envelope_correlation(
     if n_nodes is None:
         raise RuntimeError("Passing in empty epochs object is not allowed.")
 
-    # apply function on correlation structure
-    n_epochs = len(corrs)
-
     # ravel from 2D connectivity into 1D array
     # over all epochs
     corr = np.array([_corr.flatten() for _corr in corrs])
@@ -204,7 +202,6 @@ def envelope_correlation(
         names=names,
         method="env_corr_orth" if orthogonalize else "env_corr",
         indices="lower",
-        n_epochs_used=n_epochs,
         n_nodes=n_nodes,
         events=events,
         event_id=event_id,
@@ -286,6 +283,7 @@ def _gen_sym_orth(data, n_iter, tol):
         for ii in range(n_iter):
             # eq. 4: UΣVᵀ = SVD(ZD), but our Z is transposed
             U, s, Vh = np.linalg.svd(Z.T * d, full_matrices=False)
+            U, Vh = _correct_signs(U, Vh)
             this_rank = (s >= s[0] * 1e-6).sum()
             if rank is None:
                 rank = this_rank

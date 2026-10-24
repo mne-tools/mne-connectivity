@@ -37,7 +37,6 @@ extensions = [
     "sphinx.ext.autosummary",
     "sphinx.ext.doctest",
     "sphinx.ext.intersphinx",
-    "sphinx_autodoc_typehints",
     "sphinx.ext.mathjax",
     "sphinx.ext.viewcode",
     "sphinx_gallery.gen_gallery",
@@ -61,7 +60,9 @@ copybutton_prompt_is_regexp = True
 autosummary_generate = True
 
 autodoc_default_options = {"inherited-members": None}
-autodoc_typehints = "signature"
+# Types are documented (in human-readable numpydoc form) in the docstrings
+# themselves, so don't also render the annotations into the signatures.
+autodoc_typehints = "none"
 
 # prevent jupyter notebooks from being run even if empty cell
 # nbsphinx_execute = 'never'
@@ -128,7 +129,7 @@ numpydoc_xref_ignore = {
     "lists",
     "func",
     "n_nodes",
-    "n_estimated_nodes",
+    "n_connections",
     "n_samples",
     "n_channels",
     "n_patterns",

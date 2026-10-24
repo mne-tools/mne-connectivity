@@ -371,9 +371,10 @@ def _prepare_xarray_mne_data_structures(conn_obj):
     conn_obj.attrs["metadata"] = _prepare_write_metadata(conn_obj.metadata)
 
     # write event IDs since they are stored as a list instead
-    if conn_obj.event_id is not None:
+    if hasattr(conn_obj, "event_id") and conn_obj.event_id is not None:
         conn_obj.attrs["event_id_keys"] = list(conn_obj.event_id.keys())
         conn_obj.attrs["event_id_vals"] = list(conn_obj.event_id.values())
+        del conn_obj.attrs["event_id"]
 
     return conn_obj
 
@@ -413,3 +414,33 @@ def _get_unique_multivariate_nodes_and_indices(indices):
     node_indices = (np.array(node_indices[0]), np.array(node_indices[1]))
 
     return unique_nodes, node_indices
+
+
+def _correct_signs(u, v=None):
+    """Sign correction to ensure deterministic output from SVD/Eigenvalue decomp.
+
+    Adjusts the columns of `u` (could be U returned from SVD, or eigvects; with shape
+    `[..., M, M]`) and the rows of `v` (if provided), such that the loadings in the
+    columns that are largest in absolute value are always positive. Ensures
+    deterministic output of decomposition-based methods.
+
+    Inspired by sklearn's `svd_flip` helper.
+    """
+    # Row index of the largest-magnitude element in each column.
+    max_abs_rows = np.argmax(np.abs(u), axis=-2)
+
+    # Gather u[..., max_abs_rows[..., j], j] for every batch and column.
+    pivot_values = np.take_along_axis(
+        u,
+        max_abs_rows[..., np.newaxis, :],
+        axis=-2,
+    )[..., 0, :]
+
+    signs = np.sign(pivot_values)
+    u *= signs[..., np.newaxis, :]
+
+    if v is not None:
+        v *= signs[..., :, np.newaxis]
+        return u, v
+
+    return u

@@ -1,0 +1,1 @@
+Ensure output of CaCoh, MIC, and Granger causality methods in :func:`~mne_connectivity.spectral_connectivity_epochs` and :func:`~mne_connectivity.spectral_connectivity_time`, output of CaCoh and MIC methods in :class:`~mne_connectivity.decoding.CoherencyDecomposition`, and output of :func:`~mne_connectivity.symmetric_orth`, is deterministic, by `Thomas Binns`_.
