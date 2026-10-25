@@ -97,7 +97,7 @@ The minimum required dependencies to run MNE-Connectivity are:
 - `scikit-learn <https://scikit-learn.org>`__ ≥ 1.5
 - `SciPy <https://scipy.org/>`__ ≥ 1.14
 - `tqdm <https://tqdm.github.io>`__ ≥ 4.66
-- `xarray <https://xarray.dev/>`__ ≥ 2023.11.0
+- `xarray <https://xarray.dev/>`__ ≥ 2024.10.0
 
 .. ↑↑↑ END CORE DEPS LIST. DO NOT EDIT! HANDLED BY MNE-TOOLS ↑↑↑
 
