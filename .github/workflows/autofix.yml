@@ -75,7 +75,7 @@ jobs:
           --format pylock.toml --output-file tools/pylock.ci-old.toml \
           --no-cache
       - name: Validate 'old' CI lockfile
-        uses: tsbinns/mne-tools/actions/check-lockfile@name-case
+        uses: mne-tools/mne-tools/actions/check-lockfile@main
         with:
           project-root: ${{ github.workspace }}
           lockfile-path: tools/pylock.ci-old.toml
