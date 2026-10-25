@@ -12,15 +12,17 @@ dev = [
 ]
 doc = [
   "intersphinx-registry",
+  "joblib",  # for parallelisation in examples
   "memory-profiler",
   "mne-bids",
-  "mne-connectivity[full]",
   "mne-qt-browser",
   "nibabel",
   "nilearn",
   "numpydoc",
   "pooch",
   "pydata-sphinx-theme >= 0.14.1",
+  "pyvista >= 0.44",  # released 2024-07-07, will become 0.45 on 2027-04-19
+  "pyvistaqt >= 0.11",  # released 2023-06-30, will become 0.12 on 2028-07-01
   "sphinx != 8.1.0",
   "sphinx-copybutton",
   "sphinx-design",
@@ -42,14 +44,13 @@ style = [
   "yamllint",
 ]
 test = [
-  "joblib",
-  "mne-bids",
-  "mne-connectivity[full]",
-  "pymatreader",
-  "pytest",
-  "pytest-cov",
-  "pytest-timeout",
-  "pytest-xdist",
+  "h5netcdf",
+  "h5py >= 2.4",
+  "joblib >= 0.8",
+  "pytest >= 8.0, != 9.1.0",  # https://github.com/pytest-dev/pytest/issues/14591
+  "pytest-cov >= 4.1",
+  "pytest-timeout >= 2.2",
+  "pytest-xdist >= 3.6.1",
   "statsmodels",
   "threadpoolctl",
 ]
@@ -102,7 +103,8 @@ full = [
 ]
 full-no-qt = [
   "h5netcdf",
-  "joblib",
+  "h5py >= 2.4",
+  "joblib >= 0.8",
   "numba >= 0.60",  # released 2024-06-13, will become 0.61 on 2027-01-20
   "pyvista >= 0.44",  # released 2024-07-07, will become 0.45 on 2027-04-19
   "pyvistaqt >= 0.11",  # released 2023-06-30, will become 0.12 on 2028-07-01
