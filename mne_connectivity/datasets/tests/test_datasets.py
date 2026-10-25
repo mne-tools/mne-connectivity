@@ -3,6 +3,7 @@ from collections.abc import Generator
 import numpy as np
 import pytest
 from mne import EpochsArray, create_info
+from mne.utils import check_version
 
 from mne_connectivity import (
     make_signals_in_freq_bands,
@@ -13,6 +14,9 @@ from mne_connectivity import (
 )
 
 
+@pytest.mark.skipif(
+    not check_version("mne", "1.10"), reason="Requires MNE v1.10.0 or higher"
+)  # Taper weights in TFR objects added in MNE v1.10.0
 @pytest.mark.parametrize("n_seeds", [1, 3])
 @pytest.mark.parametrize("n_targets", [1, 3])
 @pytest.mark.parametrize("snr", ["high", "low"])
