@@ -118,7 +118,6 @@ jobs:
         uses: mne-tools/mne-tools/actions/check-environment@main
         with:
           project-root: ${{ github.workspace }}
-          groups: lockfile_extras
         if: matrix.kind == 'old'
       - run: python -m pytest . -n "$PYTEST_XDIST_N" --timeout=180 --timeout-method=thread --cov=mne_connectivity --cov-report=xml --cov-config=pyproject.toml --verbose --ignore mne-python
       - uses: codecov/codecov-action@v7
