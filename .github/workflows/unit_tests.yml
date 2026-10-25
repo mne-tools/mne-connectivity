@@ -69,7 +69,7 @@ jobs:
           activate-environment: true
           cache-dependency-glob: |
             **/pylock.ci-old.toml
-          python-version: ${{ matrix.python }}
+          python-version: ${{ matrix.python-version }}
         if: matrix.kind == 'old'
       # Dependencies (if pip)
       - name: Install dependencies (pip)
