@@ -12,6 +12,7 @@ from mne import create_info, make_fixed_length_epochs
 from mne.annotations import Annotations
 from mne.epochs import BaseEpochs
 from mne.io import RawArray
+from mne.utils import check_version
 from numpy.testing import assert_allclose, assert_array_equal
 
 from mne_connectivity import (
@@ -397,6 +398,9 @@ def test_make_full_with_indices():
     assert_array_equal(con_ind.get_data("dense"), con_all.get_data())
 
 
+@pytest.mark.skipif(
+    not check_version("mne", "1.10"), reason="Requires MNE v1.10.0 or higher"
+)  # Taper weights in TFR objects added in MNE v1.10.0
 # Time-resolved CIPLV can involve division by zero on diagonal
 @pytest.mark.filterwarnings("ignore:divide by zero encountered in divide")
 @pytest.mark.parametrize("kind", ["epochs", "time"])
@@ -440,6 +444,9 @@ def test_make_spec_conn_full(data_make_full, kind):
         assert_allclose(lower_data, full_data, atol=1e-6)
 
 
+@pytest.mark.skipif(
+    not check_version("mne", "1.10"), reason="Requires MNE v1.10.0 or higher"
+)  # Taper weights in TFR objects added in MNE v1.10.0
 @pytest.mark.parametrize("kind", ["epochs", "time"])
 def test_make_psi_full(data_make_full, kind):
     """Test that filling missing values in PSI data works correctly."""

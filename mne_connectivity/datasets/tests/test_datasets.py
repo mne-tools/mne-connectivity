@@ -288,6 +288,9 @@ def test_make_signals_in_freq_bands_error_catch():
         )
 
 
+@pytest.mark.skipif(
+    not check_version("mne", "1.10"), reason="Requires MNE v1.10.0 or higher"
+)  # Taper weights in TFR objects added in MNE v1.10.0
 @pytest.mark.parametrize(("snr", "should_be_significant"), ([0.7, True], [0.2, False]))
 @pytest.mark.parametrize(
     ("use_coeffs", "state", "method"),
