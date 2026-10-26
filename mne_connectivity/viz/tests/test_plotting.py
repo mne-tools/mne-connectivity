@@ -498,7 +498,7 @@ def test_plot_line_connectivity_interactive():
     _fake_click(fig, line_ax, (line.get_xdata()[1], line.get_ydata()[1]), xform="data")
     (text,) = line_ax.texts
     assert (text.get_text(), text.get_alpha()) == ("ch1 ~ ch0", 1.0)
-    _fake_click(fig, line_ax, (line_ax.get_xlim()[0], line_ax.get_ylim()[1]), "data")
+    _fake_click(fig, line_ax, (0.01, 0.99))
     assert text.get_alpha() == 0.0
 
 
