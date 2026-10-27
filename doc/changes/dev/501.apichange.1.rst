@@ -1,0 +1,1 @@
+Return :class:`~mne_connectivity.VARConnectivity` and :class:`~mne_connectivity.EpochVARConnectivity` objects from :func:`~mne_connectivity.vector_auto_regression`, by `Thomas Binns`_.

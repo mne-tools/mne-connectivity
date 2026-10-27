@@ -1,0 +1,1 @@
+Add new :class:`~mne_connectivity.VARConnectivity` and :class:`~mne_connectivity.EpochVARConnectivity` classes for working with VAR models, by `Thomas Binns`_.

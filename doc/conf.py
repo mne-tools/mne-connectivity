@@ -121,6 +121,7 @@ numpydoc_xref_ignore = {
     "n_components",
     "n_step",
     "n_freqs",
+    "n_lags",
     "epochs",
     "freqs",
     "times",

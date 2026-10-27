@@ -2,6 +2,7 @@
 #
 # License: BSD (3-clause)
 
+import itertools
 import os
 from functools import partial
 
@@ -20,9 +21,11 @@ from mne_connectivity import (
     EpochSpectralConnectivity,
     EpochSpectroTemporalConnectivity,
     EpochTemporalConnectivity,
+    EpochVARConnectivity,
     SpectralConnectivity,
     SpectroTemporalConnectivity,
     TemporalConnectivity,
+    VARConnectivity,
     envelope_correlation,
     phase_slope_index,
     phase_slope_index_time,
@@ -68,6 +71,11 @@ def _prep_correct_connectivity_input(
     if conn_cls.is_epoched:
         correct_numpy_shape.append(n_epochs)
 
+    if conn_cls in (VARConnectivity, EpochVARConnectivity):
+        assert indices is None
+        assert tril is False
+        assert n_components == 0
+
     if indices is None:
         if tril:
             correct_numpy_shape.append((n_nodes - 1) * n_nodes // 2)
@@ -95,6 +103,9 @@ def _prep_correct_connectivity_input(
         EpochSpectroTemporalConnectivity,
     ):
         extra_kwargs["times"] = np.arange(3)
+        correct_numpy_shape.append(3)
+    if conn_cls in (VARConnectivity, EpochVARConnectivity):
+        extra_kwargs["lags"] = np.arange(3)
         correct_numpy_shape.append(3)
 
     return correct_numpy_shape, extra_kwargs
@@ -267,7 +278,10 @@ def test_connectivity_containers(conn_cls):
     ],
 )
 def test_connectivity_containers_multivariate(conn_cls):
-    """Test that connectivity containers work properly with multivariate data."""
+    """Test that connectivity containers work properly with multivariate data.
+
+    Don't test VARConnectivity or EpochVARConnectivity, since this isn't supported.
+    """
     indices = (
         np.array([[0, 1], [0, 1], [2, 3]]),
         np.array([[2, 3], [4, 5], [4, 5]]),
@@ -330,6 +344,43 @@ def test_connectivity_containers_multivariate(conn_cls):
             indicess=(np.arange(3), np.arange(3)),
             **index_kwargs,
         )
+
+
+@pytest.mark.parametrize("conn_cls", [VARConnectivity, EpochVARConnectivity])
+def test_var_connectivity_containers(conn_cls):
+    """Test that VAR connectivity containers work properly."""
+    # Construct test data
+    n_epochs, n_nodes = 4, 3
+    correct_numpy_shape, extra_kwargs = _prep_correct_connectivity_input(
+        conn_cls, n_nodes=n_nodes, tril=False, n_epochs=n_epochs
+    )
+    data = np.ones(correct_numpy_shape)
+
+    # Test initialization error checks
+    with pytest.raises(
+        ValueError, match="`indices` should not be provided for VAR models."
+    ):
+        conn_cls(data=data, indices="all", n_nodes=2, **extra_kwargs)
+    with pytest.raises(
+        NotImplementedError,
+        match="VAR models with multiple components are not currently supported.",
+    ):
+        mv_data = np.expand_dims(data, axis=-1)  # add components dim
+        conn_cls(data=mv_data, n_nodes=2, components=np.arange(1), **extra_kwargs)
+
+    # Test that connectivity container can be instantiated properly
+    conn = conn_cls(data=data, n_nodes=n_nodes, **extra_kwargs)
+    assert conn.indices == "all"
+    assert conn.shape == tuple(correct_numpy_shape)
+
+    # Test that `get_data` works as intended
+    assert_array_equal(conn.get_data(output="raveled"), data)
+    dense_shape = []  # should be ([n_epochs], n_nodes, n_nodes, ...) dense shape
+    if conn_cls.is_epoched:
+        dense_shape.append(n_epochs)
+    dense_shape.extend([n_nodes, n_nodes, len(extra_kwargs["lags"])])
+    for output in ["dense", "compact"]:  # compact is alias for dense with 'all' indices
+        assert conn.get_data(output).shape == tuple(dense_shape)
 
 
 def test_get_data_error_catch():
@@ -491,36 +542,21 @@ def test_make_smi_full(data_make_full, weighted):
         EpochTemporalConnectivity,
         EpochSpectralConnectivity,
         EpochSpectroTemporalConnectivity,
+        VARConnectivity,
+        EpochVARConnectivity,
     ],
 )
 def test_io(conn_cls, tmpdir):
     """Test writing and reading connectivity data."""
-    correct_numpy_shape = []
-    extra_kwargs = dict()
-    if conn_cls.is_epoched:
-        correct_numpy_shape.append(4)
-    correct_numpy_shape.append(4)
-    if conn_cls in (
-        SpectralConnectivity,
-        SpectroTemporalConnectivity,
-        EpochSpectralConnectivity,
-        EpochSpectroTemporalConnectivity,
-    ):
-        extra_kwargs["freqs"] = np.arange(4)
-        correct_numpy_shape.append(4)
-    if conn_cls in (
-        TemporalConnectivity,
-        SpectroTemporalConnectivity,
-        EpochTemporalConnectivity,
-        EpochSpectroTemporalConnectivity,
-    ):
-        extra_kwargs["times"] = np.arange(3)
-        correct_numpy_shape.append(3)
+    n_nodes = 2
+    correct_numpy_shape, extra_kwargs = _prep_correct_connectivity_input(
+        conn_cls, n_nodes=n_nodes, tril=False
+    )
 
     correct_numpy_input = np.ones(correct_numpy_shape)
 
     # create the connectivity data structure
-    conn = conn_cls(data=correct_numpy_input, n_nodes=2, **extra_kwargs)
+    conn = conn_cls(data=correct_numpy_input, n_nodes=n_nodes, **extra_kwargs)
 
     # temporary conn save
     fname = os.path.join(tmpdir, "connectivity.nc")
@@ -544,14 +580,14 @@ def test_io(conn_cls, tmpdir):
         ("phase-slope-index", "psi"),
         ("SMI", "smi"),
         ("wSMI", "wsmi"),
-        ("VAR(1)", "var"),
-        ("VAR(p)", "var"),
-        ("Time-varying VAR(1)", "var_dynamic"),
-        ("Time-varying VAR(p)", "var_dynamic"),
     ],
 )
 def test_deprecated_method_renaming_io(method_old_new, tmpdir):
-    """Test that deprecated methods are renamed when reading in connectivity data."""
+    """Test that deprecated methods are renamed when reading in connectivity data.
+
+    Test VAR methods separately, as this additionally involves packaging into a new
+    container class.
+    """
     method_old, method_new = method_old_new
 
     # Save connectivity container with deprecated method name
@@ -561,14 +597,67 @@ def test_deprecated_method_renaming_io(method_old_new, tmpdir):
     conn.save(os.path.join(tmpdir, "connectivity.nc"))
 
     # Read the connectivity container back in
-    method_old_escaped = method_old.replace("(", r"\(").replace(")", r"\)")
     with pytest.warns(
-        RuntimeWarning, match=f"The '{method_old_escaped}' method name was deprecated"
+        RuntimeWarning, match=f"The '{method_old}' method name was deprecated"
     ):
         new_conn = read_connectivity(os.path.join(tmpdir, "connectivity.nc"))
 
     # Assert that the method has been renamed
     assert new_conn.method == method_new
+
+
+@pytest.mark.parametrize("dynamic", [True, False])
+@pytest.mark.parametrize("n_lags", [1, 3])
+def test_deprecated_var_io(dynamic, n_lags, tmpdir):
+    """Test that deprecated VAR models get renamed and moved to VAR containers."""
+    n_nodes = 3
+    expected_shape = (n_nodes**2,)
+    conn_kwargs = dict()
+    if dynamic:
+        expected_shape = (4,) + expected_shape
+        method = "Time-varying VAR"
+    else:
+        method = "VAR"
+    if n_lags > 1:
+        method += "(p)"
+        expected_shape += (n_lags,)
+        conn_kwargs["times"] = list(range(n_lags))
+    else:
+        # Old VAR models did not have a lags dimension for models with order of 1
+        method += "(1)"
+    data = np.ones(expected_shape)
+    if dynamic and n_lags > 1:
+        cls = EpochTemporalConnectivity
+    elif dynamic and n_lags == 1:
+        cls = EpochConnectivity
+    elif not dynamic and n_lags > 1:
+        cls = TemporalConnectivity
+    else:
+        cls = Connectivity
+
+    # Save deprecated VAR model
+    conn = cls(data=data, n_nodes=n_nodes, method=method, **conn_kwargs)
+    conn.xarray.attrs["lags"] = n_lags  # lags were a kwarg, not a dim coordinate
+    conn.save(os.path.join(tmpdir, "connectivity.nc"))
+
+    # Read the connectivity container back in
+    method_escaped = method.replace("(", r"\(").replace(")", r"\)")
+    with pytest.warns(
+        RuntimeWarning, match=f"The '{method_escaped}' method name was deprecated"
+    ):
+        with pytest.warns(
+            RuntimeWarning,
+            match="Storing VAR models outside of the VARConnectivity",
+        ):
+            new_conn = read_connectivity(os.path.join(tmpdir, "connectivity.nc"))
+    assert isinstance(
+        new_conn, VARConnectivity if not dynamic else EpochVARConnectivity
+    )
+    assert new_conn.method == "var"
+    assert new_conn.dims == tuple(dim for dim in conn.dims if dim != "times") + (
+        "lags",
+    )
+    assert_array_equal(new_conn.lags, np.arange(n_lags))
 
 
 @pytest.mark.parametrize(
@@ -578,36 +667,19 @@ def test_deprecated_method_renaming_io(method_old_new, tmpdir):
         EpochTemporalConnectivity,
         EpochSpectralConnectivity,
         EpochSpectroTemporalConnectivity,
+        EpochVARConnectivity,
     ],
 )
 def test_append(conn_cls):
     """Test appending connectivity data."""
-    correct_numpy_shape = []
-    extra_kwargs = dict()
-    if conn_cls.is_epoched:
-        correct_numpy_shape.append(4)
-    correct_numpy_shape.append(4)
-    if conn_cls in (
-        SpectralConnectivity,
-        SpectroTemporalConnectivity,
-        EpochSpectralConnectivity,
-        EpochSpectroTemporalConnectivity,
-    ):
-        extra_kwargs["freqs"] = np.arange(4)
-        correct_numpy_shape.append(4)
-    if conn_cls in (
-        TemporalConnectivity,
-        SpectroTemporalConnectivity,
-        EpochTemporalConnectivity,
-        EpochSpectroTemporalConnectivity,
-    ):
-        extra_kwargs["times"] = np.arange(50)
-        correct_numpy_shape.append(50)
-
+    correct_numpy_shape, extra_kwargs = _prep_correct_connectivity_input(
+        conn_cls, n_nodes=2, tril=False, n_epochs=4
+    )
     correct_numpy_input = np.ones(correct_numpy_shape)
+
     events = np.zeros((correct_numpy_input.shape[0], 3), dtype=int)
     events[:, -1] = 1  # event ID
-    events[:, 0] = np.linspace(0, 50, len(events))
+    events[:, 0] = np.linspace(0, 3, len(events))
 
     # create the connectivity data structure
     conn = conn_cls(data=correct_numpy_input, n_nodes=2, events=events, **extra_kwargs)
@@ -723,17 +795,23 @@ def test_get_data_complex(indices, output, missing):
 
 
 @pytest.mark.parametrize(
-    "conn_cls",
+    "conn_cls, n_components",
     [
-        EpochConnectivity,
-        SpectralConnectivity,
-        EpochSpectralConnectivity,
-        TemporalConnectivity,
-        EpochTemporalConnectivity,
-        EpochSpectroTemporalConnectivity,
+        *itertools.product(
+            (
+                SpectralConnectivity,
+                TemporalConnectivity,
+                EpochConnectivity,
+                EpochSpectralConnectivity,
+                EpochTemporalConnectivity,
+                EpochSpectroTemporalConnectivity,
+            ),
+            (0, 2),
+        ),
+        (VARConnectivity, 0),
+        (EpochVARConnectivity, 0),
     ],
 )
-@pytest.mark.parametrize("n_components", [0, 2])
 @pytest.mark.parametrize(
     "method", ["mean", "median", lambda x, axis: np.mean(x, axis=axis)]
 )
@@ -741,19 +819,22 @@ def test_combine(conn_cls, n_components, method):
     """Test `combine_epochs/freqs/times` methods run correctly."""
     # Create connectivity container
     n_epochs, n_nodes = 4, 3
-    indices = np.tril_indices(n_nodes, k=-1)
-    if n_components > 0:  # make indices into multivariate format
-        indices = ([[ind] for ind in indices[0]], [[ind] for ind in indices[1]])
+    is_var_container = conn_cls in (VARConnectivity, EpochVARConnectivity)
     correct_numpy_shape, extra_kwargs = _prep_correct_connectivity_input(
         conn_cls,
         n_nodes=n_nodes,
-        tril=True,
+        tril=True if not is_var_container else False,
         n_epochs=n_epochs,
         n_components=n_components,
     )
+    if not is_var_container:
+        indices = np.tril_indices(n_nodes, k=-1)
+        if n_components > 0:  # make indices into multivariate format
+            indices = ([[ind] for ind in indices[0]], [[ind] for ind in indices[1]])
+        extra_kwargs["indices"] = indices
     rng = np.random.default_rng(44)
     data = rng.random(correct_numpy_shape)
-    con = conn_cls(data=data, n_nodes=n_nodes, indices=indices, **extra_kwargs)
+    con = conn_cls(data=data, n_nodes=n_nodes, **extra_kwargs)
 
     # Check combining methods
     aggr_dims = ["epochs", "times", "freqs"]
