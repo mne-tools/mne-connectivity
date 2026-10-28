@@ -590,12 +590,15 @@ def test_make_surrogate_numpy_seed_types(seed_factory, surrogate_func):
     """Test that both surrogate helpers accept NumPy-compatible RNG seeds."""
     data = np.arange(4 * 2 * 20, dtype=float).reshape(4, 2, 20)
     epochs = EpochsArray(
-        data=data, info=create_info(ch_names=2, sfreq=100, ch_types="eeg"),
+        data=data,
+        info=create_info(ch_names=2, sfreq=100, ch_types="eeg"),
         verbose=False,
     )
 
     surrogates = surrogate_func(
-        data=epochs, n_shuffles=1, rng_seed=seed_factory(),
+        data=epochs,
+        n_shuffles=1,
+        rng_seed=seed_factory(),
         return_generator=False,
     )
 
@@ -615,8 +618,12 @@ def test_make_surrogate_numpy_seed_types(seed_factory, surrogate_func):
 def test_make_signals_in_freq_bands_numpy_seed_types(seed_factory):
     """Test that simulated signals accept NumPy-compatible RNG seeds."""
     epochs = make_signals_in_freq_bands(
-        n_seeds=1, n_targets=1, freq_band=(10, 15),
-        n_epochs=2, duration=8.0, rng_seed=seed_factory(),
+        n_seeds=1,
+        n_targets=1,
+        freq_band=(10, 15),
+        n_epochs=2,
+        duration=8.0,
+        rng_seed=seed_factory(),
     )
 
     assert isinstance(epochs, EpochsArray)
