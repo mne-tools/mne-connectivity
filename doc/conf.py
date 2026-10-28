@@ -147,6 +147,9 @@ numpydoc_xref_ignore = {
     "variable",
 }
 numpydoc_xref_aliases = {
+    # NumPy random
+    "SeedSequence": "numpy.random.SeedSequence",
+    "BitGenerator": "numpy.random.BitGenerator",
     # Python
     "file-like": ":term:`file-like <python:file object>`",
     # Matplotlib
