@@ -616,7 +616,7 @@ def test_make_signals_in_freq_bands_numpy_seed_types(seed_factory):
     """Test that simulated signals accept NumPy-compatible RNG seeds."""
     epochs = make_signals_in_freq_bands(
         n_seeds=1, n_targets=1, freq_band=(10, 15),
-        n_epochs=2, duration=1.0, rng_seed=seed_factory(),
+        n_epochs=2, duration=8.0, rng_seed=seed_factory(),
     )
 
     assert isinstance(epochs, EpochsArray)
