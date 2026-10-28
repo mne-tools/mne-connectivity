@@ -11,6 +11,7 @@
 .. _Marijn van Vliet: https://github.com/wmvanvliet
 .. _Mina Jamshidi: https://github.com/minajamshidi
 .. _Mohammad Orabe: https://github.com/orabe
+.. _Okan Tiktas: https://github.com/OKAN-SOFTWARE
 .. _Qianliang Li: https://github.com/Avoide
 .. _Rebecca Stevenson: https://github.com/RebeccaStevenson
 .. _Richard Höchenberger: https://github.com/hoechenberger

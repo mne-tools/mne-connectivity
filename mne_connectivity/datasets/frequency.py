@@ -89,9 +89,8 @@ def make_signals_in_freq_bands(
         type (see :term:`mne:data channels`). If specified as a list, must be a
         list of ``n_seeds + n_targets`` channel names.
     rng_seed : int | array-like of int | SeedSequence | BitGenerator | Generator | None
-        Seed passed to ``numpy.random.default_rng``. ``SeedSequence``,
-        ``BitGenerator``, and ``Generator`` refer to classes in ``numpy.random``.
-        If ``None``, NumPy chooses a seed from entropy.
+        Seed passed to :func:`numpy.random.default_rng`. If ``None`` (default), a new
+        :class:`numpy.random.Generator` seeded from entropy is used.
 
     Returns
     -------

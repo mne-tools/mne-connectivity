@@ -26,9 +26,8 @@ def make_surrogate_resting_data(
     n_shuffles : int (default 1000)
         The number of surrogate datasets to create.
     rng_seed : int | array-like of int | SeedSequence | BitGenerator | Generator | None
-        Seed passed to ``numpy.random.default_rng``. ``SeedSequence``,
-        ``BitGenerator``, and ``Generator`` refer to classes in ``numpy.random``.
-        If ``None``, NumPy chooses a seed from entropy.
+        Seed passed to :func:`numpy.random.default_rng`. If ``None`` (default), a new
+        :class:`numpy.random.Generator` seeded from entropy is used.
     return_generator : bool (default True)
         Whether or not to return the surrogate data as a generator object instead of a
         list. This allows iterating over the surrogates without having to keep them all
@@ -148,9 +147,8 @@ def make_surrogate_evoked_data(
     n_shuffles : int (default 1000)
         The number of surrogate datasets to create.
     rng_seed : int | array-like of int | SeedSequence | BitGenerator | Generator | None
-        Seed passed to ``numpy.random.default_rng``. ``SeedSequence``,
-        ``BitGenerator``, and ``Generator`` refer to classes in ``numpy.random``.
-        If ``None``, NumPy chooses a seed from entropy.
+        Seed passed to :func:`numpy.random.default_rng`. If ``None`` (default), a new
+        :class:`numpy.random.Generator` seeded from entropy is used.
     return_generator : bool (default True)
         Whether or not to return the surrogate data as a generator object instead of a
         list. This allows iterating over the surrogates without having to keep them all
