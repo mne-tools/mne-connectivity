@@ -330,7 +330,7 @@ random_state : None | int | instance of ~numpy.random.RandomState | ~numpy.rando
     :class:`numpy.random.RandomState`. Existing
     :class:`numpy.random.RandomState` or :class:`numpy.random.Generator`
     instances are used directly.
-"""
+"""  # noqa: E501
 
 # Visualisation
 docdict["viz_info"] = """
