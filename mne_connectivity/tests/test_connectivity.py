@@ -616,6 +616,7 @@ def test_append(conn_cls, has_metadata, tmp_path):
         data=correct_numpy_input,
         n_nodes=2,
         events=events,
+        event_id={"event_1": 1},
         metadata=metadata,
         **extra_kwargs,
     )
@@ -625,10 +626,18 @@ def test_append(conn_cls, has_metadata, tmp_path):
     if has_metadata:
         conn_2.metadata["batch"] = 1
 
+    # the same event key must not map to different values
+    conn_2.events[:, 2] = 2
+    conn_2.event_id["event_1"] = 2
+    with pytest.raises(ValueError, match="event_id values must be the same"):
+        conn.append(conn_2)
+    conn_2.event_id["event_2"] = conn_2.event_id.pop("event_1")
+
     # append epochs
     conn.append(conn_2)
     assert conn.n_epochs == conn_2.n_epochs * 2
     assert len(conn.events) == conn.n_epochs
+    assert conn.event_id == {"event_1": 1, "event_2": 2}
     if has_metadata:
         assert conn.metadata["batch"].tolist() == [0] * len(events) + [1] * len(events)
         assert len(conn_2.metadata) == len(events)
