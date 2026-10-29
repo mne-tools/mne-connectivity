@@ -3,6 +3,7 @@
 .. _Alexander Kroner: https://github.com/alexanderkroner
 .. _Britta Westner: https://github.com/britta-wstnr
 .. _Daniel McCloy: https://dan.mccloy.info
+.. _Don Yin: https://github.com/Don-Yin
 .. _Eric Larson: https://github.com/larsoner
 .. _Giovanni Marraffini: https://github.com/GioMarraffini
 .. _Kenji Marshall: https://github.com/kenjimarshall

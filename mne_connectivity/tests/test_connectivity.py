@@ -580,7 +580,8 @@ def test_deprecated_method_renaming_io(method_old_new, tmpdir):
         EpochSpectroTemporalConnectivity,
     ],
 )
-def test_append(conn_cls):
+@pytest.mark.parametrize("has_metadata", [False, True])
+def test_append(conn_cls, has_metadata, tmp_path):
     """Test appending connectivity data."""
     correct_numpy_shape = []
     extra_kwargs = dict()
@@ -610,15 +611,43 @@ def test_append(conn_cls):
     events[:, 0] = np.linspace(0, 50, len(events))
 
     # create the connectivity data structure
-    conn = conn_cls(data=correct_numpy_input, n_nodes=2, events=events, **extra_kwargs)
+    metadata = pd.DataFrame({"batch": [0] * len(events)}) if has_metadata else None
+    conn = conn_cls(
+        data=correct_numpy_input,
+        n_nodes=2,
+        events=events,
+        event_id={"event_1": 1},
+        metadata=metadata,
+        **extra_kwargs,
+    )
 
     # create a copy of the connectivity
     conn_2 = conn.copy()
+    if has_metadata:
+        conn_2.metadata["batch"] = 1
+
+    # the same event key must not map to different values
+    conn_2.events[:, 2] = 2
+    conn_2.event_id["event_1"] = 2
+    with pytest.raises(ValueError, match="event_id values must be the same"):
+        conn.append(conn_2)
+    conn_2.event_id["event_2"] = conn_2.event_id.pop("event_1")
 
     # append epochs
     conn.append(conn_2)
     assert conn.n_epochs == conn_2.n_epochs * 2
     assert len(conn.events) == conn.n_epochs
+    assert conn.event_id == {"event_1": 1, "event_2": 2}
+    if has_metadata:
+        assert conn.metadata["batch"].tolist() == [0] * len(events) + [1] * len(events)
+        assert len(conn_2.metadata) == len(events)
+    else:
+        assert conn.metadata.empty
+
+    fname = tmp_path / "connectivity.nc"
+    conn.save(fname)
+    reloaded = read_connectivity(fname)
+    assert_array_equal(reloaded.metadata.to_numpy(), conn.metadata.to_numpy())
 
 
 @pytest.mark.parametrize(
