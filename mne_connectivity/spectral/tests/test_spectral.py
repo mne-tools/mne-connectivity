@@ -1153,6 +1153,9 @@ def test_multivar_spectral_connectivity_flipped_indices():
     assert_allclose(con_ts.get_data()[:, 0], con_st_ts.get_data()[:, 1])
 
 
+@pytest.mark.skipif(
+    not check_version("mne", "1.10"), reason="Requires MNE v1.10.0 or higher"
+)  # Taper weights in TFR objects added in MNE v1.10.0
 @pytest.mark.parametrize(
     "conn_func", [spectral_connectivity_epochs, spectral_connectivity_time]
 )
