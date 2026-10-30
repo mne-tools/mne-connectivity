@@ -14,45 +14,9 @@ from mne_connectivity import (
 from mne_connectivity.effective import phase_slope_index, phase_slope_index_time
 
 
-def test_psi():
-    """Test Phase Slope Index (PSI) estimation."""
-    sfreq = 50.0
-    n_signals = 3
-    n_epochs = 10
-    n_times = 500
-    rng = np.random.default_rng(42)
-    data = rng.standard_normal((n_epochs, n_signals, n_times))
-
-    # simulate time shifts
-    for i in range(n_epochs):
-        data[i, 1, 10:] = data[i, 0, :-10]  # signal 0 is ahead
-        data[i, 2, :-10] = data[i, 0, 10:]  # signal 2 is ahead
-
-    conn = phase_slope_index(data, mode="fourier", sfreq=sfreq)
-
-    assert conn.get_data(output="dense")[1, 0, 0] < 0
-    assert conn.get_data(output="dense")[2, 0, 0] > 0
-
-    # only compute for a subset of the indices
-    indices = (np.array([0]), np.array([1]))
-    conn_2 = phase_slope_index(data, mode="fourier", sfreq=sfreq, indices=indices)
-
-    # the measure is symmetric (sign flip)
-    assert_array_almost_equal(
-        conn_2.get_data()[0, 0], -conn.get_data(output="dense")[1, 0, 0]
-    )
-
-    cwt_freqs = np.arange(5.0, 20, 0.5)
-    conn_cwt = phase_slope_index(
-        data, mode="cwt_morlet", sfreq=sfreq, cwt_freqs=cwt_freqs, indices=indices
-    )
-
-    assert np.all(conn_cwt.get_data() > 0)
-    assert conn_cwt.shape[-1] == n_times
-
-
-def test_psi_time_properties():
-    """Test result properties of Phase Slope Index (PSI) estimation over time."""
+@pytest.mark.parametrize("psi_func", [phase_slope_index, phase_slope_index_time])
+def test_psi_properties(psi_func):
+    """Test result properties of Phase Slope Index (PSI) estimation over epochs/time."""
     # Simulate signals interacting in two distinct frequency bands
     fmin = (10, 25)
     fmax = (15, 30)
@@ -77,15 +41,13 @@ def test_psi_time_properties():
     # Compute PSI between signals in each frequency band
     freqs = np.arange(3, 33, 1)
     indices = (np.array([0, 1, 2, 3]), np.array([1, 0, 3, 2]))
-    conn = phase_slope_index_time(
-        data,
-        freqs=freqs,
-        indices=indices,
-        fmin=fmin,
-        fmax=fmax,
-        n_cycles=freqs / 1.25,
-        average=True,
-    )
+    func_kwargs = {}
+    if psi_func is phase_slope_index_time:
+        freqs = np.arange(3, 33, 1)
+        func_kwargs["freqs"] = freqs
+        func_kwargs["n_cycles"] = freqs / 1.25
+        func_kwargs["average"] = True
+    conn = psi_func(data, indices=indices, fmin=fmin, fmax=fmax, **func_kwargs)
     conn_data = conn.get_data()
 
     # Check directionality captured
