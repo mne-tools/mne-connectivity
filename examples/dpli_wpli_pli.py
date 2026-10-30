@@ -98,6 +98,7 @@ f = 10  # frequency of sinusoids (Hz)
 t = np.arange(0, T, 1 / fs)
 A = 1  # noise amplitude
 sigma = 0.5  # Gaussian noise variance
+rng = np.random.default_rng(42)
 
 data = []
 
@@ -106,8 +107,7 @@ for ps in zip(phase_differences):
     sig = []
     for _ in range(n_e):
         sig.append(
-            np.sin(2 * np.pi * f * t - ps)
-            + A * np.random.normal(0, sigma, size=t.shape)
+            np.sin(2 * np.pi * f * t - ps) + A * rng.normal(0, sigma, size=t.shape)
         )
     data.append(sig)
 
@@ -242,11 +242,9 @@ for A in A_list:
     sig = []
     # Generate other signal
     for _ in range(int(n_e / 2)):  # phase difference -pi/100
-        sig.append(
-            np.sin(2 * np.pi * f * t + np.pi / 100 + A * np.random.uniform(-1, 1))
-        )
+        sig.append(np.sin(2 * np.pi * f * t + np.pi / 100 + A * rng.uniform(-1, 1)))
     for _ in range(int(n_e / 2), n_e):  # phase difference pi/2
-        sig.append(np.sin(2 * np.pi * f * t - np.pi / 2 + A * np.random.uniform(-1, 1)))
+        sig.append(np.sin(2 * np.pi * f * t - np.pi / 2 + A * rng.uniform(-1, 1)))
     data.append(sig)
 
 data = np.swapaxes(np.array(data), 0, 1)

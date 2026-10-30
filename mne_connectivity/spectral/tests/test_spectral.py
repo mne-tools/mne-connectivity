@@ -69,9 +69,9 @@ def create_test_dataset(
     """
     # Use a case known to have no spurious correlations (it would bad if
     # tests could randomly fail):
-    rng = np.random.RandomState(0)
+    rng = np.random.default_rng(0)
 
-    data = rng.randn(n_signals, n_epochs * n_times)
+    data = rng.standard_normal((n_signals, n_epochs * n_times))
     times_data = np.linspace(tmin, tmax, n_times)
 
     # simulate connectivity from fstart to fend
@@ -86,7 +86,7 @@ def create_test_dataset(
         h_trans_bandwidth=trans_bandwidth,
     )
     # add some noise, so the spectrum is not exactly zero
-    data[1, :] += 1e-2 * rng.randn(n_times * n_epochs)
+    data[1, :] += 1e-2 * rng.standard_normal(n_times * n_epochs)
     data = data.reshape(n_signals, n_epochs, n_times)
     data = np.transpose(data, [1, 0, 2])
     return data, times_data
@@ -1263,9 +1263,9 @@ def test_spectral_connectivity_freq_decim():
 @pytest.mark.parametrize("kind", ("epochs", "ndarray", "stc", "combo"))
 def test_epochs_tmin_tmax(kind):
     """Test spectral.spectral_connectivity_epochs with epochs and arrays."""
-    rng = np.random.RandomState(0)
+    rng = np.random.default_rng(0)
     n_epochs, n_chs, n_times, sfreq, f = 10, 2, 2000, 1000.0, 20.0
-    data = rng.randn(n_epochs, n_chs, n_times)
+    data = rng.standard_normal((n_epochs, n_chs, n_times))
     sig = np.sin(2 * np.pi * f * np.arange(1000) / sfreq) * np.hanning(1000)
     data[:, :, 500:1500] += sig
     info = create_info(n_chs, sfreq, "eeg")
@@ -1451,9 +1451,9 @@ def test_spectral_connectivity_time_delayed():
 
     # 20-30 Hz connectivity
     fstart, fend = 20.0, 30.0
-    rng = np.random.RandomState(0)
+    rng = np.random.default_rng(0)
     # TODO: Replace with `make_signals_in_freq_bands` after tweaking tolerances in tests
-    data = rng.randn(n_signals, n_epochs * n_times + delay)
+    data = rng.standard_normal((n_signals, n_epochs * n_times + delay))
     # simulate connectivity from fstart to fend
     data[n_seeds:, :] = filter_data(
         data[:n_seeds, :],
@@ -1466,7 +1466,9 @@ def test_spectral_connectivity_time_delayed():
         h_trans_bandwidth=trans_bandwidth,
     )
     # add some noise, so the spectrum is not exactly zero
-    data[n_seeds:, :] += 1e-2 * rng.randn(n_seeds, n_times * n_epochs + delay)
+    data[n_seeds:, :] += 1e-2 * rng.standard_normal(
+        (n_seeds, n_times * n_epochs + delay)
+    )
     # shift the seeds to that the targets are a delayed version of them
     data[:n_seeds, : n_epochs * n_times] = data[:n_seeds, delay:]
     data = data[:, : n_times * n_epochs]

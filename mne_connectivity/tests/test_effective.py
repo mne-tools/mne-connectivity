@@ -20,8 +20,8 @@ def test_psi():
     n_signals = 3
     n_epochs = 10
     n_times = 500
-    rng = np.random.RandomState(42)
-    data = rng.randn(n_epochs, n_signals, n_times)
+    rng = np.random.default_rng(42)
+    data = rng.standard_normal((n_epochs, n_signals, n_times))
 
     # simulate time shifts
     for i in range(n_epochs):

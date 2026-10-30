@@ -44,9 +44,9 @@ def _compute_corrs_orig(data):
 
 def test_roundtrip_envelope_correlation(tmp_path):
     """Test write/read roundtrip for envelope correlation."""
-    rng = np.random.RandomState(0)
+    rng = np.random.default_rng(0)
     n_epochs, n_signals, n_times = 1, 4, 64
-    data = rng.randn(n_epochs, n_signals, n_times)
+    data = rng.standard_normal(size=(n_epochs, n_signals, n_times))
     data_hilbert = hilbert(data, axis=-1)
     corr = envelope_correlation(data_hilbert)
     tmp_file = tmp_path / "temp_file.nc"
@@ -58,9 +58,9 @@ def test_roundtrip_envelope_correlation(tmp_path):
 
 def test_empty_epochs_correlation():
     """Test empty epochs object results in error."""
-    rng = np.random.RandomState(0)
+    rng = np.random.default_rng(0)
     n_epochs, n_signals, n_times = 0, 4, 64
-    data = rng.randn(n_epochs, n_signals, n_times)
+    data = rng.standard_normal(size=(n_epochs, n_signals, n_times))
     data_hilbert = hilbert(data, axis=-1)
 
     with pytest.raises(RuntimeError, match="Passing in empty epochs"):
@@ -69,7 +69,7 @@ def test_empty_epochs_correlation():
 
 def test_envelope_correlation():
     """Test the envelope correlation function."""
-    rng = np.random.RandomState(0)
+    rng = np.random.default_rng(0)
     n_epochs, n_signals, n_times = 2, 4, 64
     # data and expected output are fixed for the comparison to FieldTrip below (data
     # originally generated with the legacy `np.random.RandomState(0).randn(...)`)
@@ -110,7 +110,9 @@ def test_envelope_correlation():
     with pytest.raises(ValueError, match="entry in data must be 2D"):
         envelope_correlation(data[np.newaxis])
     with pytest.raises(ValueError, match="n_nodes mismatch"):
-        envelope_correlation([rng.randn(2, 8), rng.randn(3, 8)])
+        envelope_correlation(
+            [rng.standard_normal(size=(2, 8)), rng.standard_normal(size=(3, 8))]
+        )
     with pytest.raises(ValueError, match="Invalid value.*orthogonalize.*"):
         envelope_correlation(data, orthogonalize="foo")
 
@@ -173,9 +175,9 @@ def test_envelope_correlation_bad_channels():
 def test_symmetric_orth(ndim, generator):
     """Test symmetric_orth."""
     n_ch, n_time = 5, 1000
-    rng = np.random.RandomState(0)
-    Z = rng.randn(n_ch, n_time)
-    mixing = rng.randn(n_ch, n_ch)
+    rng = np.random.default_rng(0)
+    Z = rng.standard_normal(size=(n_ch, n_time))
+    mixing = rng.standard_normal(size=(n_ch, n_ch))
     mixing = mixing @ mixing.T
     mixing += np.eye(n_ch)
     Z = mixing @ Z

@@ -18,7 +18,7 @@ warning_str = dict(
 
 def bivariate_var_data():
     """Bivariate dataset for VAR estimation."""
-    rng = np.random.RandomState(12345)
+    rng = np.random.default_rng(12345)
     e = rng.standard_normal((252, 2))
     y = np.zeros_like(e)
     y[:2] = e[:2]
@@ -46,14 +46,8 @@ def create_noisy_data(
         noise standard deviation.
     m : int
         The number of samples.
-    return_A : bool
-        Whether to return the A matrix
-    random_state : None | int | instance of ~numpy.random.RandomState
-        If ``random_state`` is an :class:`int`, it will be used as a seed for
-        :class:`~numpy.random.RandomState`. If ``None``, the seed will be
-        obtained from the operating system (see
-        :class:`~numpy.random.RandomState` for details). Default is
-        ``None``.
+    random_state : None | int | instance of ~numpy.random.Generator
+        Seed passed to :func:`numpy.random.default_rng`.
 
     Returns
     -------
@@ -65,7 +59,7 @@ def create_noisy_data(
         (Optional) if ``return_A`` is True, then returns the
         true linear system matrix.
     """
-    rng = np.random.RandomState(random_state)
+    rng = np.random.default_rng(random_state)
 
     mu = 0.0
     noise = rng.normal(mu, sigma, m)  # gaussian noise
@@ -174,7 +168,7 @@ def test_regression():
     model = vector_auto_regression(sample_data, lags=1)
 
     # test the recovered model
-    expected_A = np.array([[0.57733211, 0.57736152], [-0.57735815, 1.15471885]])
+    expected_A = np.array([[0.57735826, 0.57736025], [-0.57733510, 1.15469368]])
     assert_array_almost_equal(model.get_data(output="dense").squeeze(), expected_A)
 
     assert_array_almost_equal(
@@ -233,7 +227,6 @@ def test_vector_auto_regression_computation():
 
     Tests eigenvalue and state matrix recovery.
     """
-    np.random.RandomState(12345)
     sample_data, sample_eigs, sample_A = create_noisy_data(add_noise=True)
 
     # create 3D array input
@@ -258,9 +251,9 @@ def test_vector_auto_regression_computation():
 
 def test_vector_auto_regression():
     """Test the var function."""
-    rng = np.random.RandomState(0)
+    rng = np.random.default_rng(0)
     n_epochs, n_signals, n_times = 2, 4, 64
-    data = rng.randn(n_epochs, n_signals, n_times)
+    data = rng.standard_normal(size=(n_epochs, n_signals, n_times))
     times = np.arange(n_times)
 
     with pytest.raises(ValueError, match='"model" parameter'):
@@ -361,6 +354,11 @@ def test_dynamic_mixin(model, lags):
     n_samples = 10
     simulation = var.simulate(n_samples=n_samples)
     assert simulation.shape == (n_signals, n_samples)
+    # Check seeds are passed to `numpy.random.default_rng`
+    assert_array_equal(
+        var.simulate(n_samples=n_samples, random_state=44),
+        var.simulate(n_samples=n_samples, random_state=np.random.default_rng(44)),
+    )
 
     # Check the companion matrix can be computed for the VAR model
     companion = var.companion
