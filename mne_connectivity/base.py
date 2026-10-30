@@ -966,8 +966,8 @@ class BaseConnectivity:
         Parameters
         ----------
         fname : str | pathlib.Path
-            The filepath to save the data. Data is saved as netCDF files (``.nc``
-            extension).
+            The filepath to save the data. Data is saved as netCDF files (the ``.h5``
+            extension is recommended).
         """
         method = self.method
         indices = self.indices
