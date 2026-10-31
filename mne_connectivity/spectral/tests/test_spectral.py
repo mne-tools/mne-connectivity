@@ -5,7 +5,6 @@ import numpy as np
 import pandas as pd
 import pytest
 from mne import EpochsArray, SourceEstimate, create_info
-from mne.filter import filter_data
 from mne.utils import check_version
 from numpy.testing import (
     assert_allclose,
@@ -1355,53 +1354,30 @@ def test_spectral_connectivity_time_delayed():
     Granger scores only in the context of the noise-corrected TRGC metric,
     where the true directionality of the connections seems to be identified.
     """
-    mode = "multitaper"  # stick with single mode in interest of time
-
-    sfreq = 100.0  # Hz
-    n_signals = 4  # should be even!
-    n_seeds = n_signals // 2
-    n_epochs = 10
-    n_times = 200  # samples
-    trans_bandwidth = 2.0  # Hz
-    delay = 5  # samples (non-zero delay needed for GC to be >> 0)
-
-    indices = ([[0, 1]], [[2, 3]])
-
-    # 20-30 Hz connectivity
+    # Simulate data with connection in 20-30 Hz band where seeds lead targets
     fstart, fend = 20.0, 30.0
-    rng = np.random.default_rng(0)
-    # TODO: Replace with `make_signals_in_freq_bands` after tweaking tolerances in tests
-    data = rng.standard_normal((n_signals, n_epochs * n_times + delay))
-    # simulate connectivity from fstart to fend
-    data[n_seeds:, :] = filter_data(
-        data[:n_seeds, :],
-        sfreq,
-        fstart,
-        fend,
-        filter_length="auto",
-        fir_design="firwin2",
-        l_trans_bandwidth=trans_bandwidth,
-        h_trans_bandwidth=trans_bandwidth,
+    trans_bandwidth = 2.0  # Hz
+    data = make_signals_in_freq_bands(
+        n_seeds=2,
+        n_targets=2,
+        freq_band=(fstart, fend),
+        sfreq=100.0,
+        duration=2.0,
+        snr=0.5,
+        connection_delay=0.05,  # non-zero delay needed for GC to be >> 0
+        trans_bandwidth=trans_bandwidth,
+        rng_seed=0,
     )
-    # add some noise, so the spectrum is not exactly zero
-    data[n_seeds:, :] += 1e-2 * rng.standard_normal(
-        (n_seeds, n_times * n_epochs + delay)
-    )
-    # shift the seeds to that the targets are a delayed version of them
-    data[:n_seeds, : n_epochs * n_times] = data[:n_seeds, delay:]
-    data = data[:, : n_times * n_epochs]
-    data = data.reshape(n_signals, n_epochs, n_times)
-    data = np.transpose(data, [1, 0, 2])
 
-    freqs = np.arange(2.5, 50, 0.5)
+    freqs = np.arange(3, 50)
+    mode = "multitaper"  # stick with single mode in interest of time
+    indices = ([[0, 1]], [[2, 3]])
     con_st = spectral_connectivity_time(
         data,
         freqs,
         method=["gc", "gc_tr"],
         indices=indices,
         mode=mode,
-        sfreq=sfreq,
-        n_jobs=1,
         gc_n_lags=20,
         n_cycles=5,
         average=True,
@@ -1412,8 +1388,6 @@ def test_spectral_connectivity_time_delayed():
         method=["gc", "gc_tr"],
         indices=(indices[1], indices[0]),
         mode=mode,
-        sfreq=sfreq,
-        n_jobs=1,
         gc_n_lags=20,
         n_cycles=5,
         average=True,
@@ -1424,21 +1398,18 @@ def test_spectral_connectivity_time_delayed():
     ts_tr = con_ts[1].get_data()
     trgc = (st - ts) - (st_tr - ts_tr)
 
-    freqs = con_st[0].freqs
-    gidx = (freqs.index(fstart), freqs.index(fend) + 1)
-    bidx = (
-        freqs.index(fstart - trans_bandwidth * 2),
-        freqs.index(fend + trans_bandwidth * 2) + 1,
+    freqs = np.asarray(con_st[0].freqs)
+    freqs_con = (freqs >= fstart) & (freqs <= fend)
+    freqs_noise = (freqs < fstart - trans_bandwidth * 2) | (
+        freqs > fend + trans_bandwidth * 2
     )
-
     # assert that TRGC (i.e. net, noise-corrected connectivity) is positive and
     # >> 0 (i.e. that there is indeed a flow of info. from  seeds to targets,
     # as simulated)
-    assert np.all(trgc[:, gidx[0] : gidx[1]] > 0)
-    assert trgc[:, gidx[0] : gidx[1]].mean() > 0.4
+    assert_array_less(0, trgc[:, freqs_con])
+    assert_array_less(0.2, trgc[:, freqs_con].mean())
     # check that non-interacting freqs. have close to zero connectivity
-    assert np.allclose(trgc[0, : bidx[0]].mean(), 0, atol=0.1)
-    assert np.allclose(trgc[0, bidx[1] :].mean(), 0, atol=0.1)
+    assert_allclose(trgc[:, freqs_noise].mean(), 0, atol=0.1)
 
 
 @pytest.mark.parametrize("method", ["coh", "cohy", "plv", "pli", "wpli", "ciplv"])
