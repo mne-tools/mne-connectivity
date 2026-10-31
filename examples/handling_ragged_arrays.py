@@ -98,7 +98,8 @@ from mne_connectivity import spectral_connectivity_epochs
 # %%
 
 # Create random data
-data = np.random.randn(10, 5, 200)  # epochs x channels x times
+rng = np.random.default_rng(42)
+data = rng.standard_normal((10, 5, 200))  # epochs x channels x times
 sfreq = 50
 ragged_indices = (
     [[0, 1], [0, 1, 2, 3]],  # seeds

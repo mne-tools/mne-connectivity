@@ -12,7 +12,6 @@ from mne.utils import (
     _ensure_events,
     _on_missing,
     _validate_type,
-    check_random_state,
     copy_function_doc_to_method_doc,
     object_size,
     sizeof_fmt,
@@ -472,7 +471,7 @@ class DynamicMixin:
 
         # set noise function
         if noise_func is None:
-            rng = check_random_state(random_state)
+            rng = np.random.default_rng(random_state)
 
             def noise_func():
                 return rng.normal(size=(1, n_nodes))

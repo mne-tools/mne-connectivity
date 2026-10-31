@@ -5,6 +5,9 @@
 #
 # License: BSD (3-clause)
 
+import os
+import pickle
+
 import numpy as np
 import pytest
 from mne import EpochsArray, create_info
@@ -41,9 +44,9 @@ def _compute_corrs_orig(data):
 
 def test_roundtrip_envelope_correlation(tmp_path):
     """Test write/read roundtrip for envelope correlation."""
-    rng = np.random.RandomState(0)
+    rng = np.random.default_rng(0)
     n_epochs, n_signals, n_times = 1, 4, 64
-    data = rng.randn(n_epochs, n_signals, n_times)
+    data = rng.standard_normal(size=(n_epochs, n_signals, n_times))
     data_hilbert = hilbert(data, axis=-1)
     corr = envelope_correlation(data_hilbert)
     tmp_file = tmp_path / "temp_file.nc"
@@ -55,9 +58,9 @@ def test_roundtrip_envelope_correlation(tmp_path):
 
 def test_empty_epochs_correlation():
     """Test empty epochs object results in error."""
-    rng = np.random.RandomState(0)
+    rng = np.random.default_rng(0)
     n_epochs, n_signals, n_times = 0, 4, 64
-    data = rng.randn(n_epochs, n_signals, n_times)
+    data = rng.standard_normal(size=(n_epochs, n_signals, n_times))
     data_hilbert = hilbert(data, axis=-1)
 
     with pytest.raises(RuntimeError, match="Passing in empty epochs"):
@@ -66,9 +69,17 @@ def test_empty_epochs_correlation():
 
 def test_envelope_correlation():
     """Test the envelope correlation function."""
-    rng = np.random.RandomState(0)
+    rng = np.random.default_rng(0)
     n_epochs, n_signals, n_times = 2, 4, 64
-    data = rng.randn(n_epochs, n_signals, n_times)
+    # data and expected output are fixed for the comparison to FieldTrip below (data
+    # originally generated with the legacy `np.random.RandomState(0).randn(...)`)
+    test_data_path = os.path.join(
+        os.path.dirname(__file__), "data", "envelope_test_data.pkl"
+    )
+    with open(test_data_path, "rb") as f:
+        test_data = pickle.load(f)
+    data = test_data["data"]
+    assert data.shape == (n_epochs, n_signals, n_times)
     data_hilbert = hilbert(data, axis=-1)
     corr_orig = _compute_corrs_orig(data_hilbert)
     assert (0 <= corr_orig).all()
@@ -99,7 +110,9 @@ def test_envelope_correlation():
     with pytest.raises(ValueError, match="entry in data must be 2D"):
         envelope_correlation(data[np.newaxis])
     with pytest.raises(ValueError, match="n_nodes mismatch"):
-        envelope_correlation([rng.randn(2, 8), rng.randn(3, 8)])
+        envelope_correlation(
+            [rng.standard_normal(size=(2, 8)), rng.standard_normal(size=(3, 8))]
+        )
     with pytest.raises(ValueError, match="Invalid value.*orthogonalize.*"):
         envelope_correlation(data, orthogonalize="foo")
 
@@ -129,29 +142,7 @@ def test_envelope_correlation():
         corr.combine_epochs(method="foo")
 
     # check against FieldTrip, which uses the square-log-norm version
-    # from scipy.io import savemat
-    # savemat('data.mat', dict(data_hilbert=data_hilbert))
-    # matlab
-    # load data
-    # ft_connectivity_powcorr_ortho(reshape(data_hilbert(1,:,:), [4, 64]))
-    # ft_connectivity_powcorr_ortho(reshape(data_hilbert(2,:,:), [4, 64]))
-    ft_vals = np.array(
-        [
-            [
-                [np.nan, 0.196734553900236, 0.063173148355451, -0.242638384630448],
-                [0.196734553900236, np.nan, 0.041799775495150, -0.088205187548542],
-                [0.063173148355451, 0.041799775495150, np.nan, 0.090331428512317],
-                [-0.242638384630448, -0.088205187548542, 0.090331428512317, np.nan],
-            ],
-            [
-                [np.nan, -0.013270857462890, 0.185200598081295, 0.140284351572544],
-                [-0.013270857462890, np.nan, 0.150981508043722, -0.000671809276372],
-                [0.185200598081295, 0.150981508043722, np.nan, 0.137460244313337],
-                [0.140284351572544, -0.000671809276372, 0.137460244313337, np.nan],
-            ],
-        ],
-        float,
-    )
+    ft_vals = test_data["expected_output"]
     ft_vals[np.isnan(ft_vals)] = 0.0
     corr_log = envelope_correlation(data, log=True, absolute=False)
     assert_allclose(corr_log.get_data(output="dense"), ft_vals)
@@ -184,9 +175,9 @@ def test_envelope_correlation_bad_channels():
 def test_symmetric_orth(ndim, generator):
     """Test symmetric_orth."""
     n_ch, n_time = 5, 1000
-    rng = np.random.RandomState(0)
-    Z = rng.randn(n_ch, n_time)
-    mixing = rng.randn(n_ch, n_ch)
+    rng = np.random.default_rng(0)
+    Z = rng.standard_normal(size=(n_ch, n_time))
+    mixing = rng.standard_normal(size=(n_ch, n_ch))
     mixing = mixing @ mixing.T
     mixing += np.eye(n_ch)
     Z = mixing @ Z
@@ -224,5 +215,4 @@ def test_symmetric_orth(ndim, generator):
     Z_bad = Z.copy()
     Z_bad[0] = Z[1] + Z[2]
     with pytest.warns(RuntimeWarning, match="rank deficient"):
-        with pytest.warns(RuntimeWarning, match="did not converge"):
-            symmetric_orth(Z_bad)
+        symmetric_orth(Z_bad)

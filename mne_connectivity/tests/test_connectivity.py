@@ -40,8 +40,8 @@ def _make_test_epochs():
     n_signals = 3
     n_epochs = 10
     n_times = 500
-    rng = np.random.RandomState(42)
-    data = rng.randn(n_signals, n_epochs * n_times)
+    rng = np.random.default_rng(42)
+    data = rng.standard_normal((n_signals, n_epochs * n_times))
 
     # create Epochs
     info = create_info(
@@ -681,7 +681,7 @@ def test_events_handling(conn_func):
 
 
 @pytest.mark.parametrize(
-    "epochs", [_make_test_epochs(), np.random.RandomState(0).random((10, 3, 500))]
+    "epochs", [_make_test_epochs(), np.random.default_rng(0).random((10, 3, 500))]
 )
 @pytest.mark.parametrize(
     "func",
