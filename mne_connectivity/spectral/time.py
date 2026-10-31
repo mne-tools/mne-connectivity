@@ -626,7 +626,7 @@ def spectral_connectivity_time(
             "At least one value in n_cycles corresponds to a wavelet longer than the "
             "signal. Use less cycles, higher frequencies, or longer epochs."
         )
-    # A precomputed TFR may have decimated time points, not spectral frequencies.
+    # check for Nyquist (already checked for TFR input)
     if not spectrum_computed and np.any(freqs > sfreq / 2):
         raise ValueError(
             f"Frequencies {freqs[freqs > sfreq / 2]} Hz are larger than Nyquist = "
