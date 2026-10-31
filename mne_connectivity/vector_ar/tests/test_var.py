@@ -18,7 +18,7 @@ warning_str = dict(
 
 def bivariate_var_data():
     """Bivariate dataset for VAR estimation."""
-    rng = np.random.default_rng(12345)
+    rng = np.random.default_rng(0)
     e = rng.standard_normal((252, 2))
     y = np.zeros_like(e)
     y[:2] = e[:2]
@@ -27,12 +27,7 @@ def bivariate_var_data():
     return y
 
 
-def create_noisy_data(
-    add_noise,
-    sigma=1e-4,
-    m=100,
-    random_state=12345,
-):
+def create_noisy_data(add_noise, sigma=1e-4, m=100, rng=0):
     """Create noisy test data.
 
     Generate a 2x2 linear system, and perturb
@@ -46,7 +41,7 @@ def create_noisy_data(
         noise standard deviation.
     m : int
         The number of samples.
-    random_state : None | int | instance of ~numpy.random.Generator
+    rng : None | int | instance of ~numpy.random.Generator
         Seed passed to :func:`numpy.random.default_rng`.
 
     Returns
@@ -56,10 +51,9 @@ def create_noisy_data(
     sample_eigs : array
         The true eigenvalues of the system.
     sample_A : array
-        (Optional) if ``return_A`` is True, then returns the
-        true linear system matrix.
+        The true linear system matrix.
     """
-    rng = np.random.default_rng(random_state)
+    rng = np.random.default_rng(rng)
 
     mu = 0.0
     noise = rng.normal(mu, sigma, m)  # gaussian noise
@@ -96,7 +90,7 @@ def test_regression_against_statsmodels(lags, trend):
     """Test regression against any statsmodels changes in VAR model."""
     from statsmodels.tsa.vector_ar.var_model import VAR
 
-    sample_data, _, sample_A = create_noisy_data(add_noise=False, random_state=12345)
+    sample_data, _, sample_A = create_noisy_data(add_noise=False)
     block_size = sample_data.shape[0]
 
     # statsmodels feeds in (n_samples, n_channels)
@@ -168,7 +162,7 @@ def test_regression():
     model = vector_auto_regression(sample_data, lags=1)
 
     # test the recovered model
-    expected_A = np.array([[0.57735826, 0.57736025], [-0.57733510, 1.15469368]])
+    expected_A = np.array([[0.57736345, 0.57734573], [-0.57734088, 1.15468710]])
     assert_array_almost_equal(model.get_data(output="dense").squeeze(), expected_A)
 
     assert_array_almost_equal(
