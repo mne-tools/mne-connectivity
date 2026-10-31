@@ -54,12 +54,12 @@ def test_psi_properties(psi_func):
     CON_THRESH = 0.4
     NOISE_THRESH = 0.1
     # signals interacting at 10-15 Hz
-    assert conn_data[0, 0] > CON_THRESH  # 10-15 Hz; seed leads target
-    assert conn_data[1, 0] < -CON_THRESH  # 10-15 Hz; target follows seed
+    assert_array_less(CON_THRESH, conn_data[0, 0])  # 10-15 Hz; seed leads target
+    assert_array_less(conn_data[1, 0], -CON_THRESH)  # 10-15 Hz; target follows seed
     assert_array_less(np.abs(conn_data[:2, 1]), NOISE_THRESH)  # no 25-30 Hz interaction
     # signals interacting at 25-30 Hz
-    assert conn_data[2, 1] > CON_THRESH  # 25-30 Hz; seed leads target
-    assert conn_data[3, 1] < -CON_THRESH  # 25-30 Hz; target follows seed
+    assert_array_less(CON_THRESH, conn_data[2, 1])  # 25-30 Hz; seed leads target
+    assert_array_less(conn_data[3, 1], -CON_THRESH)  # 25-30 Hz; target follows seed
     assert_array_less(np.abs(conn_data[2:, 0]), NOISE_THRESH)  # no 10-15 Hz interaction
     # Check measure is symmetric (sign flip)
     assert_array_almost_equal(conn_data[(0, 2), :], -conn_data[(1, 3), :])
