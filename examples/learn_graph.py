@@ -10,6 +10,11 @@ independently per edge. All edge weights are learned jointly, which was found to
 more robust than Phase Lag Index for short recordings and to better capture
 individual-specific connectivity in real MEG data :footcite:`ShabestariEtAl2026`.
 
+Signals are *smooth* on a graph if nodes connected by strong edges have similar signals.
+:func:`~mne_connectivity.learn_graph` finds the graph on which the given signals are
+smoothest, with penalties that keep every node connected and control how dense the
+graph is.
+
 Using synthetic data with a known structure, we show how well the learned graph
 recovers a ground-truth graph, how ``beta`` controls the sparsity of the learned graph,
 and how a graph learned from several smooth signals recovers the geometry they live on.
@@ -24,6 +29,7 @@ and how a graph learned from several smooth signals recovers the geometry they l
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.collections import LineCollection
+from scipy.spatial.distance import pdist
 
 from mne_connectivity import Connectivity, learn_graph
 from mne_connectivity.viz import plot_connectivity
@@ -70,6 +76,25 @@ def precision_recall(W):
     recall = n_correct / np.count_nonzero(true_edges)
     return precision, recall
 
+
+########################################################################################
+# To see what this smoothness looks like in the data, we compute, for every pair of
+# nodes, how different their signals are (the mean squared difference over time
+# samples). Pairs of nodes that are connected in the ground-truth graph have more
+# similar signals than pairs that are not connected. These pairwise differences are
+# what :func:`~mne_connectivity.learn_graph` uses: the more similar the signals of two
+# nodes are, the cheaper it is to connect them.
+
+# %%
+
+pair_differences = pdist(X, metric="sqeuclidean") / n_times  # same order as triu
+
+fig, ax = plt.subplots(figsize=(6, 3.5), layout="constrained")
+bins = np.linspace(0, pair_differences.max(), 30)
+ax.hist(pair_differences[~true_edges], bins=bins, alpha=0.6, label="Not connected")
+ax.hist(pair_differences[true_edges], bins=bins, alpha=0.6, label="Connected")
+ax.set(xlabel="Mean squared difference between signals", ylabel="Number of node pairs")
+ax.legend()
 
 ########################################################################################
 # Now we learn a graph from ``X`` and compare it to the ground truth, using the default
