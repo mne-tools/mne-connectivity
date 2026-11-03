@@ -141,11 +141,11 @@ def learn_graph(
         \min_{w \geq 0} \; 2 w^\top z - \alpha \mathbf{1}^\top \log(Sw)
         + \beta \|w\|^2
 
-    where ``z`` is the vector of pairwise distances between nodes (rows of
-    ``data``) and ``S`` maps an edge-weight vector to the corresponding
+    where :math:`z` is the vector of pairwise distances between nodes (rows of
+    ``data``) and :math:`S` maps an edge-weight vector to the corresponding
     vector of node degrees. This is the model proposed in
     :footcite:`Kalofolias2016`, and is the same model used on real MEG data
-    (with parameters named ``sigma``, ``rho``) in
+    (with :math:`\alpha`, :math:`\beta` named :math:`\sigma`, :math:`\rho`) in
     :footcite:`ShabestariEtAl2026`, where it was found to be more robust than
     Phase Lag Index for short recordings and to better capture
     individual-specific connectivity. The default ``alpha=0.5, beta=0.5`` is
@@ -169,7 +169,7 @@ def learn_graph(
         more connected (higher-degree) graphs; every node is guaranteed at
         least one edge for any ``alpha > 0``. Default ``0.5``.
     beta : float
-        Controls the ``||w||^2`` penalty on edge weights. Must be
+        Controls the :math:`\|w\|^2` penalty on edge weights. Must be
         non-negative. Larger values yield denser graphs. ``beta=0`` yields
         the sparsest graph consistent with keeping every node connected, but
         lacks a strongly-convex term and so converges markedly more slowly
@@ -225,17 +225,17 @@ def learn_graph(
     Notes
     -----
     This implements the model of eq. 12 in :footcite:`Kalofolias2016` (their
-    ``alpha``, ``beta``), identical to the model used in
-    :footcite:`ShabestariEtAl2026` (that paper's ``sigma``, ``rho``). The
+    :math:`\alpha`, :math:`\beta`), identical to the model used in
+    :footcite:`ShabestariEtAl2026` (that paper's :math:`\sigma`, :math:`\rho`). The
     log-barrier term on node degrees (rather than on individual edge
     weights) is what distinguishes this model from a plain Gaussian-kernel
     graph construction: it guarantees every node has at least one edge,
     without preventing individual edges from being exactly zero, so sparse
     *and* fully connected graphs can be learned simultaneously.
 
-    Because ``z`` (the pairwise-distance vector) scales with the physical
+    Because :math:`z` (the pairwise-distance vector) scales with the physical
     units/amplitude of ``data``, and ``alpha``/``beta`` interact
-    multiplicatively with that scale, ``normalize=True`` divides ``z`` by its
+    multiplicatively with that scale, ``normalize=True`` divides :math:`z` by its
     mean before solving so that the default ``alpha=0.5, beta=0.5`` are
     reasonable starting points regardless of the input's scale. Use
     ``normalize=False`` for a literal, unscaled port of the optimization
