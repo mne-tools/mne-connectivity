@@ -25,7 +25,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.collections import LineCollection
 
-from mne_connectivity import learn_graph
+from mne_connectivity import Connectivity, learn_graph
+from mne_connectivity.viz import plot_connectivity
 
 ########################################################################################
 # Learning a Known Graph from Synthetic Smooth Signals
@@ -86,16 +87,24 @@ conn = learn_graph(X, verbose=False)
 W_learned = conn.get_data(output="dense")
 precision, recall = precision_recall(W_learned)
 
-fig, axes = plt.subplots(1, 2, figsize=(9, 4))
-axes[0].imshow(A_true, cmap="viridis")
-axes[0].set_title(f"Ground truth\n({np.count_nonzero(true_edges)} edges)")
-im = axes[1].imshow(W_learned, cmap="viridis")
-axes[1].set_title(
+########################################################################################
+# We can plot both graphs with :func:`~mne_connectivity.viz.plot_connectivity`.
+
+# %%
+
+conn_true = Connectivity(
+    data=A_true[triu], n_nodes=n_nodes, indices="upper", method="learn_graph"
+)
+fig_true = plot_connectivity(conn_true, cmap="viridis")
+fig_true.axes[0].set_title(f"Ground truth ({np.count_nonzero(true_edges)} edges)")
+
+fig_learned = plot_connectivity(
+    conn, cmap="viridis", mask=A_true.astype(bool), mask_style="contour"
+)
+fig_learned.axes[0].set_title(
     f"Learned ({np.count_nonzero(W_learned[triu])} edges)\n"
     f"precision={precision:.2f}, recall={recall:.2f}"
 )
-fig.colorbar(im, ax=axes[1], shrink=0.8, label="edge weight")
-fig.tight_layout()
 
 ########################################################################################
 # Effect of ``beta`` on Graph Sparsity
