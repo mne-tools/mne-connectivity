@@ -196,7 +196,9 @@ def learn_graph(
         shape ``(n_nodes, n_times)``, a 3D array of shape
         ``(n_epochs, n_nodes, n_times)``, a :class:`mne.Epochs` object, or a
         list/generator of 2D arrays or :class:`mne.SourceEstimate` /
-        :class:`mne.VolSourceEstimate` objects.
+        :class:`mne.VolSourceEstimate` objects. For :class:`mne.Epochs`, channels
+        marked as bad are not used to learn the graph; they are kept as nodes, with
+        their connections set to ``NaN``.
     %(names)s
         Ignored (and overridden by ``data.ch_names``) if ``data`` is an
         :class:`mne.Epochs` object.
@@ -345,14 +347,17 @@ def learn_graph(
         raise RuntimeError("Passing in empty epochs/data is not allowed.")
     first_epoch = _check_epoch_data(first_epoch, 0, None)
     n_nodes = first_epoch.shape[0]
-    if n_nodes < 2:
-        raise ValueError(f"learn_graph requires at least 2 nodes, got {n_nodes}")
+    # only good channels are learned; bad channels are kept as nodes (see below)
+    learned_nodes = np.arange(n_nodes) if picks is None else picks
+    n_learned = len(learned_nodes)
+    if n_learned < 2:
+        raise ValueError(f"learn_graph requires at least 2 nodes, got {n_learned}")
     epochs_iter = _iter_epochs(first_epoch, data_iter, n_nodes, picks)
     del first_epoch
 
-    logger.info(f"Learning graph(s) with {n_nodes} nodes each")
+    logger.info(f"Learning graph(s) with {n_learned} nodes each")
 
-    iu, ju = np.triu_indices(n_nodes, k=1)
+    iu, ju = np.triu_indices(n_learned, k=1)
 
     parallel, my_learn_one, _ = parallel_func(
         _learn_graph_one_epoch, n_jobs, verbose=verbose
@@ -362,7 +367,7 @@ def learn_graph(
             epoch_data,
             iu,
             ju,
-            n_nodes,
+            n_learned,
             metric,
             normalize,
             alpha,
@@ -374,15 +379,21 @@ def learn_graph(
         for epoch_data in epochs_iter
     )
 
-    # edge weights are ordered as (iu, ju); fill the symmetric matrix, then keep the
-    # part selected by indices
-    con = np.zeros((len(results), n_nodes, n_nodes))
-    con[:, iu, ju] = [w for w, _, _ in results]
-    con[:, ju, iu] = con[:, iu, ju]
+    # edge weights are ordered as (iu, ju) over the learned nodes; fill the symmetric
+    # matrix over all nodes (connections of bad channels stay NaN), then keep the part
+    # selected by indices
+    con = np.full((len(results), n_nodes, n_nodes), np.nan)
+    rows, cols = learned_nodes[iu], learned_nodes[ju]
+    con[:, rows, cols] = [w for w, _, _ in results]
+    con[:, cols, rows] = con[:, rows, cols]
+    con[:, learned_nodes, learned_nodes] = 0.0
     if indices == "all":
         con = con.reshape(len(results), -1)
     else:
-        tri = np.tril_indices(n_nodes, k=-1) if indices == "lower" else (iu, ju)
+        if indices == "lower":
+            tri = np.tril_indices(n_nodes, k=-1)
+        else:  # "upper"
+            tri = np.triu_indices(n_nodes, k=1)
         con = con[:, tri[0], tri[1]]
 
     logger.info(f"[learn_graph Done] Learned {len(results)} graph(s)")

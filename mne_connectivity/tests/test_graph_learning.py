@@ -122,6 +122,18 @@ def test_learn_graph_epochs_input():
     )
     assert conn.get_data(output="dense").shape == (n_epochs, n_nodes, n_nodes)
 
+    # bad channels are kept as nodes, but their connections are not learned (NaN)
+    bad = 2
+    epochs.info["bads"] = [epochs.ch_names[bad]]
+    dense = learn_graph(epochs, indices="all", verbose=False).get_data(output="dense")
+    assert dense.shape == (n_epochs, n_nodes, n_nodes)
+    assert np.all(np.isnan(dense[:, bad, :])) and np.all(np.isnan(dense[:, :, bad]))
+    good = np.setdiff1d(np.arange(n_nodes), [bad])
+    dense_good = learn_graph(
+        epochs.copy().drop_channels(epochs.info["bads"]), indices="all", verbose=False
+    ).get_data(output="dense")
+    assert_array_equal(dense[np.ix_(np.arange(n_epochs), good, good)], dense_good)
+
 
 def test_learn_graph_2d_output():
     """Test the output for a bare 2D array, for each indices option."""
