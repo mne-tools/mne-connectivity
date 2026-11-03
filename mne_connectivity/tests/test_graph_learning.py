@@ -1,3 +1,5 @@
+import weakref
+
 import mne
 import numpy as np
 import pytest
@@ -147,8 +149,8 @@ def test_learn_graph_2d_output():
         assert_array_equal(conn.get_data(output="dense"), dense)
 
 
-def test_learn_graph_n_jobs_identical():
-    """Test that n_jobs=1 and n_jobs=2 give identical results."""
+def test_learn_graph_n_jobs_and_generator():
+    """Test n_jobs=1, n_jobs=2 and generator input give identical results."""
     rng = np.random.default_rng(5)
     n_nodes, n_epochs, n_times_per_epoch = 5, 4, 200
     X, _ = _make_synthetic_graph_signals(n_nodes, n_epochs * n_times_per_epoch, rng)
@@ -162,6 +164,18 @@ def test_learn_graph_n_jobs_identical():
     conn_serial = learn_graph(X3, n_jobs=1, verbose=False)
     conn_parallel = learn_graph(X3, n_jobs=2, verbose=False)
     assert_allclose(conn_serial.get_data(), conn_parallel.get_data())
+
+    refs = []
+
+    def epoch_generator():
+        for epoch_data in X3:
+            assert all(ref() is None for ref in refs[:-1])
+            epoch_data = epoch_data.copy()
+            refs.append(weakref.ref(epoch_data))
+            yield epoch_data
+
+    conn_generator = learn_graph(epoch_generator(), verbose=False)
+    assert_allclose(conn_serial.get_data(), conn_generator.get_data())
 
 
 @pytest.mark.parametrize("indices", ["lower", "upper", "all"])

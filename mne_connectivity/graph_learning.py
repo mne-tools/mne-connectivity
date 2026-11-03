@@ -2,6 +2,8 @@
 #
 # License: BSD (3-clause)
 
+import itertools
+
 import numpy as np
 from mne import BaseEpochs
 from mne._fiff.pick import _picks_to_idx
@@ -111,6 +113,40 @@ def _learn_graph_one_epoch(
             f"(tol={tol}); consider increasing max_iter or tol"
         )
     return w, n_iter, converged
+
+
+def _check_epoch_data(epoch_data, ei, n_nodes):
+    """Check a single epoch of data and return it as a 2D array."""
+    if isinstance(epoch_data, _BaseSourceEstimate):
+        epoch_data = epoch_data.data
+    epoch_data = np.asarray(epoch_data)
+    if epoch_data.ndim != 2:
+        raise ValueError(f"Each entry in data must be 2D, got shape {epoch_data.shape}")
+    if np.iscomplexobj(epoch_data):
+        raise ValueError(
+            "learn_graph does not support complex-valued data, got "
+            f"dtype {epoch_data.dtype}"
+        )
+    if n_nodes is not None and epoch_data.shape[0] != n_nodes:
+        raise ValueError(
+            f"n_nodes mismatch between data[0] and data[{ei}], got "
+            f"{n_nodes} and {epoch_data.shape[0]}"
+        )
+    return epoch_data
+
+
+def _iter_epochs(first_epoch, data_iter, n_nodes, picks):
+    """Yield checked epochs one at a time, starting with the already-checked first."""
+    epoch_data = first_epoch
+    del first_epoch
+    for ei in itertools.count(1):
+        if picks is not None:
+            epoch_data = epoch_data[picks]
+        yield epoch_data
+        epoch_data = next(data_iter, None)
+        if epoch_data is None:
+            return
+        epoch_data = _check_epoch_data(epoch_data, ei, n_nodes)
 
 
 @verbose
@@ -301,40 +337,20 @@ def learn_graph(
     else:
         data_iter = data
 
-    n_nodes = None
-    epochs_data = []
-    for ei, epoch_data in enumerate(data_iter):
-        if isinstance(epoch_data, _BaseSourceEstimate):
-            epoch_data = epoch_data.data
-        epoch_data = np.asarray(epoch_data)
-        if epoch_data.ndim != 2:
-            raise ValueError(
-                f"Each entry in data must be 2D, got shape {epoch_data.shape}"
-            )
-        if np.iscomplexobj(epoch_data):
-            raise ValueError(
-                "learn_graph does not support complex-valued data, got "
-                f"dtype {epoch_data.dtype}"
-            )
-        this_n_nodes, _ = epoch_data.shape
-        if ei > 0 and this_n_nodes != n_nodes:
-            raise ValueError(
-                f"n_nodes mismatch between data[0] and data[{ei}], got "
-                f"{n_nodes} and {this_n_nodes}"
-            )
-        n_nodes = this_n_nodes
-        if picks is not None:
-            epoch_data = epoch_data[picks]
-        epochs_data.append(epoch_data)
-
-    if n_nodes is None:
+    # the first epoch determines the number of nodes; the others are validated and
+    # learned one at a time, so that a generator is never loaded into memory at once
+    data_iter = iter(data_iter)
+    first_epoch = next(data_iter, None)
+    if first_epoch is None:
         raise RuntimeError("Passing in empty epochs/data is not allowed.")
+    first_epoch = _check_epoch_data(first_epoch, 0, None)
+    n_nodes = first_epoch.shape[0]
     if n_nodes < 2:
         raise ValueError(f"learn_graph requires at least 2 nodes, got {n_nodes}")
+    epochs_iter = _iter_epochs(first_epoch, data_iter, n_nodes, picks)
+    del first_epoch
 
-    logger.info(
-        f"Learning graph(s) for {len(epochs_data)} epoch(s), {n_nodes} nodes each"
-    )
+    logger.info(f"Learning graph(s) with {n_nodes} nodes each")
 
     iu, ju = np.triu_indices(n_nodes, k=1)
 
@@ -355,7 +371,7 @@ def learn_graph(
             tol,
             step_size,
         )
-        for epoch_data in epochs_data
+        for epoch_data in epochs_iter
     )
 
     # edge weights are ordered as (iu, ju); fill the symmetric matrix, then keep the
@@ -369,7 +385,7 @@ def learn_graph(
         tri = np.tril_indices(n_nodes, k=-1) if indices == "lower" else (iu, ju)
         con = con[:, tri[0], tri[1]]
 
-    logger.info("[learn_graph Done]")
+    logger.info(f"[learn_graph Done] Learned {len(results)} graph(s)")
 
     con_kwargs = dict(
         names=names,
