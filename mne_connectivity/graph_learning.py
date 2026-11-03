@@ -359,10 +359,9 @@ def learn_graph(
         n_nodes=n_nodes,
     )
     if single_epoch:
-        return Connectivity(data=con[0], n_epochs_used=1, **con_kwargs)
+        return Connectivity(data=con[0], **con_kwargs)
     return EpochConnectivity(
         data=con,
-        n_epochs_used=n_epochs,
         events=events,
         event_id=event_id,
         metadata=metadata,
