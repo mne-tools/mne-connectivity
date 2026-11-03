@@ -141,7 +141,8 @@ fig.tight_layout()
 # Learning the Geometry Behind Smooth Signals
 # ===========================================
 #
-# In the example above, the graph was used to generate the signals. A graph can also be
+# In the example above, the signals were smooth *on the graph*: they were generated from
+# the graph, so that strongly connected nodes have similar values. A graph can also be
 # learned from signals that are smooth for another reason, for instance because they
 # vary smoothly in space. Here, adapting the graph-learning tutorial that Vassilis
 # Kalofolias wrote for `PyGSP <https://github.com/epfl-lts2/pygsp/pull/57>`__, we place
