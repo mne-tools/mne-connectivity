@@ -110,12 +110,16 @@ fig_learned.axes[0].set_title(
 # Effect of ``beta`` on Graph Sparsity
 # =====================================
 #
-# ``alpha`` controls how strongly node degrees are pulled away from zero (preventing
-# isolated nodes), while ``beta`` controls the density of the learned graph: small
-# values of ``beta`` give sparse graphs, and increasing ``beta`` yields progressively
-# denser graphs. Here, a sparser graph contains mostly true edges (high precision) but
-# misses some of them (low recall), whereas a denser graph finds all true edges at the
-# cost of including spurious ones.
+# The ``alpha`` term (a logarithmic penalty on the node degrees) only guarantees that
+# every node keeps at least one edge, i.e., that no node is isolated. On its own
+# (``beta=0``), it gives the sparsest graph that satisfies this. The ``beta`` term
+# penalizes large edge weights, which spreads the weight over more edges and so makes
+# the graph denser. Which edges are learned depends only on the product
+# ``alpha * beta``: changing ``alpha`` and ``beta`` while keeping their product fixed
+# only rescales the edge weights :footcite:`Kalofolias2016`. Here, we keep ``alpha``
+# fixed and vary ``beta``. A sparser graph contains mostly true edges (high precision)
+# but misses some of them (low recall), whereas a denser graph finds all true edges at
+# the cost of including spurious ones.
 
 # %%
 
