@@ -211,7 +211,7 @@ def learn_graph(
     graph : instance of Connectivity or EpochConnectivity
         The learned graph(s): a symmetric, zero-diagonal, non-negative
         weighted adjacency, stored as the raveled upper-triangular values
-        (``indices='upper'``); the diagonal is always ``0``. A single
+        (``indices='upper'``). A single
         :class:`~mne_connectivity.Connectivity` is returned if ``data`` was a
         bare 2D array; otherwise an
         :class:`~mne_connectivity.EpochConnectivity` is returned with one
