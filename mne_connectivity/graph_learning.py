@@ -198,8 +198,8 @@ def learn_graph(
         Override the closed-form step size
         ``1 / (1 + 2 * beta + sqrt(2 * (n_nodes - 1)))``. Useful for matching
         the step size used by another implementation (e.g. for validation)
-        or for trading off convergence speed against stability; convergence
-        is only guaranteed for the default. Default ``None``.
+        or for trading off convergence speed against stability. Default
+        ``None``.
     %(n_jobs)s
         Each epoch's graph is learned independently, so this parallelizes
         across epochs; for small numbers of nodes/iterations the joblib
