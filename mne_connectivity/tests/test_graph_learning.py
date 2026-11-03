@@ -220,6 +220,12 @@ def test_learn_graph_bad_inputs():
         learn_graph(X, alpha=-1)
     with pytest.raises(ValueError, match="beta must be"):
         learn_graph(X, beta=-1)
+    with pytest.raises(ValueError, match="step_size must be"):
+        learn_graph(X, step_size=0)
+    with pytest.raises(ValueError, match="step_size must be"):
+        learn_graph(X, step_size=-0.1)
+    with pytest.raises(TypeError, match="step_size"):
+        learn_graph(X, step_size="auto")
     with pytest.raises(ValueError, match="Invalid value for the 'indices'"):
         learn_graph(X, indices="symmetric")
     with pytest.raises(TypeError, match="indices must be an instance of str"):

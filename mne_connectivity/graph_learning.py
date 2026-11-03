@@ -203,7 +203,8 @@ def learn_graph(
         node-degree updates. Default ``1e-4``.
     step_size : float | None
         Override the closed-form step size
-        ``1 / (1 + 2 * beta + sqrt(2 * (n_nodes - 1)))``. Useful for matching
+        ``1 / (1 + 2 * beta + sqrt(2 * (n_nodes - 1)))``. Must be strictly
+        positive. Useful for matching
         the step size used by another implementation (e.g. for validation)
         or for trading off convergence speed against stability. Default
         ``None``.
@@ -278,6 +279,9 @@ def learn_graph(
         raise ValueError(f"max_iter must be >= 1, got {max_iter}")
     if tol <= 0:
         raise ValueError(f"tol must be > 0, got {tol}")
+    _validate_type(step_size, ("numeric", None), "step_size")
+    if step_size is not None and step_size <= 0:
+        raise ValueError(f"step_size must be > 0, got {step_size}")
 
     events = None
     event_id = None
