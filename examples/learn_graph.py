@@ -241,6 +241,24 @@ fig.tight_layout()
 plt.show()
 
 ########################################################################################
+# Which Graph Is Learned Depends on What Makes Signals Similar
+# ============================================================
+#
+# In neurophysiological recordings, the signals are typically the time samples of the
+# data, and the learned graph connects nodes whose signals are similar, whatever the
+# reason for that similarity. In sensor space, field spread makes nearby sensors record
+# similar signals, so a graph learned from sensor data can largely reflect the sensor
+# layout, much like the geometry recovered above. Such a graph is useful when the aim is
+# a data-driven description of how the sensors relate to each other, e.g., to filter or
+# classify sensor data with graph signal processing methods. When the aim is instead to
+# find functional connections between brain regions, spatial proximity is a confound,
+# and learning the graph from source-reconstructed signals (e.g., label time courses)
+# reduces, though does not remove, the similarity caused by signal leakage. In both
+# cases, as the example above shows, the signals need to vary in many independent ways
+# (many signals, or in recordings, many time samples) for the graph to capture an
+# underlying structure rather than coincidental similarities of values.
+
+########################################################################################
 # References
 # ----------
 # .. footbibliography::
