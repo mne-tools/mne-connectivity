@@ -345,7 +345,6 @@ def learn_graph(
         for epoch_data in epochs_data
     )
 
-    n_epochs = len(results)
     # edge weights are already ordered as np.triu_indices(n_nodes, k=1), i.e., the
     # upper-triangular storage expected by indices="upper"
     con = np.array([w for w, _, _ in results])
