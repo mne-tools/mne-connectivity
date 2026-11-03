@@ -159,8 +159,7 @@ def learn_graph(
         shape ``(n_nodes, n_times)``, a 3D array of shape
         ``(n_epochs, n_nodes, n_times)``, a :class:`mne.Epochs` object, or a
         list/generator of 2D arrays or :class:`mne.SourceEstimate` /
-        :class:`mne.VolSourceEstimate` objects. See Returns for how the
-        output depends on the input type.
+        :class:`mne.VolSourceEstimate` objects.
     %(names)s
         Ignored (and overridden by ``data.ch_names``) if ``data`` is an
         :class:`mne.Epochs` object.
