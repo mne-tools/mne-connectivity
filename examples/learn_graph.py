@@ -41,7 +41,7 @@ from mne_connectivity.viz import plot_connectivity
 
 # %%
 
-rng = np.random.default_rng(0)
+rng = np.random.default_rng(3)
 n_nodes = 30
 community = np.repeat([0, 1, 2], n_nodes // 3)
 p_edge = np.where(community[:, np.newaxis] == community, 0.4, 0.02)
