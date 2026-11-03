@@ -117,8 +117,8 @@ def _learn_graph_one_epoch(
 @fill_doc
 def learn_graph(
     data,
-    names=None,
     *,
+    names=None,
     alpha=0.5,
     beta=0.5,
     metric="sqeuclidean",
