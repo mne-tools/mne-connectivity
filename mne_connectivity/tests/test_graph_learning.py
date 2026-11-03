@@ -121,13 +121,30 @@ def test_learn_graph_epochs_input():
     assert conn.get_data(output="dense").shape == (n_epochs, n_nodes, n_nodes)
 
 
-def test_learn_graph_bare_2d_returns_connectivity():
-    """Test that a bare 2D array returns Connectivity, not EpochConnectivity."""
-    rng = np.random.default_rng(4)
-    X, _ = _make_synthetic_graph_signals(5, 500, rng)
+def test_learn_graph_2d_output():
+    """Test the output for a bare 2D array, for each indices option."""
+    rng = np.random.default_rng(7)
+    n_nodes = 6
+    X, _ = _make_synthetic_graph_signals(n_nodes, 500, rng)
     conn = learn_graph(X, verbose=False)
     assert isinstance(conn, Connectivity)
     assert not isinstance(conn, EpochConnectivity)
+    assert conn.indices == "lower"  # default
+
+    # each indices option stores (part of) the same symmetric graph
+    dense = learn_graph(X, indices="all", verbose=False).get_data(output="dense")
+    assert_array_equal(np.diag(dense), 0)
+    assert_allclose(dense, dense.T)
+    expected_raveled = {
+        "lower": dense[np.tril_indices(n_nodes, k=-1)],
+        "upper": dense[np.triu_indices(n_nodes, k=1)],
+        "all": dense.ravel(),
+    }
+    for indices, expected in expected_raveled.items():
+        conn = learn_graph(X, indices=indices, verbose=False)
+        assert conn.indices == indices
+        assert_array_equal(conn.get_data(output="raveled"), expected)
+        assert_array_equal(conn.get_data(output="dense"), dense)
 
 
 def test_learn_graph_n_jobs_identical():
@@ -147,7 +164,8 @@ def test_learn_graph_n_jobs_identical():
     assert_allclose(conn_serial.get_data(), conn_parallel.get_data())
 
 
-def test_learn_graph_roundtrip(tmp_path):
+@pytest.mark.parametrize("indices", ["lower", "upper", "all"])
+def test_learn_graph_roundtrip(tmp_path, indices):
     """Test save/load round-trip of a learn_graph result."""
     rng = np.random.default_rng(6)
     n_nodes, n_epochs, n_times_per_epoch = 5, 3, 200
@@ -159,10 +177,11 @@ def test_learn_graph_roundtrip(tmp_path):
         ]
     )
 
-    conn = learn_graph(X3, verbose=False)
+    conn = learn_graph(X3, indices=indices, verbose=False)
     fname = tmp_path / "test-graph-connectivity.nc"
     conn.save(fname)
     read_conn = read_connectivity(fname)
+    assert read_conn.indices == indices
     assert_array_equal(conn.get_data(), read_conn.get_data())
 
 
@@ -201,6 +220,10 @@ def test_learn_graph_bad_inputs():
         learn_graph(X, alpha=-1)
     with pytest.raises(ValueError, match="beta must be"):
         learn_graph(X, beta=-1)
+    with pytest.raises(ValueError, match="Invalid value for the 'indices'"):
+        learn_graph(X, indices="symmetric")
+    with pytest.raises(TypeError, match="indices must be an instance of str"):
+        learn_graph(X, indices=(np.array([0]), np.array([1])))
     with pytest.raises(ValueError, match="must be 2D"):
         learn_graph(np.zeros(6))
     with pytest.raises(ValueError, match="must be 2D"):

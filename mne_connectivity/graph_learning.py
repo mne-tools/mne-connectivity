@@ -7,7 +7,7 @@ from mne import BaseEpochs
 from mne._fiff.pick import _picks_to_idx
 from mne.parallel import parallel_func
 from mne.source_estimate import _BaseSourceEstimate
-from mne.utils import _validate_type, logger, verbose, warn
+from mne.utils import _check_option, _validate_type, logger, verbose, warn
 from scipy.spatial.distance import pdist
 
 from .base import Connectivity, EpochConnectivity
@@ -119,6 +119,7 @@ def learn_graph(
     data,
     *,
     names=None,
+    indices="lower",
     alpha=0.5,
     beta=0.5,
     metric="sqeuclidean",
@@ -163,6 +164,12 @@ def learn_graph(
     %(names)s
         Ignored (and overridden by ``data.ch_names``) if ``data`` is an
         :class:`mne.Epochs` object.
+    indices : ``'lower'`` | ``'upper'`` | ``'all'``
+        Which part of the symmetric graph to store. If ``'lower'`` or ``'upper'``,
+        only the lower- or upper-triangular part is stored, and the rest is filled in
+        when requesting ``get_data(output='dense')``. If ``'all'``, the full matrix
+        (including the zero diagonal) is stored. The graph itself is always learned
+        over all pairs of nodes. Default is ``'lower'``.
     alpha : float
         Controls how strongly node degrees are pulled away from zero via the
         log-barrier term. Must be strictly positive. Larger values yield
@@ -210,8 +217,8 @@ def learn_graph(
     -------
     graph : instance of Connectivity or EpochConnectivity
         The learned graph(s): a symmetric, zero-diagonal, non-negative
-        weighted adjacency, stored as the raveled upper-triangular values
-        (``indices='upper'``). A single
+        weighted adjacency, stored as the raveled values of the part of the
+        matrix selected by ``indices``. A single
         :class:`~mne_connectivity.Connectivity` is returned if ``data`` was a
         bare 2D array; otherwise an
         :class:`~mne_connectivity.EpochConnectivity` is returned with one
@@ -259,6 +266,8 @@ def learn_graph(
     ----------
     .. footbibliography::
     """
+    _validate_type(indices, str, "indices")
+    _check_option("indices", indices, ["lower", "upper", "all"])
     _validate_type(alpha, "numeric", "alpha")
     _validate_type(beta, "numeric", "beta")
     if alpha <= 0:
@@ -345,16 +354,23 @@ def learn_graph(
         for epoch_data in epochs_data
     )
 
-    # edge weights are already ordered as np.triu_indices(n_nodes, k=1), i.e., the
-    # upper-triangular storage expected by indices="upper"
-    con = np.array([w for w, _, _ in results])
+    # edge weights are ordered as (iu, ju); fill the symmetric matrix, then keep the
+    # part selected by indices
+    con = np.zeros((len(results), n_nodes, n_nodes))
+    con[:, iu, ju] = [w for w, _, _ in results]
+    con[:, ju, iu] = con[:, iu, ju]
+    if indices == "all":
+        con = con.reshape(len(results), -1)
+    else:
+        tri = np.tril_indices(n_nodes, k=-1) if indices == "lower" else (iu, ju)
+        con = con[:, tri[0], tri[1]]
 
     logger.info("[learn_graph Done]")
 
     con_kwargs = dict(
         names=names,
         method="learn_graph",
-        indices="upper",
+        indices=indices,
         n_nodes=n_nodes,
     )
     if single_epoch:
