@@ -190,7 +190,7 @@ def learn_graph(
     max_iter : int
         Maximum number of primal-dual iterations. Default ``1000``. Sparser
         settings (small ``beta``, in particular ``beta=0``) may require more
-        iterations to converge; see Notes.
+        iterations to converge. See Notes.
     tol : float
         Relative convergence tolerance on both the edge-weight and
         node-degree updates. Default ``1e-4``.
