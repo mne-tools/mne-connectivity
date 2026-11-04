@@ -523,7 +523,7 @@ def test_io(conn_cls, tmpdir):
     conn = conn_cls(data=correct_numpy_input, n_nodes=2, **extra_kwargs)
 
     # temporary conn save
-    fname = os.path.join(tmpdir, "connectivity.nc")
+    fname = os.path.join(tmpdir, "connectivity.h5")
     conn.save(fname)
 
     # re-read the file in
@@ -558,14 +558,14 @@ def test_deprecated_method_renaming_io(method_old_new, tmpdir):
     n_nodes = 3
     data = np.ones((n_nodes**2,))
     conn = Connectivity(data=data, n_nodes=n_nodes, method=method_old)
-    conn.save(os.path.join(tmpdir, "connectivity.nc"))
+    conn.save(os.path.join(tmpdir, "connectivity.h5"))
 
     # Read the connectivity container back in
     method_old_escaped = method_old.replace("(", r"\(").replace(")", r"\)")
     with pytest.warns(
         RuntimeWarning, match=f"The '{method_old_escaped}' method name was deprecated"
     ):
-        new_conn = read_connectivity(os.path.join(tmpdir, "connectivity.nc"))
+        new_conn = read_connectivity(os.path.join(tmpdir, "connectivity.h5"))
 
     # Assert that the method has been renamed
     assert new_conn.method == method_new
@@ -683,7 +683,7 @@ def test_metadata_handling(func, tmpdir, epochs):
         assert len(metadata) == len(epochs)
 
     # temporary conn save
-    fname = os.path.join(tmpdir, "connectivity.nc")
+    fname = os.path.join(tmpdir, "connectivity.h5")
     conn.save(fname)
 
     new_conn = read_connectivity(fname)
@@ -862,3 +862,46 @@ def test_combine_errors(conn_cls, aggr_dim):
             match="To ensure the interpretability of the connectivity data",
         ):
             combine_meth("mean")
+
+
+def test_save_fname_check(tmp_path):
+    """Test filename extension check when saving connectivity data."""
+    conn = Connectivity(data=np.ones((4,)), n_nodes=2)
+
+    # Valid endings: .h5 and .hdf5
+    conn.save(tmp_path / "test.h5")
+    conn.save(tmp_path / "test.hdf5")
+
+    # Invalid endings should warn about MNE naming conventions
+    with pytest.warns(
+        RuntimeWarning,
+        match="does not conform to MNE naming conventions.*connectivity",
+    ):
+        conn.save(tmp_path / "test.nc")
+
+    with pytest.warns(
+        RuntimeWarning,
+        match="does not conform to MNE naming conventions.*connectivity",
+    ):
+        conn.save(tmp_path / "test.txt")
+
+
+def test_read_netcdf_backwards_compatibility(tmp_path):
+    """Test loading netCDF (.nc) files works but raises a deprecation warning."""
+    conn = Connectivity(data=np.ones((4,)), n_nodes=2)
+    fname = tmp_path / "test.nc"
+
+    # Saving as .nc warns about non-standard extension
+    with pytest.warns(
+        RuntimeWarning, match="does not conform to MNE naming conventions"
+    ):
+        conn.save(fname)
+
+    # Reading .nc should emit a FutureWarning and successfully restore data
+    with pytest.warns(
+        FutureWarning,
+        match="Loading netCDF files is deprecated and will be removed",
+    ):
+        loaded_conn = read_connectivity(fname)
+
+    assert_array_equal(conn.get_data(), loaded_conn.get_data())

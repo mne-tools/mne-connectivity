@@ -5,6 +5,7 @@
 .. _Daniel McCloy: https://dan.mccloy.info
 .. _Eric Larson: https://github.com/larsoner
 .. _Giovanni Marraffini: https://github.com/GioMarraffini
+.. _hrishihrishihrishi: https://github.com/hrishihrishihrishi
 .. _Kenji Marshall: https://github.com/kenjimarshall
 .. _Laouen Belloli: https://github.com/Laouen
 .. _Marieke De Vylder: https://github.com/mariekedevylder
