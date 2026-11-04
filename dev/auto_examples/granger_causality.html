@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Compute directionality of connectivity with multivariate Granger causality &#8212; MNE-Connectivity 0.10.0.dev48+gc7677a862 documentation</title>
+    <title>Compute directionality of connectivity with multivariate Granger causality &#8212; MNE-Connectivity 0.10.0.dev50+gd50ca290c documentation</title>
   
   
   
@@ -26,8 +26,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=75c7c72ae941e8b558d8" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=75c7c72ae941e8b558d8" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -39,12 +39,12 @@
     <link rel="stylesheet" type="text/css" href="../_static/style.css?v=31c91a46" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <script defer src="../_static/scripts/fontawesome.js?digest=75c7c72ae941e8b558d8"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="../_static/documentation_options.js?v=bf36b644"></script>
+    <script src="../_static/documentation_options.js?v=8de3553b"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -54,7 +54,7 @@
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/granger_causality';</script>
     <script>
-        DOCUMENTATION_OPTIONS.theme_version = '0.23.0';
+        DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://mne.tools/mne-connectivity/dev/_static/versions.json';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
@@ -117,7 +117,7 @@
   
     <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
-  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation" aria-expanded="false" aria-controls="pst-primary-sidebar-modal">
     <span class="fa-solid fa-bars"></span>
   </button>
   
@@ -137,7 +137,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.10.0.dev48+gc7677a862 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.10.0.dev50+gd50ca290c documentation</p>
   
 </a></div>
     
@@ -201,14 +201,14 @@
 
 <div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
   <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
-    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto" title="System Settings"></i>
   </button>
   <ul class="dropdown-menu dropdown-menu-end">
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg me-1"></i>Dark</button></li>
   </ul>
 </div></div>
       
@@ -263,7 +263,7 @@
   
 
   
-    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page" aria-expanded="false" aria-controls="pst-secondary-sidebar-modal">
       <span class="fa-solid fa-outdent"></span>
     </button>
   
@@ -278,7 +278,7 @@
       
       
       
-      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <dialog id="pst-primary-sidebar-modal" tabindex="-1"></dialog>
       <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
@@ -335,14 +335,14 @@
 
 <div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
   <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
-    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto" title="System Settings"></i>
   </button>
   <ul class="dropdown-menu dropdown-menu-end">
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg me-1"></i>Dark</button></li>
   </ul>
 </div></div>
         
@@ -466,7 +466,7 @@
     
     <li class="breadcrumb-item breadcrumb-home">
       <a href="../index.html" class="nav-link" aria-label="Home">
-        <i class="fa-solid fa-home"></i>
+        <i class="fa-solid fa-house"></i>
       </a>
     </li>
     
@@ -739,14 +739,14 @@ Connectivity computation...
 Computing GC for connection 1 of 1
 
   0%|          | frequency blocks : 0/51 [00:00&lt;?,       ?it/s]
-  6%|▌         | frequency blocks : 3/51 [00:00&lt;00:00,  166.34it/s]
- 22%|██▏       | frequency blocks : 11/51 [00:00&lt;00:00,  316.63it/s]
- 37%|███▋      | frequency blocks : 19/51 [00:00&lt;00:00,  373.31it/s]
- 53%|█████▎    | frequency blocks : 27/51 [00:00&lt;00:00,  403.54it/s]
- 69%|██████▊   | frequency blocks : 35/51 [00:00&lt;00:00,  421.12it/s]
- 84%|████████▍ | frequency blocks : 43/51 [00:00&lt;00:00,  434.49it/s]
-100%|██████████| frequency blocks : 51/51 [00:00&lt;00:00,  443.61it/s]
-100%|██████████| frequency blocks : 51/51 [00:00&lt;00:00,  434.72it/s]
+  4%|▍         | frequency blocks : 2/51 [00:00&lt;00:00,  119.16it/s]
+ 20%|█▉        | frequency blocks : 10/51 [00:00&lt;00:00,  303.96it/s]
+ 35%|███▌      | frequency blocks : 18/51 [00:00&lt;00:00,  367.53it/s]
+ 51%|█████     | frequency blocks : 26/51 [00:00&lt;00:00,  396.99it/s]
+ 67%|██████▋   | frequency blocks : 34/51 [00:00&lt;00:00,  417.07it/s]
+ 82%|████████▏ | frequency blocks : 42/51 [00:00&lt;00:00,  430.54it/s]
+ 98%|█████████▊| frequency blocks : 50/51 [00:00&lt;00:00,  440.30it/s]
+100%|██████████| frequency blocks : 51/51 [00:00&lt;00:00,  431.10it/s]
 [Connectivity computation done]
 Replacing existing metadata with 3 columns
 Connectivity computation...
@@ -788,13 +788,13 @@ Connectivity computation...
 Computing GC for connection 1 of 1
 
   0%|          | frequency blocks : 0/51 [00:00&lt;?,       ?it/s]
- 16%|█▌        | frequency blocks : 8/51 [00:00&lt;00:00,  493.64it/s]
- 31%|███▏      | frequency blocks : 16/51 [00:00&lt;00:00,  490.16it/s]
- 47%|████▋     | frequency blocks : 24/51 [00:00&lt;00:00,  488.52it/s]
- 63%|██████▎   | frequency blocks : 32/51 [00:00&lt;00:00,  490.63it/s]
- 78%|███████▊  | frequency blocks : 40/51 [00:00&lt;00:00,  492.31it/s]
- 94%|█████████▍| frequency blocks : 48/51 [00:00&lt;00:00,  492.78it/s]
-100%|██████████| frequency blocks : 51/51 [00:00&lt;00:00,  491.15it/s]
+ 16%|█▌        | frequency blocks : 8/51 [00:00&lt;00:00,  472.38it/s]
+ 31%|███▏      | frequency blocks : 16/51 [00:00&lt;00:00,  476.07it/s]
+ 47%|████▋     | frequency blocks : 24/51 [00:00&lt;00:00,  481.08it/s]
+ 63%|██████▎   | frequency blocks : 32/51 [00:00&lt;00:00,  483.24it/s]
+ 78%|███████▊  | frequency blocks : 40/51 [00:00&lt;00:00,  484.37it/s]
+ 94%|█████████▍| frequency blocks : 48/51 [00:00&lt;00:00,  485.00it/s]
+100%|██████████| frequency blocks : 51/51 [00:00&lt;00:00,  482.62it/s]
 [Connectivity computation done]
 </pre></div>
 </div>
@@ -950,13 +950,13 @@ Connectivity computation...
 Computing GC time-reversed for connection 1 of 1
 
   0%|          | frequency blocks : 0/51 [00:00&lt;?,       ?it/s]
- 16%|█▌        | frequency blocks : 8/51 [00:00&lt;00:00,  487.99it/s]
- 31%|███▏      | frequency blocks : 16/51 [00:00&lt;00:00,  485.60it/s]
- 47%|████▋     | frequency blocks : 24/51 [00:00&lt;00:00,  486.93it/s]
- 65%|██████▍   | frequency blocks : 33/51 [00:00&lt;00:00,  491.80it/s]
- 80%|████████  | frequency blocks : 41/51 [00:00&lt;00:00,  492.40it/s]
- 96%|█████████▌| frequency blocks : 49/51 [00:00&lt;00:00,  491.70it/s]
-100%|██████████| frequency blocks : 51/51 [00:00&lt;00:00,  489.45it/s]
+ 16%|█▌        | frequency blocks : 8/51 [00:00&lt;00:00,  479.90it/s]
+ 31%|███▏      | frequency blocks : 16/51 [00:00&lt;00:00,  478.69it/s]
+ 47%|████▋     | frequency blocks : 24/51 [00:00&lt;00:00,  480.72it/s]
+ 63%|██████▎   | frequency blocks : 32/51 [00:00&lt;00:00,  482.33it/s]
+ 78%|███████▊  | frequency blocks : 40/51 [00:00&lt;00:00,  483.19it/s]
+ 94%|█████████▍| frequency blocks : 48/51 [00:00&lt;00:00,  484.81it/s]
+100%|██████████| frequency blocks : 51/51 [00:00&lt;00:00,  483.26it/s]
 [Connectivity computation done]
 Replacing existing metadata with 3 columns
 Connectivity computation...
@@ -998,13 +998,13 @@ Connectivity computation...
 Computing GC time-reversed for connection 1 of 1
 
   0%|          | frequency blocks : 0/51 [00:00&lt;?,       ?it/s]
- 16%|█▌        | frequency blocks : 8/51 [00:00&lt;00:00,  477.82it/s]
- 31%|███▏      | frequency blocks : 16/51 [00:00&lt;00:00,  481.17it/s]
- 47%|████▋     | frequency blocks : 24/51 [00:00&lt;00:00,  481.14it/s]
- 63%|██████▎   | frequency blocks : 32/51 [00:00&lt;00:00,  483.79it/s]
- 78%|███████▊  | frequency blocks : 40/51 [00:00&lt;00:00,  485.26it/s]
- 94%|█████████▍| frequency blocks : 48/51 [00:00&lt;00:00,  486.50it/s]
-100%|██████████| frequency blocks : 51/51 [00:00&lt;00:00,  485.26it/s]
+ 16%|█▌        | frequency blocks : 8/51 [00:00&lt;00:00,  486.43it/s]
+ 31%|███▏      | frequency blocks : 16/51 [00:00&lt;00:00,  482.02it/s]
+ 47%|████▋     | frequency blocks : 24/51 [00:00&lt;00:00,  483.23it/s]
+ 63%|██████▎   | frequency blocks : 32/51 [00:00&lt;00:00,  486.43it/s]
+ 78%|███████▊  | frequency blocks : 40/51 [00:00&lt;00:00,  488.98it/s]
+ 96%|█████████▌| frequency blocks : 49/51 [00:00&lt;00:00,  491.49it/s]
+100%|██████████| frequency blocks : 51/51 [00:00&lt;00:00,  489.50it/s]
 [Connectivity computation done]
 </pre></div>
 </div>
@@ -1099,61 +1099,61 @@ Connectivity computation...
 Computing GC for connection 1 of 1
 
   0%|          | frequency blocks : 0/51 [00:00&lt;?,       ?it/s]
-  2%|▏         | frequency blocks : 1/51 [00:00&lt;00:01,   34.48it/s]
-  4%|▍         | frequency blocks : 2/51 [00:00&lt;00:01,   36.59it/s]
-  6%|▌         | frequency blocks : 3/51 [00:00&lt;00:01,   37.58it/s]
-  8%|▊         | frequency blocks : 4/51 [00:00&lt;00:01,   38.11it/s]
- 10%|▉         | frequency blocks : 5/51 [00:00&lt;00:01,   38.29it/s]
- 12%|█▏        | frequency blocks : 6/51 [00:00&lt;00:01,   38.45it/s]
- 14%|█▎        | frequency blocks : 7/51 [00:00&lt;00:01,   38.61it/s]
- 16%|█▌        | frequency blocks : 8/51 [00:00&lt;00:01,   38.73it/s]
- 18%|█▊        | frequency blocks : 9/51 [00:00&lt;00:01,   38.90it/s]
- 20%|█▉        | frequency blocks : 10/51 [00:00&lt;00:01,   38.85it/s]
- 22%|██▏       | frequency blocks : 11/51 [00:00&lt;00:01,   38.91it/s]
- 24%|██▎       | frequency blocks : 12/51 [00:00&lt;00:01,   38.96it/s]
- 25%|██▌       | frequency blocks : 13/51 [00:00&lt;00:00,   38.88it/s]
- 27%|██▋       | frequency blocks : 14/51 [00:00&lt;00:00,   38.82it/s]
- 29%|██▉       | frequency blocks : 15/51 [00:00&lt;00:00,   38.84it/s]
- 31%|███▏      | frequency blocks : 16/51 [00:00&lt;00:00,   38.87it/s]
- 33%|███▎      | frequency blocks : 17/51 [00:00&lt;00:00,   38.89it/s]
- 35%|███▌      | frequency blocks : 18/51 [00:00&lt;00:00,   38.91it/s]
- 37%|███▋      | frequency blocks : 19/51 [00:00&lt;00:00,   38.94it/s]
- 39%|███▉      | frequency blocks : 20/51 [00:00&lt;00:00,   38.98it/s]
- 41%|████      | frequency blocks : 21/51 [00:00&lt;00:00,   39.05it/s]
- 43%|████▎     | frequency blocks : 22/51 [00:00&lt;00:00,   39.09it/s]
- 45%|████▌     | frequency blocks : 23/51 [00:00&lt;00:00,   39.16it/s]
- 47%|████▋     | frequency blocks : 24/51 [00:00&lt;00:00,   39.19it/s]
- 49%|████▉     | frequency blocks : 25/51 [00:00&lt;00:00,   39.22it/s]
- 51%|█████     | frequency blocks : 26/51 [00:00&lt;00:00,   39.22it/s]
- 53%|█████▎    | frequency blocks : 27/51 [00:00&lt;00:00,   39.27it/s]
- 55%|█████▍    | frequency blocks : 28/51 [00:00&lt;00:00,   39.26it/s]
- 57%|█████▋    | frequency blocks : 29/51 [00:00&lt;00:00,   39.28it/s]
- 59%|█████▉    | frequency blocks : 30/51 [00:00&lt;00:00,   39.14it/s]
- 61%|██████    | frequency blocks : 31/51 [00:00&lt;00:00,   39.19it/s]
- 63%|██████▎   | frequency blocks : 32/51 [00:00&lt;00:00,   39.23it/s]
- 65%|██████▍   | frequency blocks : 33/51 [00:00&lt;00:00,   39.23it/s]
- 67%|██████▋   | frequency blocks : 34/51 [00:00&lt;00:00,   39.27it/s]
- 69%|██████▊   | frequency blocks : 35/51 [00:00&lt;00:00,   39.30it/s]
- 71%|███████   | frequency blocks : 36/51 [00:00&lt;00:00,   39.33it/s]
- 73%|███████▎  | frequency blocks : 37/51 [00:00&lt;00:00,   39.40it/s]
- 75%|███████▍  | frequency blocks : 38/51 [00:00&lt;00:00,   39.37it/s]
- 76%|███████▋  | frequency blocks : 39/51 [00:00&lt;00:00,   39.38it/s]
- 78%|███████▊  | frequency blocks : 40/51 [00:01&lt;00:00,   39.42it/s]
- 80%|████████  | frequency blocks : 41/51 [00:01&lt;00:00,   39.44it/s]
- 82%|████████▏ | frequency blocks : 42/51 [00:01&lt;00:00,   39.46it/s]
- 84%|████████▍ | frequency blocks : 43/51 [00:01&lt;00:00,   39.49it/s]
- 86%|████████▋ | frequency blocks : 44/51 [00:01&lt;00:00,   39.48it/s]
- 88%|████████▊ | frequency blocks : 45/51 [00:01&lt;00:00,   39.51it/s]
- 90%|█████████ | frequency blocks : 46/51 [00:01&lt;00:00,   39.52it/s]
- 92%|█████████▏| frequency blocks : 47/51 [00:01&lt;00:00,   39.56it/s]
- 94%|█████████▍| frequency blocks : 48/51 [00:01&lt;00:00,   39.59it/s]
- 96%|█████████▌| frequency blocks : 49/51 [00:01&lt;00:00,   39.62it/s]
- 98%|█████████▊| frequency blocks : 50/51 [00:01&lt;00:00,   39.59it/s]
-100%|██████████| frequency blocks : 51/51 [00:01&lt;00:00,   39.59it/s]
-100%|██████████| frequency blocks : 51/51 [00:01&lt;00:00,   39.33it/s]
+  2%|▏         | frequency blocks : 1/51 [00:00&lt;00:01,   34.29it/s]
+  4%|▍         | frequency blocks : 2/51 [00:00&lt;00:01,   36.97it/s]
+  6%|▌         | frequency blocks : 3/51 [00:00&lt;00:01,   37.57it/s]
+  8%|▊         | frequency blocks : 4/51 [00:00&lt;00:01,   38.06it/s]
+ 10%|▉         | frequency blocks : 5/51 [00:00&lt;00:01,   38.39it/s]
+ 12%|█▏        | frequency blocks : 6/51 [00:00&lt;00:01,   38.59it/s]
+ 14%|█▎        | frequency blocks : 7/51 [00:00&lt;00:01,   38.90it/s]
+ 16%|█▌        | frequency blocks : 8/51 [00:00&lt;00:01,   39.01it/s]
+ 18%|█▊        | frequency blocks : 9/51 [00:00&lt;00:01,   39.11it/s]
+ 20%|█▉        | frequency blocks : 10/51 [00:00&lt;00:01,   39.24it/s]
+ 22%|██▏       | frequency blocks : 11/51 [00:00&lt;00:01,   39.21it/s]
+ 24%|██▎       | frequency blocks : 12/51 [00:00&lt;00:00,   39.32it/s]
+ 25%|██▌       | frequency blocks : 13/51 [00:00&lt;00:00,   39.36it/s]
+ 27%|██▋       | frequency blocks : 14/51 [00:00&lt;00:00,   39.40it/s]
+ 29%|██▉       | frequency blocks : 15/51 [00:00&lt;00:00,   39.48it/s]
+ 31%|███▏      | frequency blocks : 16/51 [00:00&lt;00:00,   39.44it/s]
+ 33%|███▎      | frequency blocks : 17/51 [00:00&lt;00:00,   39.36it/s]
+ 35%|███▌      | frequency blocks : 18/51 [00:00&lt;00:00,   39.40it/s]
+ 37%|███▋      | frequency blocks : 19/51 [00:00&lt;00:00,   39.39it/s]
+ 39%|███▉      | frequency blocks : 20/51 [00:00&lt;00:00,   39.39it/s]
+ 41%|████      | frequency blocks : 21/51 [00:00&lt;00:00,   39.34it/s]
+ 43%|████▎     | frequency blocks : 22/51 [00:00&lt;00:00,   39.35it/s]
+ 45%|████▌     | frequency blocks : 23/51 [00:00&lt;00:00,   39.37it/s]
+ 47%|████▋     | frequency blocks : 24/51 [00:00&lt;00:00,   39.41it/s]
+ 49%|████▉     | frequency blocks : 25/51 [00:00&lt;00:00,   39.47it/s]
+ 51%|█████     | frequency blocks : 26/51 [00:00&lt;00:00,   39.53it/s]
+ 53%|█████▎    | frequency blocks : 27/51 [00:00&lt;00:00,   39.60it/s]
+ 55%|█████▍    | frequency blocks : 28/51 [00:00&lt;00:00,   39.68it/s]
+ 57%|█████▋    | frequency blocks : 29/51 [00:00&lt;00:00,   39.76it/s]
+ 59%|█████▉    | frequency blocks : 30/51 [00:00&lt;00:00,   39.82it/s]
+ 61%|██████    | frequency blocks : 31/51 [00:00&lt;00:00,   39.83it/s]
+ 63%|██████▎   | frequency blocks : 32/51 [00:00&lt;00:00,   39.86it/s]
+ 65%|██████▍   | frequency blocks : 33/51 [00:00&lt;00:00,   39.89it/s]
+ 67%|██████▋   | frequency blocks : 34/51 [00:00&lt;00:00,   39.93it/s]
+ 69%|██████▊   | frequency blocks : 35/51 [00:00&lt;00:00,   39.98it/s]
+ 71%|███████   | frequency blocks : 36/51 [00:00&lt;00:00,   40.01it/s]
+ 73%|███████▎  | frequency blocks : 37/51 [00:00&lt;00:00,   40.04it/s]
+ 75%|███████▍  | frequency blocks : 38/51 [00:00&lt;00:00,   40.05it/s]
+ 76%|███████▋  | frequency blocks : 39/51 [00:00&lt;00:00,   40.09it/s]
+ 78%|███████▊  | frequency blocks : 40/51 [00:01&lt;00:00,   40.13it/s]
+ 80%|████████  | frequency blocks : 41/51 [00:01&lt;00:00,   40.16it/s]
+ 82%|████████▏ | frequency blocks : 42/51 [00:01&lt;00:00,   40.16it/s]
+ 84%|████████▍ | frequency blocks : 43/51 [00:01&lt;00:00,   40.16it/s]
+ 86%|████████▋ | frequency blocks : 44/51 [00:01&lt;00:00,   40.14it/s]
+ 88%|████████▊ | frequency blocks : 45/51 [00:01&lt;00:00,   40.14it/s]
+ 90%|█████████ | frequency blocks : 46/51 [00:01&lt;00:00,   40.11it/s]
+ 92%|█████████▏| frequency blocks : 47/51 [00:01&lt;00:00,   40.10it/s]
+ 94%|█████████▍| frequency blocks : 48/51 [00:01&lt;00:00,   40.10it/s]
+ 96%|█████████▌| frequency blocks : 49/51 [00:01&lt;00:00,   40.06it/s]
+ 98%|█████████▊| frequency blocks : 50/51 [00:01&lt;00:00,   40.01it/s]
+100%|██████████| frequency blocks : 51/51 [00:01&lt;00:00,   39.96it/s]
+100%|██████████| frequency blocks : 51/51 [00:01&lt;00:00,   39.79it/s]
 [Connectivity computation done]
 
-&lt;matplotlib.legend.Legend object at 0x79c0621dcd70&gt;
+&lt;matplotlib.legend.Legend object at 0x7de7f3630980&gt;
 </pre></div>
 </div>
 </section>
@@ -1271,7 +1271,7 @@ and targets <em>across</em> connections.</p>
 </aside>
 </aside>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 21.391 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 21.397 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-granger-causality-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/bc4fcabe78bb61cbb3c5dd027303b4da/granger_causality.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">granger_causality.ipynb</span></code></a></p>
@@ -1321,7 +1321,7 @@ and targets <em>across</em> connections.</p>
             
             
               
-                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <dialog id="pst-secondary-sidebar-modal" tabindex="-1"></dialog>
                 <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
@@ -1355,8 +1355,8 @@ and targets <em>across</em> connections.</p>
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
-<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+  <script defer src="../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1367,7 +1367,7 @@ and targets <em>across</em> connections.</p>
 
   <p class="copyright">
     
-      © Copyright 2021-2026, MNE Developers. Last updated on 2026-10-29.
+      © Copyright 2021-2026, MNE Developers. Last updated on 2026-11-04.
       <br/>
     
   </p>
@@ -1389,7 +1389,7 @@ and targets <em>across</em> connections.</p>
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.23.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.24.0.
 </p></div>
       
     </div>
