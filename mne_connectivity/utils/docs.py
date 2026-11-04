@@ -323,14 +323,11 @@ n_jobs : int
 
 # Random state
 docdict["random_state"] = """
-random_state : None | int | instance of ~numpy.random.RandomState | ~numpy.random.Generator
-    Random state used for the default Gaussian noise when ``noise_func`` is
-    ``None``. If ``None`` (default), NumPy's global
-    :class:`numpy.random.RandomState` is used. An int seeds a new
-    :class:`numpy.random.RandomState`. Existing
-    :class:`numpy.random.RandomState` or :class:`numpy.random.Generator`
-    instances are used directly.
-"""  # noqa: E501
+random_state : int | array-like of int | SeedSequence | BitGenerator | Generator | None
+    Seed passed to :func:`numpy.random.default_rng` to generate the default Gaussian
+    noise when ``noise_func`` is ``None``. If ``None`` (default), a new
+    :class:`numpy.random.Generator` seeded from entropy is used.
+"""
 
 # Visualisation
 docdict["viz_info"] = """
