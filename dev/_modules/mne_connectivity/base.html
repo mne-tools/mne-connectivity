@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_connectivity.base &#8212; MNE-Connectivity 0.10.0.dev51+g0bf3f3622 documentation</title>
+    <title>mne_connectivity.base &#8212; MNE-Connectivity 0.10.0.dev53+g460961fc1 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="../../_static/documentation_options.js?v=ce12f412"></script>
+    <script src="../../_static/documentation_options.js?v=2db5a754"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -133,7 +133,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.10.0.dev51+g0bf3f3622 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.10.0.dev53+g460961fc1 documentation</p>
   
 </a></div>
     
@@ -449,7 +449,6 @@
     <span class="n">_ensure_events</span><span class="p">,</span>
     <span class="n">_on_missing</span><span class="p">,</span>
     <span class="n">_validate_type</span><span class="p">,</span>
-    <span class="n">check_random_state</span><span class="p">,</span>
     <span class="n">copy_function_doc_to_method_doc</span><span class="p">,</span>
     <span class="n">object_size</span><span class="p">,</span>
     <span class="n">sizeof_fmt</span><span class="p">,</span>
@@ -909,7 +908,7 @@
 
         <span class="c1"># set noise function</span>
         <span class="k">if</span> <span class="n">noise_func</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">rng</span> <span class="o">=</span> <span class="n">check_random_state</span><span class="p">(</span><span class="n">random_state</span><span class="p">)</span>
+            <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">random_state</span><span class="p">)</span>
 
             <span class="k">def</span><span class="w"> </span><span class="nf">noise_func</span><span class="p">():</span>
                 <span class="k">return</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_nodes</span><span class="p">))</span>

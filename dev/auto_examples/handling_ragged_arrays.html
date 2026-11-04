@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Working with ragged indices for multivariate connectivity &#8212; MNE-Connectivity 0.10.0.dev51+g0bf3f3622 documentation</title>
+    <title>Working with ragged indices for multivariate connectivity &#8212; MNE-Connectivity 0.10.0.dev53+g460961fc1 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="../_static/documentation_options.js?v=ce12f412"></script>
+    <script src="../_static/documentation_options.js?v=2db5a754"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -136,7 +136,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.10.0.dev51+g0bf3f3622 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.10.0.dev53+g460961fc1 documentation</p>
   
 </a></div>
     
@@ -571,7 +571,8 @@ number of seed and target channels, so ragged arrays are not a concern here.</p>
 coherency (MIC; see <a class="reference internal" href="mic_mim.html"><span class="doc">Compute multivariate measures of the imaginary part of coherency</span></a> for more information). Just like for bivariate
 connectivity, we can extract the connectivity in <code class="docutils literal notranslate"><span class="pre">'raveled'</span></code> and <code class="docutils literal notranslate"><span class="pre">'dense'</span></code> forms.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span class="c1"># Create random data</span><span class="w">
-</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">data</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy-random sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.randn.html#numpy.random.randn" title="numpy.random.randn"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span></a><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>  <span class="c1"># epochs x channels x times</span><span class="w">
+</span><a class="sphx-glr-backref-module-numpy-random sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/random/generator.html#numpy.random.Generator" title="numpy.random.Generator"><span class="n">rng</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy-random sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/random/generator.html#numpy.random.default_rng" title="numpy.random.default_rng"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span></a><span class="p">(</span><span class="mi">42</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">data</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy-random sphx-glr-backref-type-py-method reference external" href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.Generator.standard_normal.html#numpy.random.Generator.standard_normal" title="numpy.random.Generator.standard_normal"><span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span></a><span class="p">(</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span><span class="p">)</span>  <span class="c1"># epochs x channels x times</span><span class="w">
 </span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">sfreq</span></a> <span class="o">=</span> <span class="mi">50</span><span class="w">
 </span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="tuple"><span class="n">ragged_indices</span></a> <span class="o">=</span> <span class="p">(</span><span class="w">
 </span>    <span class="p">[</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span><span class="p">]</span><span class="p">,</span>  <span class="c1"># seeds</span><span class="w">
@@ -689,7 +690,7 @@ trivial, as shown below:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Assertions completed successfully!
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.029 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.024 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-handling-ragged-arrays-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/627c6a640d649eb934528032e8142ffb/handling_ragged_arrays.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">handling_ragged_arrays.ipynb</span></code></a></p>
