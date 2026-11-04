@@ -1775,7 +1775,8 @@ def test_multivar_spectral_connectivity_time_shapes(
 )  # Taper weights in TFR objects added in MNE v1.10.0
 @pytest.mark.parametrize("method", ["coh", "cacoh"])
 @pytest.mark.parametrize("mode", ["multitaper", "cwt_morlet"])
-def test_spectral_connectivity_time_tfr_input(method, mode):
+@pytest.mark.parametrize("decim", [1, 5])
+def test_spectral_connectivity_time_tfr_input(method, mode, decim):
     """Test spec_conn_time works with EpochsTFR data as input.
 
     Important to test both bivariate and multivariate methods, as the latter involves
@@ -1819,7 +1820,12 @@ def test_spectral_connectivity_time_tfr_input(method, mode):
         kwargs.update(time_bandwidth=mt_bandwidth)
         spec_mode = mode
     coeffs = data.compute_tfr(
-        method=spec_mode, freqs=freqs, n_cycles=n_cycles, output="complex", **kwargs
+        method=spec_mode,
+        freqs=freqs,
+        n_cycles=n_cycles,
+        output="complex",
+        decim=decim,
+        **kwargs,
     )
 
     # Compute connectivity
@@ -1836,7 +1842,7 @@ def test_spectral_connectivity_time_tfr_input(method, mode):
 
     # Check connectivity from Epochs and EpochsTFR are equivalent (small but non-zero
     # tolerance given due to some platform-dependent variation)
-    con_from_epochs = spectral_connectivity_time(data=data, **con_kwargs)
+    con_from_epochs = spectral_connectivity_time(data=data, decim=decim, **con_kwargs)
     assert_allclose(
         np.abs(con.get_data()), np.abs(con_from_epochs.get_data()), atol=1e-7
     )
