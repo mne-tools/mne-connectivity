@@ -172,9 +172,10 @@ fig.tight_layout()
 # vary smoothly in space. Here, adapting the `graph-learning tutorial
 # <https://github.com/epfl-lts2/pygsp/pull/57/changes#diff-8dc3f92aaf8a64f43a280273e06dd632d026247444e3da99b772c774ac01b3d9>`__
 # that Vassilis Kalofolias wrote for PyGSP, we place nodes at random positions in a 2D
-# square, and define four smooth functions of the position. Each node only "observes"
-# the values of these four functions at its location; its coordinates are never given
-# to :func:`~mne_connectivity.learn_graph`.
+# square, and define four smooth functions of the position. The signal of each node then
+# has four time points, each one being the value of one of the functions at the node's
+# location; the coordinates of the nodes are never given to
+# :func:`~mne_connectivity.learn_graph`.
 
 # %%
 
@@ -191,29 +192,29 @@ signals = np.column_stack(
         ((x - 0.5) ** 2 + (y - 0.5) ** 3 + x - y) * 3,
         np.sin(3 * ((x - 0.5) ** 2 + (y - 0.5) ** 2)),
     ]
-)  # shape (n_nodes, n_signals)
+)  # shape (n_nodes, n_times)
 
 fig, axes = plt.subplots(1, 4, figsize=(12, 3))
-for i_signal, ax in enumerate(axes):
-    ax.scatter(x, y, c=signals[:, i_signal], s=12, cmap="viridis")
-    ax.set_title(f"Smooth signal {i_signal + 1}")
+for i_time, ax in enumerate(axes):
+    ax.scatter(x, y, c=signals[:, i_time], s=12, cmap="viridis")
+    ax.set_title(f"Time point {i_time + 1}")
     ax.set_aspect("equal")
     ax.set_axis_off()
 fig.tight_layout()
 
 ########################################################################################
-# We learn one graph from the first signal only, and one from all four signals. For a
+# We learn one graph from the first time point only, and one from all four. For a
 # sparser graph, we use a small ``alpha`` rather than a small ``beta``: the sparsity of
 # the learned graph is determined by the product ``alpha * beta``, whereas their ratio
 # only rescales the weights :footcite:`Kalofolias2016`, and keeping ``beta`` away from
 # ``0`` makes the optimization converge much faster.
 #
-# With a single signal, nodes with similar *values* are connected, even if they lie far
-# apart (on the same level line of the function), so the learned graph does not reflect
-# the layout of the nodes. With all four signals, only nodes whose values are similar
-# for every signal are connected, which in practice means nodes that are close in
-# space: the learned graph recovers the geometry of the nodes, with each node connected
-# to a handful of its neighbors.
+# With a single time point, nodes with similar *values* are connected, even if they lie
+# far apart (on the same level line of the function), so the learned graph does not
+# reflect the layout of the nodes. With all four time points, only nodes whose values
+# are similar at every time point are connected, which in practice means nodes that are
+# close in space: the learned graph recovers the geometry of the nodes, with each node
+# connected to a handful of its neighbors.
 
 # %%
 
@@ -233,12 +234,12 @@ def plot_graph(ax, W, title):
 
 
 fig, axes = plt.subplots(1, 2, figsize=(9, 4.5))
-for ax, n_signals in zip(axes, (1, 4)):
-    conn_geo = learn_graph(signals[:, :n_signals], alpha=0.001, verbose=False)
+for ax, n_times_used in zip(axes, (1, 4)):
+    conn_geo = learn_graph(signals[:, :n_times_used], alpha=0.001, verbose=False)
     plot_graph(
         ax,
         conn_geo.get_data(output="dense"),
-        f"Learned from {n_signals} signal{'s' if n_signals > 1 else ''}",
+        f"Learned from {n_times_used} time point{'s' if n_times_used > 1 else ''}",
     )
 fig.tight_layout()
 
@@ -248,9 +249,9 @@ plt.show()
 # Which Graph Is Learned Depends on What Makes Signals Similar
 # ============================================================
 #
-# In neurophysiological recordings, the signals are typically the time samples of the
-# data, and the learned graph connects nodes whose signals are similar, whatever the
-# reason for that similarity. In sensor space, field spread makes nearby sensors record
+# In neurophysiological recordings, the signal of each node is its time course, and the
+# learned graph connects nodes whose signals are similar, whatever the reason for that
+# similarity. In sensor space, field spread makes nearby sensors record
 # similar signals, so a graph learned from sensor data can largely reflect the sensor
 # layout, much like the geometry recovered above. Such a graph is useful when the aim is
 # a data-driven description of how the sensors relate to each other, e.g., to filter or
@@ -259,8 +260,8 @@ plt.show()
 # and learning the graph from source-reconstructed signals (e.g., label time courses)
 # reduces, though does not remove, the similarity caused by signal leakage. In both
 # cases, as the example above shows, the signals need to vary in many independent ways
-# (many signals, or in recordings, many time samples) for the graph to capture an
-# underlying structure rather than coincidental similarities of values.
+# (here, over four time points; in recordings, over many time points) for the graph to
+# capture an underlying structure rather than coincidental similarities of values.
 
 ########################################################################################
 # References
