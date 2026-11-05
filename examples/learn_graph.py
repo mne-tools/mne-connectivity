@@ -169,17 +169,21 @@ fig.tight_layout()
 # In the example above, the signals were smooth *on the graph*: they were generated from
 # the graph, so that strongly connected nodes have similar values. A graph can also be
 # learned from signals that are smooth for another reason, for instance because they
-# vary smoothly in space. Here, adapting the graph-learning tutorial that Vassilis
-# Kalofolias wrote for `PyGSP <https://github.com/epfl-lts2/pygsp/pull/57>`__, we place
-# nodes at random positions in a 2D square, and define four smooth functions of the
-# position. Each node only "observes" the values of these four functions at its
-# location; its coordinates are never given to :func:`~mne_connectivity.learn_graph`.
+# vary smoothly in space. Here, adapting the `graph-learning tutorial
+# <https://github.com/epfl-lts2/pygsp/pull/57/changes#diff-8dc3f92aaf8a64f43a280273e06dd632d026247444e3da99b772c774ac01b3d9>`__
+# that Vassilis Kalofolias wrote for PyGSP, we place nodes at random positions in a 2D
+# square, and define four smooth functions of the position. Each node only "observes"
+# the values of these four functions at its location; its coordinates are never given
+# to :func:`~mne_connectivity.learn_graph`.
 
 # %%
 
 n_nodes = 300
 coords = rng.uniform(size=(n_nodes, 2))
 x, y = coords.T
+# Adapted from the PyGSP graph-learning tutorial by V. Kalofolias
+# (https://github.com/epfl-lts2/pygsp/pull/57), Copyright (c) 2014, EPFL LTS2,
+# released under the BSD-3-Clause license.
 signals = np.column_stack(
     [
         (-np.sin((2 - x - y) ** 2) / 2 + np.cos(y * 3)) / 2,
