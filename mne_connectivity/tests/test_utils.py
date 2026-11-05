@@ -17,7 +17,7 @@ def test_seed_target_indices():
     # bivariate indices
     n_seeds_test = [1, 3, 4]
     n_targets_test = [2, 3, 200]
-    rng = np.random.RandomState(42)
+    rng = np.random.default_rng(42)
     for n_seeds in n_seeds_test:
         for n_targets in n_targets_test:
             idx = rng.permutation(np.arange(n_seeds + n_targets))

@@ -12,8 +12,6 @@ from mne.utils import (
     _ensure_events,
     _on_missing,
     _validate_type,
-    check_fname,
-    check_random_state,
     copy_function_doc_to_method_doc,
     object_size,
     sizeof_fmt,
@@ -224,12 +222,13 @@ class EpochMixin:
             warn("Epoch Connectivity object to append was empty.")
         event_id.update(epoch_conn.event_id)
         events = np.concatenate((events, evs), axis=0)
-        metadata = pd.concat([epoch_conn.metadata, metadata])
+        metadata = pd.concat([metadata, epoch_conn.metadata])
 
         # now combine the xarray data, altered events and event ID
         self._obj = xr.concat([self.xarray, epoch_conn.xarray], dim="epochs")
         self._obj.attrs["events"] = events
         self._obj.attrs["event_id"] = event_id
+        self.metadata = metadata
         return self
 
     @fill_doc
@@ -472,7 +471,7 @@ class DynamicMixin:
 
         # set noise function
         if noise_func is None:
-            rng = check_random_state(random_state)
+            rng = np.random.default_rng(random_state)
 
             def noise_func():
                 return rng.normal(size=(1, n_nodes))
