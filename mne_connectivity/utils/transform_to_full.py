@@ -95,4 +95,5 @@ _CAN_FILL_MISSING = {
     "env_corr_orth": partial(_make_full, diag=0.0),
     "smi": partial(_make_full, diag=0.0),
     "wsmi": partial(_make_full, diag=0.0),
+    "learn_graph": partial(_make_full, diag=0.0),
 }
