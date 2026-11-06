@@ -350,8 +350,8 @@ def test_dynamic_mixin(model, lags):
     assert simulation.shape == (n_signals, n_samples)
     # Check seeds are passed to `numpy.random.default_rng`
     assert_array_equal(
-        var.simulate(n_samples=n_samples, random_state=44),
-        var.simulate(n_samples=n_samples, random_state=np.random.default_rng(44)),
+        var.simulate(n_samples=n_samples, rng=44),
+        var.simulate(n_samples=n_samples, rng=np.random.default_rng(44)),
     )
 
     # Check the companion matrix can be computed for the VAR model
