@@ -427,7 +427,7 @@ def test_spectral_connectivity_epochs_spectrum_tfr_input(method, mode, spectra_a
     tfr_freqs = np.arange(10, 50)  # similar to Fourier & multitaper modes
     kwargs = dict()
     if mode == "fourier":
-        kwargs.update(window="hann")  # default is Hamming, but we need Hanning
+        kwargs.update(window="hann", average=None)
         spec_mode = "welch"
     elif mode == "cwt_morlet":
         kwargs.update(freqs=tfr_freqs)

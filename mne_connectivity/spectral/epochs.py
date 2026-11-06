@@ -539,14 +539,17 @@ def _epoch_spectral_connectivity(
 
     # compute tapered spectra
     if spectrum_computed:  # use existing spectral info
-        # Select entries of interest (flexible indexing for optional tapers dim)
+        # Select entries of interest
         if tmin_idx is not None and tmax_idx is not None:  # TFR spectra
+            # Flexible indexing for optional tapers dim
             x_t = np.asarray(data)[:, sig_idx][..., freq_mask, tmin_idx:tmax_idx]
         else:  # normal spectra
-            x_t = np.asarray(data)[:, sig_idx][..., freq_mask]
-            if weights is None:  # assumes no tapers dim, i.e., for Fourier/Welch mode
-                x_t = np.expand_dims(x_t, axis=2)  # CSD construction expects tapers dim
+            x_t = np.asarray(data)[:, sig_idx]
+            if mode == "fourier":
+                # Move the segments dimension to treat it as tapers for CSD construction
+                x_t = np.moveaxis(x_t, -1, -2)
                 weights = np.ones((1, 1, 1))  # assign dummy weights
+            x_t = x_t[..., freq_mask]
         if accumulate_psd:
             if weights is not None:  # mode == 'multitaper' or 'fourier'
                 if not is_tfr_con:  # normal spectra (multitaper or Fourier)
@@ -1150,10 +1153,6 @@ def spectral_connectivity_epochs(
                     "contain complex-valued Fourier coefficients, such as that "
                     "returned from Epochs.compute_psd/tfr() with `output='complex'`"
                 )
-            if "segment" in data._dims:
-                raise ValueError(
-                    "`data` cannot contain Fourier coefficients for individual segments"
-                )
             mode = data.method
             if isinstance(data, EpochsSpectrum):
                 if isinstance(data, EpochsSpectrumArray):  # infer mode from dimensions
@@ -1162,6 +1161,11 @@ def spectral_connectivity_epochs(
                     mode = "multitaper" if "taper" in data._dims else "fourier"
                 else:  # read mode from object
                     mode = "fourier" if mode == "welch" else mode
+                if mode == "fourier" and "segment" not in data._dims:
+                    raise ValueError(
+                        "if `data` represents Welch coefficients, it must contain the "
+                        "unaggregated segments (i.e., be computed with `average=None`)"
+                    )
             else:
                 if isinstance(data, EpochsTFRArray):  # infer mode from dimensions
                     # Currently, actual mode doesn't matter as long as we handle tapers
