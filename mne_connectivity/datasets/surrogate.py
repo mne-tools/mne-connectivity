@@ -8,9 +8,7 @@ from mne.time_frequency import EpochsSpectrum, EpochsTFR
 from mne.utils import _validate_type
 
 
-def make_surrogate_resting_data(
-    data, n_shuffles=1000, rng_seed=None, return_generator=True
-):
+def make_surrogate_resting_data(data, n_shuffles=1000, rng=None, return_generator=True):
     """Create surrogate resting-state data for a null hypothesis of connectivity.
 
     Parameters
@@ -25,7 +23,7 @@ def make_surrogate_resting_data(
             Added support for :class:`mne.Epochs` objects.
     n_shuffles : int (default 1000)
         The number of surrogate datasets to create.
-    rng_seed : int | array-like of int | SeedSequence | BitGenerator | Generator | None
+    rng : int | array-like of int | SeedSequence | BitGenerator | Generator | None
         Seed passed to :func:`numpy.random.default_rng`. If ``None`` (default), a new
         :class:`numpy.random.Generator` seeded from entropy is used.
     return_generator : bool (default True)
@@ -121,21 +119,17 @@ def make_surrogate_resting_data(
         raise ValueError("Number of shuffles must be >= 1.")
 
     _validate_type(return_generator, bool, "return_generator", "bool")
-    # rng_seed checked by NumPy later
+    # rng checked by NumPy later
 
     # Make surrogate data and package into Epochs/EpochsSpectrum/EpochsTFR objects
-    surrogate_data = _shuffle_coefficients(
-        data, n_shuffles, rng_seed, data_form="resting"
-    )
+    surrogate_data = _shuffle_coefficients(data, n_shuffles, rng, data_form="resting")
     if not return_generator:
         surrogate_data = list(surrogate_data)
 
     return surrogate_data
 
 
-def make_surrogate_evoked_data(
-    data, n_shuffles=1000, rng_seed=None, return_generator=True
-):
+def make_surrogate_evoked_data(data, n_shuffles=1000, rng=None, return_generator=True):
     """Create surrogate evoked data for a null hypothesis of connectivity.
 
     Parameters
@@ -146,7 +140,7 @@ def make_surrogate_evoked_data(
         :meth:`mne.Epochs.compute_tfr` with ``output='complex'``.
     n_shuffles : int (default 1000)
         The number of surrogate datasets to create.
-    rng_seed : int | array-like of int | SeedSequence | BitGenerator | Generator | None
+    rng : int | array-like of int | SeedSequence | BitGenerator | Generator | None
         Seed passed to :func:`numpy.random.default_rng`. If ``None`` (default), a new
         :class:`numpy.random.Generator` seeded from entropy is used.
     return_generator : bool (default True)
@@ -216,19 +210,17 @@ def make_surrogate_evoked_data(
         raise ValueError("Number of shuffles must be >= 1.")
 
     _validate_type(return_generator, bool, "return_generator", "bool")
-    # rng_seed checked by NumPy later
+    # rng checked by NumPy later
 
     # Make surrogate data and package into Epochs/EpochsTFR objects
-    surrogate_data = _shuffle_coefficients(
-        data, n_shuffles, rng_seed, data_form="evoked"
-    )
+    surrogate_data = _shuffle_coefficients(data, n_shuffles, rng, data_form="evoked")
     if not return_generator:
         surrogate_data = list(surrogate_data)
 
     return surrogate_data
 
 
-def _shuffle_coefficients(data, n_shuffles, rng_seed, data_form):
+def _shuffle_coefficients(data, n_shuffles, rng, data_form):
     """Shuffle coefficients to create surrogate data.
 
     Surrogate data for each shuffle is packaged into an Epochs/EpochsSpectrum/EpochsTFR
@@ -268,7 +260,7 @@ def _shuffle_coefficients(data, n_shuffles, rng_seed, data_form):
     data_arr = data.get_data()
 
     # Make surrogate data
-    rng = np.random.default_rng(rng_seed)
+    rng = np.random.default_rng(rng)
     if data_form == "resting":
         yield from _shuffle_coefficients_over_epochs(
             data_arr, state, defaults, data_class, n_shuffles, rng

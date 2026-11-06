@@ -35,7 +35,7 @@ def test_make_signals_in_freq_bands(
 ):
     """Test `make_signals_in_freq_bands` simulates connectivity properly."""
     # Case with no spurious correlations (avoids tests randomly failing)
-    rng_seed = 0
+    rng = 0
 
     # Simulate data
     freq_band = (10, 15)  # fmin, fmax (Hz)
@@ -62,7 +62,7 @@ def test_make_signals_in_freq_bands(
         snr=0.75 if snr == "high" else 0.25,
         connection_delay=connection_delay,
         connection_time=connection_time,
-        rng_seed=rng_seed,
+        rng=rng,
     )
 
     # Compute connectivity
@@ -322,7 +322,7 @@ def test_make_surrogate_data(snr, should_be_significant, use_coeffs, state, meth
     duration = 1.0
     trans_bw = 1.0
     n_shuffles = 500
-    rng_seed = 0
+    rng = 0
     data = make_signals_in_freq_bands(
         n_seeds=n_seeds,
         n_targets=n_targets,
@@ -333,7 +333,7 @@ def test_make_surrogate_data(snr, should_be_significant, use_coeffs, state, meth
         trans_bandwidth=trans_bw,
         snr=snr,
         connection_time=connection_time,
-        rng_seed=rng_seed,
+        rng=rng,
     )
     indices = seed_target_indices(
         seeds=np.arange(n_seeds), targets=np.arange(n_targets) + n_seeds
@@ -364,7 +364,7 @@ def test_make_surrogate_data(snr, should_be_significant, use_coeffs, state, meth
     surrogate_func = (
         make_surrogate_evoked_data if state == "evoked" else make_surrogate_resting_data
     )
-    surrogate_data = surrogate_func(data=data, n_shuffles=n_shuffles, rng_seed=rng_seed)
+    surrogate_data = surrogate_func(data=data, n_shuffles=n_shuffles, rng=rng)
 
     # Compute connectivity
     con = spectral_connectivity_epochs(
@@ -451,7 +451,7 @@ def test_make_surrogate_resting_data_kind_consistency():
             dict(method="morlet", freqs=np.arange(5, sfreq // 2), output="complex"),
         ),
     ]
-    surrogate_kwargs = dict(n_shuffles=5, rng_seed=44)
+    surrogate_kwargs = dict(n_shuffles=5, rng=44)
 
     # Check surrogates from different data kinds matches, i.e.:
     # epochs → surrogate epochs → surrogate coeffs == epochs → coeffs → surrogate coeffs
@@ -482,7 +482,7 @@ def test_make_surrogate_evoked_data_fourier_magnitude_consistency():
     )
 
     surrogates = make_surrogate_evoked_data(
-        epochs, n_shuffles=3, rng_seed=7, return_generator=False
+        epochs, n_shuffles=3, rng=7, return_generator=False
     )
     expected_magnitudes = np.abs(np.fft.rfft(data, axis=-1))
 

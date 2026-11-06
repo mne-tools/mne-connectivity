@@ -105,7 +105,7 @@ epochs = make_signals_in_freq_bands(
     duration=2.0,
     sfreq=100,
     snr=0.2,
-    rng_seed=44,
+    rng=44,
 )
 
 seeds = np.arange(N_SEEDS)

@@ -80,7 +80,7 @@ data_10_12 = make_signals_in_freq_bands(
     n_targets=3,
     freq_band=(10, 12),  # 10-12 Hz interaction
     duration=2.0,
-    rng_seed=42,
+    rng=42,
 )
 
 data_23_25 = make_signals_in_freq_bands(
@@ -88,7 +88,7 @@ data_23_25 = make_signals_in_freq_bands(
     n_targets=3,
     freq_band=(23, 25),  # 23-25 Hz interaction
     duration=2.0,
-    rng_seed=44,
+    rng=44,
 )
 
 # Combine data into a single object
