@@ -8,9 +8,7 @@ from mne.time_frequency import EpochsSpectrum, EpochsTFR
 from mne.utils import _validate_type
 
 
-def make_surrogate_resting_data(
-    data, n_shuffles=1000, rng=None, return_generator=True
-):
+def make_surrogate_resting_data(data, n_shuffles=1000, rng=None, return_generator=True):
     """Create surrogate resting-state data for a null hypothesis of connectivity.
 
     Parameters
@@ -124,18 +122,14 @@ def make_surrogate_resting_data(
     # rng checked by NumPy later
 
     # Make surrogate data and package into Epochs/EpochsSpectrum/EpochsTFR objects
-    surrogate_data = _shuffle_coefficients(
-        data, n_shuffles, rng, data_form="resting"
-    )
+    surrogate_data = _shuffle_coefficients(data, n_shuffles, rng, data_form="resting")
     if not return_generator:
         surrogate_data = list(surrogate_data)
 
     return surrogate_data
 
 
-def make_surrogate_evoked_data(
-    data, n_shuffles=1000, rng=None, return_generator=True
-):
+def make_surrogate_evoked_data(data, n_shuffles=1000, rng=None, return_generator=True):
     """Create surrogate evoked data for a null hypothesis of connectivity.
 
     Parameters
@@ -219,9 +213,7 @@ def make_surrogate_evoked_data(
     # rng checked by NumPy later
 
     # Make surrogate data and package into Epochs/EpochsTFR objects
-    surrogate_data = _shuffle_coefficients(
-        data, n_shuffles, rng, data_form="evoked"
-    )
+    surrogate_data = _shuffle_coefficients(data, n_shuffles, rng, data_form="evoked")
     if not return_generator:
         surrogate_data = list(surrogate_data)
 
