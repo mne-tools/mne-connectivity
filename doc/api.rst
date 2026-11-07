@@ -26,10 +26,12 @@ Most-used classes
    TemporalConnectivity
    SpectralConnectivity
    SpectroTemporalConnectivity
+   VARConnectivity
    EpochConnectivity
    EpochTemporalConnectivity
    EpochSpectralConnectivity
    EpochSpectroTemporalConnectivity
+   EpochVARConnectivity
 
 Connectivity functions
 ======================
