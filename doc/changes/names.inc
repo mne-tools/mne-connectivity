@@ -15,6 +15,7 @@
 .. _Okan Tiktas: https://github.com/OKAN-SOFTWARE
 .. _Payam S. Shabestari: https://github.com/payamsash
 .. _Qianliang Li: https://github.com/Avoide
+.. _Qiaobo Chi: https://github.com/qiaobochi040726-source
 .. _Rebecca Stevenson: https://github.com/RebeccaStevenson
 .. _Richard Höchenberger: https://github.com/hoechenberger
 .. _Richard Köhler: https://github.com/richardkoehler
