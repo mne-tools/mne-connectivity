@@ -1150,11 +1150,27 @@ def spectral_connectivity_epochs(
                     "contain complex-valued Fourier coefficients, such as that "
                     "returned from Epochs.compute_psd/tfr() with `output='complex'`"
                 )
+            mode = spec_method = data.method
             if "segment" in data._dims:
-                raise ValueError(
-                    "`data` cannot contain Fourier coefficients for individual segments"
+                # Complex Welch coefficients have a segment dim when average=None,
+                # which is required with mne >= 1.14. A single segment can be dropped.
+                seg_axis = data._dims.index("segment")
+                coeffs = data.get_data(picks=np.arange(data.info["nchan"]))  # + bads
+                n_segments = coeffs.shape[seg_axis]
+                if n_segments != 1:
+                    raise ValueError(
+                        "`data` cannot contain Fourier coefficients for multiple "
+                        f"segments, got {n_segments} segments"
+                    )
+                data = EpochsSpectrumArray(
+                    np.take(coeffs, 0, axis=seg_axis),
+                    data.info,
+                    data.freqs,
+                    events=data.events,
+                    event_id=data.event_id,
+                    verbose=False,
                 )
-            mode = data.method
+                del coeffs
             if isinstance(data, EpochsSpectrum):
                 if isinstance(data, EpochsSpectrumArray):  # infer mode from dimensions
                     # Currently, actual mode doesn't matter as long as we handle tapers
@@ -1535,7 +1551,7 @@ def spectral_connectivity_epochs(
             spec_method=(
                 mode
                 if not isinstance(data, EpochsSpectrum | EpochsTFR)
-                else data.method
+                else spec_method
             ),
             indices=indices,
             n_epochs_used=n_epochs,
