@@ -78,7 +78,11 @@ def test_make_signals_in_freq_bands(
             method=mode, freqs=freqs, n_cycles=freqs / 2, output="complex"
         )
     else:
-        coeffs = data.compute_psd(method=mode, fmin=fmin, fmax=fmax, output="complex")
+        # complex Welch requires average=None in MNE >= 1.14
+        kwargs = dict(average=None) if mode == "welch" else dict()
+        coeffs = data.compute_psd(
+            method=mode, fmin=fmin, fmax=fmax, output="complex", **kwargs
+        )
     con = spectral_connectivity_epochs(coeffs, method=methods, indices=indices)
     freqs = np.array(con[0].freqs)
     if mode == "morlet":
@@ -351,8 +355,10 @@ def test_make_surrogate_data(snr, should_be_significant, use_coeffs, state, meth
                 method=method, freqs=freqs, n_cycles=n_cycles, output="complex"
             )
         else:
+            # complex Welch requires average=None in MNE >= 1.14
+            kwargs = dict(average=None) if method == "welch" else dict()
             data = data.compute_psd(
-                method=method, fmin=fmin, fmax=fmax, output="complex"
+                method=method, fmin=fmin, fmax=fmax, output="complex", **kwargs
             )
     else:  # prepare for coeff computation in connectivity func call
         if method == "morlet":
