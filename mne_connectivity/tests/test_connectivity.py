@@ -416,7 +416,9 @@ def test_make_spec_conn_full(data_make_full, kind):
 
     # Get spectral coeffs
     if kind == "epochs":
-        coeffs = data_make_full.compute_psd(method="welch", output="complex")
+        coeffs = data_make_full.compute_psd(
+            method="welch", average=None, output="complex"
+        )
         methods += ("ppc", "pli2_unbiased", "dpli", "wpli2_debiased")
         conn_func = spectral_connectivity_epochs
     else:  # kind == "time"
@@ -454,7 +456,9 @@ def test_make_psi_full(data_make_full, kind):
 
     # Get spectral coeffs
     if kind == "epochs":
-        coeffs = data_make_full.compute_psd(method="welch", output="complex")
+        coeffs = data_make_full.compute_psd(
+            method="welch", average=None, output="complex"
+        )
     else:  # kind == "time"
         coeffs = data_make_full.compute_tfr(
             method="morlet", freqs=np.arange(15, 20), n_cycles=3, output="complex"
