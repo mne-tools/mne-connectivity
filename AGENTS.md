@@ -227,10 +227,11 @@ the entries in `doc/changes/v0.9.rst` first. The name anchor must exist in
 `doc/changes/names.inc` (pre-commit keeps that file sorted). A CI job enforces the fragment;
 the `no-changelog-entry-needed` label is the escape hatch.
 
-Because `<PR-number>` is not known yet, and it may change before the PR is opened, the file
-can be created without `<PR-number>`, i.e., `doc/changes/dev/<type>.rst`. In this case, the
-`.github/workflows/autofix.yml` workflow will run on the PR and rename the file to include
-the PR number.
+The `<PR-number>` is not known yet. While it can be determined based off of the highest
+current issue or PR number, this may change between creating the changelog fragment, and
+opening the PR. As an alternative, the file can be created without `<PR-number>`, i.e.,
+`doc/changes/dev/<type>.rst`. In this case, the `.github/workflows/autofix.yml` workflow will
+run on the PR and rename the file to include the PR number.
 
 Where multiple distinct changes of the same type are made in one PR, it may be appropriate to
 create multiple fragments, which use the optional `<count>` suffix,
