@@ -510,9 +510,12 @@ def test_spectral_connectivity_epochs_spectrum_tfr_input_error_catch():
         tfr = data.compute_tfr(method="morlet", freqs=np.arange(15, 20), output="power")
         spectral_connectivity_epochs(data=tfr)
 
-    # Test unaggregated segments caught
-    with pytest.raises(ValueError, match=r"cannot contain Fourier coeff.*segments"):
-        spectrum = data.compute_psd(method="welch", average=False, output="complex")
+    # Test multiple unaggregated segments caught (a single segment is allowed)
+    spectrum = data.compute_psd(
+        method="welch", n_fft=n_times // 2, average=None, output="complex"
+    )
+    assert spectrum.get_data().shape[-1] == 2  # segments
+    with pytest.raises(ValueError, match=r"cannot contain Fourier coeff.*2 segments"):
         spectral_connectivity_epochs(data=spectrum)
 
     # Simulate missing weights attr in EpochsSpectrum/TFR object
@@ -1096,7 +1099,11 @@ def test_spectral_connectivity_bad_channels(conn_func, picks, data_as_spectra):
     if data_as_spectra:
         if conn_func is spectral_connectivity_epochs:
             data = data.compute_psd(
-                method="welch", fmin=con_freqs[0], fmax=con_freqs[1], output="complex"
+                method="welch",
+                fmin=con_freqs[0],
+                fmax=con_freqs[1],
+                average=None,
+                output="complex",
             )
         else:
             data = data.compute_tfr(method="morlet", freqs=con_freqs, output="complex")
