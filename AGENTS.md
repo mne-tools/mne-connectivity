@@ -227,13 +227,15 @@ the entries in `doc/changes/v0.9.rst` first. The name anchor must exist in
 `doc/changes/names.inc` (pre-commit keeps that file sorted). A CI job enforces the fragment;
 the `no-changelog-entry-needed` label is the escape hatch.
 
-The `<PR-number>` for a not-yet-opened PR is one more than the highest number currently in
-use; issues and PRs share one sequence, so query the most recently created of either:
+Because `<PR-number>` is not known yet, and it may change before the PR is opened, the file
+can be created without `<PR-number>`, i.e., `doc/changes/dev/<type>.rst`. In this case, the
+`.github/workflows/autofix.yml` workflow will run on the PR and rename the file to include
+the PR number.
 
-```bash
-gh api "repos/mne-tools/mne-connectivity/issues?state=all&per_page=1&sort=created&direction=desc" \
-    --jq '.[0].number'
-```
+Where multiple distinct changes of the same type are made in one PR, it may be appropriate to
+create multiple fragments, which use the optional `<count>` suffix,
+`doc/changes/dev/<PR-number>.<type>.<count>.rst`. E.g., `doc/changes/dev/1234.bugfix.1.rst` and
+`doc/changes/dev/1234.bugfix.2.rst`.
 
 New functionality should generally also show up in an example under `examples/` (built by
 sphinx-gallery into the docs) for discoverability. Build the docs with `make -C doc html`,
