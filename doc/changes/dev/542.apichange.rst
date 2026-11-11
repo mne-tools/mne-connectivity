@@ -1,0 +1,1 @@
+Stop storing ``n_tapers`` in connectivity containers returned from :func:`~mne_connectivity.spectral_connectivity_epochs`, by `Thomas Binns`_.
