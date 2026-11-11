@@ -79,10 +79,14 @@ def test_make_signals_in_freq_bands(
         )
     else:
         # complex Welch requires average=None in MNE >= 1.14
-        kwargs = dict(average=None) if mode == "welch" else dict()
+        kwargs = dict()
+        if mode == "welch":
+            kwargs.update(n_fft=int(sfreq * duration) // 2, average=None)  # 2 segments
         coeffs = data.compute_psd(
             method=mode, fmin=fmin, fmax=fmax, output="complex", **kwargs
         )
+        if mode == "welch":
+            assert coeffs.get_data().shape[-1] == 2
     con = spectral_connectivity_epochs(coeffs, method=methods, indices=indices)
     freqs = np.array(con[0].freqs)
     if mode == "morlet":
