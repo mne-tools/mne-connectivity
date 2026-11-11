@@ -59,6 +59,21 @@ docdict["data_EpochSpectroTemporalConnectivity"] = data_base.format(
     docdict["data_shape_EpochSpectroTemporalConnectivity"]
 )
 
+data_var_base = """
+data : array, shape {}
+    The connectivity data. ``n_connections`` is equal to ``n_nodes * n_nodes``, as the
+    data is expected to represent the interactions between all channels, i.e.,
+    ``indices='all'`` in other :class:`~mne_connectivity.Connectivity` containers.
+"""
+docdict["data_shape_VARConnectivity"] = "(n_connections, n_lags)"
+docdict["data_shape_EpochVARConnectivity"] = "(n_epochs, n_connections, n_lags)"
+docdict["data_VARConnectivity"] = data_var_base.format(
+    docdict["data_shape_VARConnectivity"]
+)
+docdict["data_EpochVARConnectivity"] = data_var_base.format(
+    docdict["data_shape_EpochVARConnectivity"]
+)
+
 docdict["names"] = """
 names : array_like | None
     The names of the nodes of the dataset used to compute connectivity. If ``None``
@@ -220,6 +235,11 @@ freqs : list | array
 docdict["times"] = """
 times : list | array
     The times at which the connectivity data is computed over.
+"""
+
+docdict["lags"] = """
+lags : list | array
+    The lags at which the connectivity data is computed over.
 """
 
 docdict["optional_components_dim"] = """
