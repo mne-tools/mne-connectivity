@@ -32,11 +32,13 @@ def _check_rank_input(rank, data, indices):
         elif isinstance(data, EpochsSpectrum):
             # Spectrum objs will drop bad channels, so specify picking all channels
             data_arr = data.get_data(picks=np.arange(data.info["nchan"]))
-            # Convert to power (and aggregate over tapers) before computing rank
+            # Convert to power and aggregate tapers/segments before computing rank
             if "taper" in data._dims:
                 data_arr = _psd_from_mt(data_arr, data.weights)
             else:
                 data_arr = (data_arr * data_arr.conj()).real
+                if "segment" in data._dims:
+                    data_arr = data_arr.mean(axis=data._dims.index("segment"))
         elif isinstance(data, EpochsTFR):
             # TFR objs will drop bad channels, so specify picking all channels
             data_arr = data.get_data(picks=np.arange(data.info["nchan"]))

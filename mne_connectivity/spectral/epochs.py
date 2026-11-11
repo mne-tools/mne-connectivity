@@ -539,14 +539,17 @@ def _epoch_spectral_connectivity(
 
     # compute tapered spectra
     if spectrum_computed:  # use existing spectral info
-        # Select entries of interest (flexible indexing for optional tapers dim)
+        # Select entries of interest
         if tmin_idx is not None and tmax_idx is not None:  # TFR spectra
+            # Flexible indexing for optional tapers dim
             x_t = np.asarray(data)[:, sig_idx][..., freq_mask, tmin_idx:tmax_idx]
         else:  # normal spectra
-            x_t = np.asarray(data)[:, sig_idx][..., freq_mask]
-            if weights is None:  # assumes no tapers dim, i.e., for Fourier/Welch mode
-                x_t = np.expand_dims(x_t, axis=2)  # CSD construction expects tapers dim
-                weights = np.ones((1, 1, 1))  # assign dummy weights
+            x_t = np.asarray(data)[:, sig_idx]
+            if mode == "fourier":  # Welch: treat segments like equally-weighted tapers
+                # (..., freqs, segments) -> (..., segments, freqs)
+                x_t = np.moveaxis(x_t, -1, -2)
+                weights = np.ones((x_t.shape[-2], 1))  # one weight per segment
+            x_t = x_t[..., freq_mask]
         if accumulate_psd:
             if weights is not None:  # mode == 'multitaper' or 'fourier'
                 if not is_tfr_con:  # normal spectra (multitaper or Fourier)
@@ -1150,34 +1153,26 @@ def spectral_connectivity_epochs(
                     "contain complex-valued Fourier coefficients, such as that "
                     "returned from Epochs.compute_psd/tfr() with `output='complex'`"
                 )
-            mode = spec_method = data.method
-            if "segment" in data._dims:
-                # Complex Welch coefficients have a segment dim when average=None,
-                # which is required with mne >= 1.14. A single segment can be dropped.
-                seg_axis = data._dims.index("segment")
-                coeffs = data.get_data(picks=np.arange(data.info["nchan"]))  # + bads
-                n_segments = coeffs.shape[seg_axis]
-                if n_segments != 1:
-                    raise ValueError(
-                        "`data` cannot contain Fourier coefficients for multiple "
-                        f"segments, got {n_segments} segments"
-                    )
-                data = EpochsSpectrumArray(
-                    np.take(coeffs, 0, axis=seg_axis),
-                    data.info,
-                    data.freqs,
-                    events=data.events,
-                    event_id=data.event_id,
-                    verbose=False,
-                )
-                del coeffs
+            mode = data.method
             if isinstance(data, EpochsSpectrum):
                 if isinstance(data, EpochsSpectrumArray):  # infer mode from dimensions
+                    if "taper" not in data._dims and "segment" not in data._dims:
+                        raise ValueError(
+                            "if `data` is an EpochsSpectrumArray object, `dim_names` "
+                            "must contain a 'taper' or 'segment' dimension; got "
+                            f"{data._dims}"
+                        )
                     # Currently, actual mode doesn't matter as long as we handle tapers
                     # and their weights in the same way as for multitaper spectra
                     mode = "multitaper" if "taper" in data._dims else "fourier"
                 else:  # read mode from object
                     mode = "fourier" if mode == "welch" else mode
+                    if mode == "fourier" and "segment" not in data._dims:
+                        raise ValueError(
+                            "if `data` is an EpochsSpectrum object containing Welch "
+                            "coefficients, it must have a 'segment' dimension (i.e., "
+                            "be computed with `average=None`)"
+                        )
             else:
                 if isinstance(data, EpochsTFRArray):  # infer mode from dimensions
                     # Currently, actual mode doesn't matter as long as we handle tapers
@@ -1551,7 +1546,7 @@ def spectral_connectivity_epochs(
             spec_method=(
                 mode
                 if not isinstance(data, EpochsSpectrum | EpochsTFR)
-                else spec_method
+                else data.method
             ),
             indices=indices,
             n_epochs_used=n_epochs,
