@@ -23,6 +23,8 @@ and how a graph learned from several smooth signals recovers the geometry they l
 # Authors: Payam S. Shabestari <payam.sadeghi74@gmail.com>
 #
 # License: BSD (3-clause)
+#
+# sphinx_gallery_thumbnail_number = 6
 
 # %%
 
