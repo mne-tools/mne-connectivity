@@ -23,6 +23,8 @@ and how a graph learned from several smooth signals recovers the geometry they l
 # Authors: Payam S. Shabestari <payam.sadeghi74@gmail.com>
 #
 # License: BSD (3-clause)
+#
+# sphinx_gallery_thumbnail_number = 6
 
 # %%
 
@@ -144,7 +146,9 @@ fig_learned.axes[0].set_title(
 # only rescales the edge weights :footcite:`Kalofolias2016`. Here, we keep ``alpha``
 # fixed and vary ``beta``. A sparser graph contains mostly true edges (high precision)
 # but misses some of them (low recall), whereas a denser graph finds all true edges at
-# the cost of including spurious ones.
+# the cost of including spurious ones. Instead of tuning ``alpha`` and ``beta`` by hand,
+# the desired average number of edges per node can also be given directly with
+# ``avg_degree``, as shown in the next section.
 
 # %%
 
@@ -203,11 +207,10 @@ for i_time, ax in enumerate(axes):
 fig.tight_layout()
 
 ########################################################################################
-# We learn one graph from the first time point only, and one from all four. For a
-# sparser graph, we use a small ``alpha`` rather than a small ``beta``: the sparsity of
-# the learned graph is determined by the product ``alpha * beta``, whereas their ratio
-# only rescales the weights :footcite:`Kalofolias2016`, and keeping ``beta`` away from
-# ``0`` makes the optimization converge much faster.
+# We learn one graph from the first time point only, and one from all four. Rather
+# than tuning ``alpha`` and ``beta``, we ask for graphs with about 5 edges per node on
+# average with ``avg_degree``, which selects the parameters automatically
+# :footcite:`KalofoliasPerraudin2017`.
 #
 # With a single time point, nodes with similar *values* are connected, even if they lie
 # far apart (on the same level line of the function), so the learned graph does not
@@ -235,7 +238,10 @@ def plot_graph(ax, W, title):
 
 fig, axes = plt.subplots(1, 2, figsize=(9, 4.5))
 for ax, n_times_used in zip(axes, (1, 4)):
-    conn_geo = learn_graph(signals[:, :n_times_used], alpha=0.001, verbose=False)
+    # a single time point needs more iterations to converge
+    conn_geo = learn_graph(
+        signals[:, :n_times_used], avg_degree=5, max_iter=5000, verbose=False
+    )
     plot_graph(
         ax,
         conn_geo.get_data(output="dense"),

@@ -81,6 +81,22 @@ def test_learn_graph_beta_monotonicity():
     assert np.all(np.diff(n_nonzeros) >= 0)
 
 
+@pytest.mark.parametrize("avg_degree", [4, 8])
+def test_learn_graph_avg_degree(avg_degree):
+    """Test that avg_degree sets the average number of edges per node."""
+    rng = np.random.default_rng(10)
+    n_epochs, n_nodes = 3, 60
+    X3 = rng.uniform(size=(n_epochs, n_nodes, 2))  # random node positions in 2D
+
+    conn = learn_graph(X3, avg_degree=avg_degree, verbose=False)
+    dense = conn.get_data(output="dense")
+    degrees = np.count_nonzero(dense, axis=2).mean(axis=1)  # average per epoch
+    assert_allclose(degrees, avg_degree, rtol=0.25)
+
+    dense_scaled = learn_graph(1000 * X3, avg_degree=avg_degree, verbose=False)
+    assert_allclose(dense_scaled.get_data(output="dense"), dense, rtol=1e-10)
+
+
 def test_learn_graph_few_time_samples():
     """Test robustness of learn_graph with very few time samples."""
     rng = np.random.default_rng(2)
@@ -246,6 +262,16 @@ def test_learn_graph_bad_inputs():
         learn_graph(X, alpha=-1)
     with pytest.raises(ValueError, match="beta must be"):
         learn_graph(X, beta=-1)
+    with pytest.raises(ValueError, match="cannot be combined with avg_degree"):
+        learn_graph(X, alpha=0.5, avg_degree=2)
+    with pytest.raises(ValueError, match="cannot be combined with avg_degree"):
+        learn_graph(X, beta=0.5, avg_degree=2)
+    with pytest.raises(ValueError, match="avg_degree must be >= 1"):
+        learn_graph(X, avg_degree=0)
+    with pytest.raises(ValueError, match="avg_degree must be at most n_nodes - 2 = 4"):
+        learn_graph(X, avg_degree=5)
+    with pytest.raises(TypeError, match="avg_degree"):
+        learn_graph(X, avg_degree=2.5)
     with pytest.raises(ValueError, match="step_size must be"):
         learn_graph(X, step_size=0)
     with pytest.raises(ValueError, match="step_size must be"):

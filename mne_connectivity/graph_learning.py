@@ -10,7 +10,7 @@ from mne._fiff.pick import _picks_to_idx
 from mne.parallel import parallel_func
 from mne.source_estimate import _BaseSourceEstimate
 from mne.utils import _check_option, _validate_type, logger, verbose, warn
-from scipy.spatial.distance import pdist
+from scipy.spatial.distance import pdist, squareform
 
 from .base import Connectivity, EpochConnectivity
 from .utils import fill_doc
@@ -79,6 +79,41 @@ def _solve_primal_dual(z, n_nodes, iu, ju, alpha, beta, max_iter, tol, step_size
     return p, n_iter, converged
 
 
+# Adapted from compute_theta_bounds() and gsp_compute_graph_learning_theta() in the
+# PyGSP graph-learning code by V. Kalofolias
+# (https://github.com/epfl-lts2/pygsp/pull/57), Copyright (c) 2014, EPFL LTS2,
+# released under the BSD-3-Clause license.
+def _scale_for_avg_degree(z, n_nodes, avg_degree):
+    """Find the scale of the distances giving about ``avg_degree`` edges per node.
+
+    With alpha = beta = 1, scaling the distances by theta controls the density of the
+    learned graph. For each node, Theorem 3 of Kalofolias & Perraudin (2017) gives the
+    range of theta for which that node alone would get exactly k edges, from its k
+    and k + 1 smallest distances. Each bound is averaged over nodes, and the geometric
+    mean of the two averaged bounds is returned.
+    """
+    k = np.arange(1, avg_degree + 2)
+    dist = squareform(z)
+    dist = np.partition(dist, avg_degree + 1, axis=1)[:, : avg_degree + 2]
+    dist = np.sort(dist, axis=1)[:, 1:]
+    with np.errstate(divide="ignore"):
+        bounds = 1 / np.sqrt(
+            np.maximum(k * dist**2 - np.cumsum(dist, axis=1) * dist, 0)
+        )
+    upper, lower = (
+        bound[np.isfinite(bound)].mean() if np.isfinite(bound).any() else np.nan
+        for bound in (bounds[:, avg_degree - 1], bounds[:, avg_degree])
+    )
+    if not np.isfinite(lower):
+        raise ValueError(
+            "Cannot select the parameters for the requested avg_degree, because the "
+            "nearest distances between nodes are all tied"
+        )
+    if avg_degree == 1:
+        return 1.1 * lower
+    return np.sqrt(lower * upper)
+
+
 def _learn_graph_one_epoch(
     epoch_data,
     iu,
@@ -88,6 +123,7 @@ def _learn_graph_one_epoch(
     normalize,
     alpha,
     beta,
+    avg_degree,
     max_iter,
     tol,
     step_size,
@@ -100,7 +136,9 @@ def _learn_graph_one_epoch(
             f"non-negative for the graph-learning model to be valid, got a "
             f"negative value (min={z.min()})"
         )
-    if normalize:
+    if avg_degree is not None:
+        z = _scale_for_avg_degree(z, n_nodes, avg_degree) * z
+    elif normalize:
         z_mean = z.mean()
         if z_mean > 0:
             z = z / z_mean
@@ -156,8 +194,9 @@ def learn_graph(
     *,
     names=None,
     indices="lower",
-    alpha=0.5,
-    beta=0.5,
+    alpha=None,
+    beta=None,
+    avg_degree=None,
     metric="sqeuclidean",
     normalize=True,
     max_iter=1000,
@@ -208,19 +247,28 @@ def learn_graph(
         when requesting ``get_data(output='dense')``. If ``'all'``, the full matrix
         (including the zero diagonal) is stored. The graph itself is always learned
         over all pairs of nodes. Default is ``'lower'``.
-    alpha : float
+    alpha : float | None
         Controls how strongly node degrees are pulled away from zero via the
         log-barrier term. Must be strictly positive. Larger values yield
         more connected (higher-degree) graphs; every node is guaranteed at
-        least one edge for any ``alpha > 0``. Default ``0.5``.
-    beta : float
+        least one edge for any ``alpha > 0``. If ``None`` (default), ``0.5`` is
+        used, unless ``avg_degree`` is given. Cannot be combined with
+        ``avg_degree``.
+    beta : float | None
         Controls the :math:`\|w\|^2` penalty on edge weights. Must be
         non-negative. Larger values yield denser graphs. ``beta=0`` yields
         the sparsest graph consistent with keeping every node connected, but
         lacks a strongly-convex term and so converges markedly more slowly
-        (see ``max_iter``); the default ``beta=0.5`` gives fast, reliable
-        convergence while still yielding a moderately sparse graph. See
-        Notes.
+        (see ``max_iter``); ``beta=0.5`` gives fast, reliable convergence while
+        still yielding a moderately sparse graph. If ``None`` (default), ``0.5`` is
+        used, unless ``avg_degree`` is given. Cannot be combined with
+        ``avg_degree``. See Notes.
+    avg_degree : int | None
+        The desired average number of edges per node. If given, ``alpha`` and
+        ``beta`` are selected automatically so that the learned graph has
+        approximately this average degree :footcite:`KalofoliasPerraudin2017`. Must
+        be between ``1`` and ``n_nodes - 2``. If ``None`` (default), ``alpha`` and
+        ``beta`` are used. See Notes.
     metric : str | callable
         Distance metric passed to :func:`scipy.spatial.distance.pdist` to
         build the pairwise dissimilarity vector between nodes. Must yield
@@ -231,7 +279,8 @@ def learn_graph(
         If ``True`` (default), rescale the pairwise-distance vector by its
         mean before solving, so that the default ``alpha``/``beta`` behave
         consistently regardless of the input's physical units or amplitude
-        scale. See Notes.
+        scale. Ignored if ``avg_degree`` is given, since the automatic selection
+        already adapts to the scale of the data. See Notes.
     max_iter : int
         Maximum number of primal-dual iterations. Default ``1000``. Sparser
         settings (small ``beta``, in particular ``beta=0``) may require more
@@ -295,8 +344,19 @@ def learn_graph(
     solver converges much more slowly in that regime (often thousands of
     iterations) and the relative-change stopping criterion (``tol``) is a
     weaker guarantee of closeness to the true optimum than it is for
-    ``beta > 0``. For most uses, prefer sweeping ``beta`` away from ``0`` (as
-    the default does) for both faster and more reliable convergence.
+    ``beta > 0``.
+
+    More generally, which edges are learned depends only on the product
+    :math:`\alpha\beta`: changing both while keeping their product fixed only
+    rescales the learned weights :footcite:`Kalofolias2016`. To learn sparser
+    graphs, prefer decreasing ``alpha`` over decreasing ``beta``, which keeps the
+    convergence fast. Alternatively, ``avg_degree`` selects the parameters
+    automatically :footcite:`KalofoliasPerraudin2017`: :math:`\alpha = \beta = 1`,
+    and :math:`z` is multiplied by a scale computed in closed form from the
+    smallest distances of each node (their Theorem 3), so that nodes have on
+    average about ``avg_degree`` edges. The resulting average degree is
+    approximate, and typically slightly larger than requested for very small
+    values (e.g., ``avg_degree=1``), since every node keeps at least one edge.
 
     The optimization is solved per epoch using a forward-backward-forward
     primal-dual splitting with per-iteration complexity ``O(n_nodes**2)``.
@@ -307,6 +367,19 @@ def learn_graph(
     """
     _validate_type(indices, str, "indices")
     _check_option("indices", indices, ["lower", "upper", "all"])
+    if avg_degree is None:
+        alpha = 0.5 if alpha is None else alpha
+        beta = 0.5 if beta is None else beta
+    else:
+        if alpha is not None or beta is not None:
+            raise ValueError(
+                "alpha and beta cannot be combined with avg_degree, which selects "
+                "the parameters automatically"
+            )
+        _validate_type(avg_degree, "int", "avg_degree")
+        if avg_degree < 1:
+            raise ValueError(f"avg_degree must be >= 1, got {avg_degree}")
+        alpha = beta = 1.0
     _validate_type(alpha, "numeric", "alpha")
     _validate_type(beta, "numeric", "beta")
     if alpha <= 0:
@@ -352,6 +425,11 @@ def learn_graph(
     n_learned = len(learned_nodes)
     if n_learned < 2:
         raise ValueError(f"learn_graph requires at least 2 nodes, got {n_learned}")
+    if avg_degree is not None and avg_degree > n_learned - 2:
+        raise ValueError(
+            f"avg_degree must be at most n_nodes - 2 = {n_learned - 2}, got "
+            f"{avg_degree}"
+        )
     epochs_iter = _iter_epochs(first_epoch, data_iter, n_nodes, picks)
     del first_epoch
 
@@ -372,6 +450,7 @@ def learn_graph(
             normalize,
             alpha,
             beta,
+            avg_degree,
             max_iter,
             tol,
             step_size,
