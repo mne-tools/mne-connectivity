@@ -5,6 +5,7 @@
 #
 # License: Simplified BSD
 
+import numpy as np
 from mne.viz.circle import _plot_connectivity_circle
 
 
@@ -21,7 +22,7 @@ def plot_connectivity_circle(
     textcolor="white",
     node_edgecolor="black",
     linewidth=1.5,
-    colormap="hot",
+    colormap=None,
     vmin=None,
     vmax=None,
     colorbar=True,
@@ -73,12 +74,22 @@ def plot_connectivity_circle(
         Color to use for lines around nodes. See :mod:`matplotlib.colors`.
     linewidth : float
         Line width to use for connections.
-    colormap : str | instance of matplotlib.colors.LinearSegmentedColormap
-        Colormap to use for coloring the connections.
+    colormap : str | instance of matplotlib.colors.Colormap | None
+        Colormap to use for coloring the connections. If ``None`` (default),
+        ``"RdBu_r"`` is used when the plotted data has both positive and negative
+        values, otherwise ``"hot"``.
+
+        .. versionchanged:: 1.0
+           The default changed from ``"hot"`` to ``None``.
     vmin : float | None
         Minimum value for colormap. If ``None``, it is determined automatically.
     vmax : float | None
         Maximum value for colormap. If ``None``, it is determined automatically.
+        If both ``vmin`` and ``vmax`` are ``None`` and the plotted data has both
+        positive and negative values, the limits are symmetric around zero.
+
+        .. versionchanged:: 1.0
+           Automatic limits for data with both signs are symmetric around zero.
     colorbar : bool
         Display a colorbar or not.
     title : str
@@ -129,6 +140,24 @@ def plot_connectivity_circle(
 
     if isinstance(con, BaseConnectivity):
         con = con.get_data()
+
+    # choose the colormap and limits
+    con = np.asarray(con)
+    if con.ndim == 2 and con.shape[0] == con.shape[1]:
+        values = con[np.tril_indices(con.shape[0], -1)]
+    else:
+        values = con.ravel()
+    values = values[np.isfinite(values)]
+    signed = (
+        not np.iscomplexobj(values)
+        and values.size > 0
+        and values.min() < 0 < values.max()
+    )
+    if colormap is None:
+        colormap = "RdBu_r" if signed else "hot"
+    if signed and vmin is None and vmax is None:
+        vmax = np.abs(values).max()
+        vmin = -vmax
 
     return _plot_connectivity_circle(
         con=con,
