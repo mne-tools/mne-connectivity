@@ -63,7 +63,7 @@ def test_spectral_connectivity_parallel(method, mode, tmp_path):
         duration=5.12,
         sfreq=50,
         trans_bandwidth=2.0,
-        rng_seed=0,  # case with no spurious correlations (avoid tests randomly failing)
+        rng=0,  # case with no spurious correlations (avoid tests randomly failing)
     )
 
     # define some frequencies for cwt
@@ -146,7 +146,7 @@ def test_spectral_connectivity(method, mode):
         trans_bandwidth=trans_bw,
         connection_delay=0.0,  # no delay, so we can test ImCoh is ~0
         snr=0.5,
-        rng_seed=0,
+        rng=0,
     )
 
     # First we test some invalid parameters:
@@ -414,7 +414,7 @@ def test_spectral_connectivity_epochs_spectrum_tfr_input(method, mode, spectra_a
         trans_bandwidth=trans_bandwidth,
         snr=0.7,
         connection_delay=delay,
-        rng_seed=44,
+        rng=44,
     )
 
     if method == "coh":
@@ -578,7 +578,7 @@ def test_spectral_connectivity_epochs_multivariate(method, n_components):
         trans_bandwidth=trans_bandwidth,
         snr=0.7,
         connection_delay=delay,
-        rng_seed=44,
+        rng=44,
     )
 
     # Compute connectivity (only 1 component)
@@ -829,7 +829,7 @@ def test_multivar_spectral_connectivity_epochs_error_catch(method, mode):
         n_epochs=8,
         duration=2.0,
         sfreq=sfreq,
-        rng_seed=0,
+        rng=0,
     )
     indices = ([[0, 1]], [[2, 3]])
     cwt_freqs = np.arange(10, 25 + 1)
@@ -1005,7 +1005,7 @@ def test_multivar_spectral_connectivity_parallel(method):
         n_epochs=8,
         duration=2.0,
         sfreq=50,
-        rng_seed=0,
+        rng=0,
     )
 
     indices = ([[0, 1]], [[2, 3]])
@@ -1033,7 +1033,7 @@ def test_multivar_spectral_connectivity_flipped_indices():
         n_epochs=8,
         duration=2.0,
         sfreq=50,
-        rng_seed=0,
+        rng=0,
     )
 
     freqs = np.arange(10, 20)
@@ -1374,7 +1374,7 @@ def test_spectral_connectivity_time_delayed():
         snr=0.5,
         connection_delay=0.05,  # non-zero delay needed for GC to be >> 0
         trans_bandwidth=trans_bandwidth,
-        rng_seed=0,
+        rng=0,
     )
 
     freqs = np.arange(3, 50)
@@ -1511,7 +1511,7 @@ def test_spectral_connectivity_time_padding(method, mode, padding):
         trans_bandwidth=2.0,
         snr=0.7,
         connection_delay=0.05,
-        rng_seed=44,
+        rng=44,
     )
     rng = np.random.default_rng(42)
     noise_data = rng.standard_normal((n_epochs, 1, data.get_data().shape[-1]))
@@ -1589,7 +1589,7 @@ def test_multivar_spectral_connectivity_time_shapes(
         n_epochs=n_epochs,
         duration=2.0,
         sfreq=50,
-        rng_seed=0,
+        rng=0,
     )
 
     # test with full indices
@@ -1697,7 +1697,7 @@ def test_spectral_connectivity_time_tfr_input(method, mode, decim):
         trans_bandwidth=trans_bandwidth,
         snr=0.7,
         connection_delay=0.05,
-        rng_seed=44,
+        rng=44,
     )
 
     if method == "coh":
@@ -1805,7 +1805,7 @@ def test_multivar_spectral_connectivity_time_error_catch(method, mode):
         n_epochs=8,
         duration=2.0,
         sfreq=50,
-        rng_seed=0,
+        rng=0,
     )
 
     indices = ([[0, 1]], [[2, 3]])
@@ -1962,7 +1962,7 @@ def test_save(tmp_path):
         n_epochs=10,
         duration=2.0,
         sfreq=1000,
-        rng_seed=0,
+        rng=0,
     )
 
     conn = spectral_connectivity_epochs(
@@ -1981,7 +1981,7 @@ def test_multivar_save_load(tmp_path):
         n_epochs=5,
         duration=2.0,
         sfreq=1000,
-        rng_seed=0,
+        rng=0,
     )
 
     tmp_file = os.path.join(tmp_path, "foo_mvc.nc")
@@ -2024,7 +2024,7 @@ def test_spectral_connectivity_indices_roundtrip_io(tmp_path, method, indices):
         n_epochs=10,
         duration=2.0,
         sfreq=100,
-        rng_seed=0,
+        rng=0,
     )
 
     freqs = np.arange(10, 31)
@@ -2066,7 +2066,7 @@ def test_multivar_spectral_connectivity_indices_roundtrip_io(tmp_path, method):
         n_epochs=10,
         duration=2.0,
         sfreq=100,
-        rng_seed=0,
+        rng=0,
     )
     indices = ([[0, 1]], [[2, 3]])
     freqs = np.arange(10, 31)

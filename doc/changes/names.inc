@@ -12,6 +12,7 @@
 .. _Marijn van Vliet: https://github.com/wmvanvliet
 .. _Mina Jamshidi: https://github.com/minajamshidi
 .. _Mohammad Orabe: https://github.com/orabe
+.. _Muhtasim Munif Fahim: https://github.com/Muhtasim-Munif-Fahim
 .. _Okan Tiktas: https://github.com/OKAN-SOFTWARE
 .. _Payam S. Shabestari: https://github.com/payamsash
 .. _Qianliang Li: https://github.com/Avoide
