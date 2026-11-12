@@ -11,12 +11,15 @@ is ordered based on the locations of the regions in the axial plane.
 # Authors: Martin Luessi <mluessi@nmr.mgh.harvard.edu>
 #          Alexandre Gramfort <alexandre.gramfort@inria.fr>
 #          Nicolas P. Rougier (graph code borrowed from his matplotlib gallery)
+#          Payam S. Shabestari <payam.sadeghi74@gmail.com>
 #
 # License: BSD (3-clause)
+# sphinx_gallery_thumbnail_number = 2
 
 import matplotlib.pyplot as plt
 import mne
 import numpy as np
+from matplotlib.patches import Patch
 from mne.datasets import sample
 from mne.minimum_norm import apply_inverse_epochs, read_inverse_operator
 from mne.viz import circular_layout
@@ -177,11 +180,103 @@ plot_connectivity_circle(
 fig.tight_layout()
 
 ###############################################################################
+# Group the regions into lobes
+# ----------------------------
+#
+# With many regions, the names on the circle become hard to read. Here, we
+# group the regions into lobes and show one name and one color per lobe. This
+# only needs the existing parameters: ``node_angles`` orders the nodes by lobe
+# and leaves a gap between lobes, ``node_colors`` gives all regions of a lobe
+# the same color, and empty strings hide all but one name per lobe.
+
+# The lobes of the regions in the 'aparc' parcellation, from front to back
+lobes = {
+    "frontal": [
+        "superiorfrontal",
+        "rostralmiddlefrontal",
+        "caudalmiddlefrontal",
+        "parsopercularis",
+        "parstriangularis",
+        "parsorbitalis",
+        "lateralorbitofrontal",
+        "medialorbitofrontal",
+        "precentral",
+        "paracentral",
+        "frontalpole",
+    ],
+    "insula": ["insula"],
+    "cingulate": [
+        "rostralanteriorcingulate",
+        "caudalanteriorcingulate",
+        "posteriorcingulate",
+        "isthmuscingulate",
+    ],
+    "temporal": [
+        "superiortemporal",
+        "middletemporal",
+        "inferiortemporal",
+        "bankssts",
+        "fusiform",
+        "transversetemporal",
+        "entorhinal",
+        "temporalpole",
+        "parahippocampal",
+    ],
+    "parietal": [
+        "superiorparietal",
+        "inferiorparietal",
+        "supramarginal",
+        "postcentral",
+        "precuneus",
+    ],
+    "occipital": ["lateraloccipital", "lingual", "cuneus", "pericalcarine"],
+}
+lobe_of = {region: lobe for lobe, regions in lobes.items() for region in regions}
+lobe_colors = dict(zip(lobes, plt.colormaps["tab10"].colors))
+
+# Order the nodes by lobe with the front at the top, mirroring the hemispheres
+lh_order = [f"{region}-lh" for regions in lobes.values() for region in regions]
+rh_order = [f"{region}-rh" for regions in lobes.values() for region in regions]
+lobe_order = lh_order + rh_order[::-1]
+
+# Start a new group wherever the lobe or the hemisphere changes
+groups = [lobe_of[name[:-3]] + name[-3:] for name in lobe_order]
+group_starts = [0] + [i for i in range(1, len(groups)) if groups[i] != groups[i - 1]]
+lobe_angles = circular_layout(
+    label_names,
+    lobe_order,
+    start_pos=90,
+    group_boundaries=group_starts,
+    group_sep=4,
+)
+
+# Color each region by its lobe, and name only the middle region of each lobe
+lobe_node_colors = [lobe_colors[lobe_of[name[:-3]]] for name in label_names]
+lobe_names = [""] * len(label_names)
+for start, stop in zip(group_starts, group_starts[1:] + [len(lobe_order)]):
+    middle = lobe_order[(start + stop - 1) // 2]
+    lobe_names[label_names.index(middle)] = lobe_of[middle[:-3]]
+
+fig, ax = plt.subplots(figsize=(8, 8), facecolor="black", subplot_kw=dict(polar=True))
+plot_connectivity_circle(
+    con_res["pli"],
+    lobe_names,
+    n_lines=300,
+    node_angles=lobe_angles,
+    node_colors=lobe_node_colors,
+    title="All-to-All Connectivity left-Auditory Condition (PLI)",
+    ax=ax,
+)
+fig.tight_layout()
+
+###############################################################################
 # Make multiple connectivity plots in the same figure
 # ---------------------------------------------------
 #
 # We can also assign these connectivity plots to axes in a figure. Below we'll
-# show the connectivity plot using two different connectivity methods.
+# show the connectivity plot using three different connectivity methods. The
+# plots are too small for node names, so we add a legend for the lobe colors
+# instead.
 
 fig, axes = plt.subplots(
     1, 3, figsize=(8, 4), facecolor="black", subplot_kw=dict(polar=True)
@@ -192,13 +287,22 @@ for ax, method in zip(axes, con_methods):
         con_res[method],
         no_names,
         n_lines=300,
-        node_angles=node_angles,
-        node_colors=label_colors,
+        node_angles=lobe_angles,
+        node_colors=lobe_node_colors,
         title=method,
         padding=0,
         fontsize_colorbar=6,
         ax=ax,
     )
+handles = [Patch(color=color, label=lobe) for lobe, color in lobe_colors.items()]
+fig.legend(
+    handles=handles,
+    loc="lower center",
+    ncols=len(handles),
+    frameon=False,
+    labelcolor="white",
+    fontsize=8,
+)
 
 
 ###############################################################################
