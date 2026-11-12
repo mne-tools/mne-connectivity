@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_connectivity.graph_learning &#8212; MNE-Connectivity 0.10.0.dev59+gf427abd87 documentation</title>
+    <title>mne_connectivity.graph_learning &#8212; MNE-Connectivity 0.10.0.dev60+gfd98e97f3 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="../../_static/documentation_options.js?v=73979042"></script>
+    <script src="../../_static/documentation_options.js?v=0c555dc2"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -133,7 +133,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.10.0.dev59+gf427abd87 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.10.0.dev60+gfd98e97f3 documentation</p>
   
 </a></div>
     
@@ -447,7 +447,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne.parallel</span><span class="w"> </span><span class="kn">import</span> <span class="n">parallel_func</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne.source_estimate</span><span class="w"> </span><span class="kn">import</span> <span class="n">_BaseSourceEstimate</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_check_option</span><span class="p">,</span> <span class="n">_validate_type</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span> <span class="n">warn</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.spatial.distance</span><span class="w"> </span><span class="kn">import</span> <span class="n">pdist</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.spatial.distance</span><span class="w"> </span><span class="kn">import</span> <span class="n">pdist</span><span class="p">,</span> <span class="n">squareform</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">Connectivity</span><span class="p">,</span> <span class="n">EpochConnectivity</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">fill_doc</span>
@@ -516,6 +516,41 @@
     <span class="k">return</span> <span class="n">p</span><span class="p">,</span> <span class="n">n_iter</span><span class="p">,</span> <span class="n">converged</span>
 
 
+<span class="c1"># Adapted from compute_theta_bounds() and gsp_compute_graph_learning_theta() in the</span>
+<span class="c1"># PyGSP graph-learning code by V. Kalofolias</span>
+<span class="c1"># (https://github.com/epfl-lts2/pygsp/pull/57), Copyright (c) 2014, EPFL LTS2,</span>
+<span class="c1"># released under the BSD-3-Clause license.</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_scale_for_avg_degree</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">n_nodes</span><span class="p">,</span> <span class="n">avg_degree</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Find the scale of the distances giving about ``avg_degree`` edges per node.</span>
+
+<span class="sd">    With alpha = beta = 1, scaling the distances by theta controls the density of the</span>
+<span class="sd">    learned graph. For each node, Theorem 3 of Kalofolias &amp; Perraudin (2017) gives the</span>
+<span class="sd">    range of theta for which that node alone would get exactly k edges, from its k</span>
+<span class="sd">    and k + 1 smallest distances. Each bound is averaged over nodes, and the geometric</span>
+<span class="sd">    mean of the two averaged bounds is returned.</span>
+<span class="sd">    """</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">avg_degree</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">dist</span> <span class="o">=</span> <span class="n">squareform</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+    <span class="n">dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="n">dist</span><span class="p">,</span> <span class="n">avg_degree</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)[:,</span> <span class="p">:</span> <span class="n">avg_degree</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span>
+    <span class="n">dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">dist</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">:]</span>
+    <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">divide</span><span class="o">=</span><span class="s2">"ignore"</span><span class="p">):</span>
+        <span class="n">bounds</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">k</span> <span class="o">*</span> <span class="n">dist</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">dist</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">dist</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="n">upper</span><span class="p">,</span> <span class="n">lower</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">bound</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">bound</span><span class="p">)]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">bound</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">()</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+        <span class="k">for</span> <span class="n">bound</span> <span class="ow">in</span> <span class="p">(</span><span class="n">bounds</span><span class="p">[:,</span> <span class="n">avg_degree</span> <span class="o">-</span> <span class="mi">1</span><span class="p">],</span> <span class="n">bounds</span><span class="p">[:,</span> <span class="n">avg_degree</span><span class="p">])</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">lower</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">"Cannot select the parameters for the requested avg_degree, because the "</span>
+            <span class="s2">"nearest distances between nodes are all tied"</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">avg_degree</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mf">1.1</span> <span class="o">*</span> <span class="n">lower</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">lower</span> <span class="o">*</span> <span class="n">upper</span><span class="p">)</span>
+
+
 <span class="k">def</span><span class="w"> </span><span class="nf">_learn_graph_one_epoch</span><span class="p">(</span>
     <span class="n">epoch_data</span><span class="p">,</span>
     <span class="n">iu</span><span class="p">,</span>
@@ -525,6 +560,7 @@
     <span class="n">normalize</span><span class="p">,</span>
     <span class="n">alpha</span><span class="p">,</span>
     <span class="n">beta</span><span class="p">,</span>
+    <span class="n">avg_degree</span><span class="p">,</span>
     <span class="n">max_iter</span><span class="p">,</span>
     <span class="n">tol</span><span class="p">,</span>
     <span class="n">step_size</span><span class="p">,</span>
@@ -537,7 +573,9 @@
             <span class="sa">f</span><span class="s2">"non-negative for the graph-learning model to be valid, got a "</span>
             <span class="sa">f</span><span class="s2">"negative value (min=</span><span class="si">{</span><span class="n">z</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">}</span><span class="s2">)"</span>
         <span class="p">)</span>
-    <span class="k">if</span> <span class="n">normalize</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">avg_degree</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="n">_scale_for_avg_degree</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">n_nodes</span><span class="p">,</span> <span class="n">avg_degree</span><span class="p">)</span> <span class="o">*</span> <span class="n">z</span>
+    <span class="k">elif</span> <span class="n">normalize</span><span class="p">:</span>
         <span class="n">z_mean</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">z_mean</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">z</span> <span class="o">=</span> <span class="n">z</span> <span class="o">/</span> <span class="n">z_mean</span>
@@ -595,8 +633,9 @@
     <span class="o">*</span><span class="p">,</span>
     <span class="n">names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">indices</span><span class="o">=</span><span class="s2">"lower"</span><span class="p">,</span>
-    <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
-    <span class="n">beta</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+    <span class="n">alpha</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">beta</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">avg_degree</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">metric</span><span class="o">=</span><span class="s2">"sqeuclidean"</span><span class="p">,</span>
     <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">max_iter</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
@@ -647,19 +686,28 @@
 <span class="sd">        when requesting ``get_data(output='dense')``. If ``'all'``, the full matrix</span>
 <span class="sd">        (including the zero diagonal) is stored. The graph itself is always learned</span>
 <span class="sd">        over all pairs of nodes. Default is ``'lower'``.</span>
-<span class="sd">    alpha : float</span>
+<span class="sd">    alpha : float | None</span>
 <span class="sd">        Controls how strongly node degrees are pulled away from zero via the</span>
 <span class="sd">        log-barrier term. Must be strictly positive. Larger values yield</span>
 <span class="sd">        more connected (higher-degree) graphs; every node is guaranteed at</span>
-<span class="sd">        least one edge for any ``alpha &gt; 0``. Default ``0.5``.</span>
-<span class="sd">    beta : float</span>
+<span class="sd">        least one edge for any ``alpha &gt; 0``. If ``None`` (default), ``0.5`` is</span>
+<span class="sd">        used, unless ``avg_degree`` is given. Cannot be combined with</span>
+<span class="sd">        ``avg_degree``.</span>
+<span class="sd">    beta : float | None</span>
 <span class="sd">        Controls the :math:`\|w\|^2` penalty on edge weights. Must be</span>
 <span class="sd">        non-negative. Larger values yield denser graphs. ``beta=0`` yields</span>
 <span class="sd">        the sparsest graph consistent with keeping every node connected, but</span>
 <span class="sd">        lacks a strongly-convex term and so converges markedly more slowly</span>
-<span class="sd">        (see ``max_iter``); the default ``beta=0.5`` gives fast, reliable</span>
-<span class="sd">        convergence while still yielding a moderately sparse graph. See</span>
-<span class="sd">        Notes.</span>
+<span class="sd">        (see ``max_iter``); ``beta=0.5`` gives fast, reliable convergence while</span>
+<span class="sd">        still yielding a moderately sparse graph. If ``None`` (default), ``0.5`` is</span>
+<span class="sd">        used, unless ``avg_degree`` is given. Cannot be combined with</span>
+<span class="sd">        ``avg_degree``. See Notes.</span>
+<span class="sd">    avg_degree : int | None</span>
+<span class="sd">        The desired average number of edges per node. If given, ``alpha`` and</span>
+<span class="sd">        ``beta`` are selected automatically so that the learned graph has</span>
+<span class="sd">        approximately this average degree :footcite:`KalofoliasPerraudin2017`. Must</span>
+<span class="sd">        be between ``1`` and ``n_nodes - 2``. If ``None`` (default), ``alpha`` and</span>
+<span class="sd">        ``beta`` are used. See Notes.</span>
 <span class="sd">    metric : str | callable</span>
 <span class="sd">        Distance metric passed to :func:`scipy.spatial.distance.pdist` to</span>
 <span class="sd">        build the pairwise dissimilarity vector between nodes. Must yield</span>
@@ -670,7 +718,8 @@
 <span class="sd">        If ``True`` (default), rescale the pairwise-distance vector by its</span>
 <span class="sd">        mean before solving, so that the default ``alpha``/``beta`` behave</span>
 <span class="sd">        consistently regardless of the input's physical units or amplitude</span>
-<span class="sd">        scale. See Notes.</span>
+<span class="sd">        scale. Ignored if ``avg_degree`` is given, since the automatic selection</span>
+<span class="sd">        already adapts to the scale of the data. See Notes.</span>
 <span class="sd">    max_iter : int</span>
 <span class="sd">        Maximum number of primal-dual iterations. Default ``1000``. Sparser</span>
 <span class="sd">        settings (small ``beta``, in particular ``beta=0``) may require more</span>
@@ -734,8 +783,19 @@
 <span class="sd">    solver converges much more slowly in that regime (often thousands of</span>
 <span class="sd">    iterations) and the relative-change stopping criterion (``tol``) is a</span>
 <span class="sd">    weaker guarantee of closeness to the true optimum than it is for</span>
-<span class="sd">    ``beta &gt; 0``. For most uses, prefer sweeping ``beta`` away from ``0`` (as</span>
-<span class="sd">    the default does) for both faster and more reliable convergence.</span>
+<span class="sd">    ``beta &gt; 0``.</span>
+
+<span class="sd">    More generally, which edges are learned depends only on the product</span>
+<span class="sd">    :math:`\alpha\beta`: changing both while keeping their product fixed only</span>
+<span class="sd">    rescales the learned weights :footcite:`Kalofolias2016`. To learn sparser</span>
+<span class="sd">    graphs, prefer decreasing ``alpha`` over decreasing ``beta``, which keeps the</span>
+<span class="sd">    convergence fast. Alternatively, ``avg_degree`` selects the parameters</span>
+<span class="sd">    automatically :footcite:`KalofoliasPerraudin2017`: :math:`\alpha = \beta = 1`,</span>
+<span class="sd">    and :math:`z` is multiplied by a scale computed in closed form from the</span>
+<span class="sd">    smallest distances of each node (their Theorem 3), so that nodes have on</span>
+<span class="sd">    average about ``avg_degree`` edges. The resulting average degree is</span>
+<span class="sd">    approximate, and typically slightly larger than requested for very small</span>
+<span class="sd">    values (e.g., ``avg_degree=1``), since every node keeps at least one edge.</span>
 
 <span class="sd">    The optimization is solved per epoch using a forward-backward-forward</span>
 <span class="sd">    primal-dual splitting with per-iteration complexity ``O(n_nodes**2)``.</span>
@@ -746,6 +806,19 @@
 <span class="sd">    """</span>
     <span class="n">_validate_type</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="s2">"indices"</span><span class="p">)</span>
     <span class="n">_check_option</span><span class="p">(</span><span class="s2">"indices"</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="p">[</span><span class="s2">"lower"</span><span class="p">,</span> <span class="s2">"upper"</span><span class="p">,</span> <span class="s2">"all"</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">avg_degree</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="k">if</span> <span class="n">alpha</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">alpha</span>
+        <span class="n">beta</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="k">if</span> <span class="n">beta</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">beta</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">alpha</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">beta</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">"alpha and beta cannot be combined with avg_degree, which selects "</span>
+                <span class="s2">"the parameters automatically"</span>
+            <span class="p">)</span>
+        <span class="n">_validate_type</span><span class="p">(</span><span class="n">avg_degree</span><span class="p">,</span> <span class="s2">"int"</span><span class="p">,</span> <span class="s2">"avg_degree"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">avg_degree</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"avg_degree must be &gt;= 1, got </span><span class="si">{</span><span class="n">avg_degree</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="n">alpha</span> <span class="o">=</span> <span class="n">beta</span> <span class="o">=</span> <span class="mf">1.0</span>
     <span class="n">_validate_type</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span> <span class="s2">"numeric"</span><span class="p">,</span> <span class="s2">"alpha"</span><span class="p">)</span>
     <span class="n">_validate_type</span><span class="p">(</span><span class="n">beta</span><span class="p">,</span> <span class="s2">"numeric"</span><span class="p">,</span> <span class="s2">"beta"</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">alpha</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
@@ -791,6 +864,11 @@
     <span class="n">n_learned</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">learned_nodes</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">n_learned</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"learn_graph requires at least 2 nodes, got </span><span class="si">{</span><span class="n">n_learned</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">avg_degree</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">avg_degree</span> <span class="o">&gt;</span> <span class="n">n_learned</span> <span class="o">-</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"avg_degree must be at most n_nodes - 2 = </span><span class="si">{</span><span class="n">n_learned</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">2</span><span class="si">}</span><span class="s2">, got "</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">avg_degree</span><span class="si">}</span><span class="s2">"</span>
+        <span class="p">)</span>
     <span class="n">epochs_iter</span> <span class="o">=</span> <span class="n">_iter_epochs</span><span class="p">(</span><span class="n">first_epoch</span><span class="p">,</span> <span class="n">data_iter</span><span class="p">,</span> <span class="n">n_nodes</span><span class="p">,</span> <span class="n">picks</span><span class="p">)</span>
     <span class="k">del</span> <span class="n">first_epoch</span>
 
@@ -811,6 +889,7 @@
             <span class="n">normalize</span><span class="p">,</span>
             <span class="n">alpha</span><span class="p">,</span>
             <span class="n">beta</span><span class="p">,</span>
+            <span class="n">avg_degree</span><span class="p">,</span>
             <span class="n">max_iter</span><span class="p">,</span>
             <span class="n">tol</span><span class="p">,</span>
             <span class="n">step_size</span><span class="p">,</span>
@@ -894,7 +973,7 @@
 
   <p class="copyright">
     
-      © Copyright 2021-2026, MNE Developers. Last updated on 2026-11-11.
+      © Copyright 2021-2026, MNE Developers. Last updated on 2026-11-12.
       <br/>
     
   </p>

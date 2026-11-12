@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Learn a functional connectivity graph &#8212; MNE-Connectivity 0.10.0.dev59+gf427abd87 documentation</title>
+    <title>Learn a functional connectivity graph &#8212; MNE-Connectivity 0.10.0.dev60+gfd98e97f3 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="../_static/documentation_options.js?v=73979042"></script>
+    <script src="../_static/documentation_options.js?v=0c555dc2"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -136,7 +136,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.10.0.dev59+gf427abd87 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.10.0.dev60+gfd98e97f3 documentation</p>
   
 </a></div>
     
@@ -512,6 +512,8 @@ and how a graph learned from several smooth signals recovers the geometry they l
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span class="c1"># Authors: Payam S. Shabestari &lt;payam.sadeghi74&#64;gmail.com&gt;</span><span class="w">
 </span><span class="c1">#</span><span class="w">
 </span><span class="c1"># License: BSD (3-clause)</span><span class="w">
+</span><span class="c1">#</span><span class="w">
+</span><span class="c1"># sphinx_gallery_thumbnail_number = 6</span><span class="w">
 </span></pre></div></div>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span><span class="nn">.</span><span class="nn">pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span><span class="w">
 </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span><span class="w">
@@ -573,7 +575,7 @@ nodes are, the cheaper it is to connect them.</p>
 </span><a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set.html#matplotlib.axes.Axes.set" title="matplotlib.axes.Axes.set"><span class="n">ax</span><span class="o">.</span><span class="n">set</span></a><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">Mean squared difference between signals</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">Number of node pairs</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
 </span><a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.legend.html#matplotlib.axes.Axes.legend" title="matplotlib.axes.Axes.legend"><span class="n">ax</span><span class="o">.</span><span class="n">legend</span></a><span class="p">(</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<img src="../_images/sphx_glr_learn_graph_001.png" srcset="../_images/sphx_glr_learn_graph_001.png" alt="learn graph" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend object at 0x7ab1829956a0&gt;
+<img src="../_images/sphx_glr_learn_graph_001.png" srcset="../_images/sphx_glr_learn_graph_001.png" alt="learn graph" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend object at 0x7a71d54e9940&gt;
 </pre></div>
 </div>
 <p>Now we learn a graph from <code class="docutils literal notranslate"><span class="pre">X</span></code> and compare it to the ground truth, using the default
@@ -622,7 +624,9 @@ the graph denser. Which edges are learned depends only on the product
 only rescales the edge weights <a class="footnote-reference brackets" href="#footcite-kalofolias2016" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>. Here, we keep <code class="docutils literal notranslate"><span class="pre">alpha</span></code>
 fixed and vary <code class="docutils literal notranslate"><span class="pre">beta</span></code>. A sparser graph contains mostly true edges (high precision)
 but misses some of them (low recall), whereas a denser graph finds all true edges at
-the cost of including spurious ones.</p>
+the cost of including spurious ones. Instead of tuning <code class="docutils literal notranslate"><span class="pre">alpha</span></code> and <code class="docutils literal notranslate"><span class="pre">beta</span></code> by hand,
+the desired average number of edges per node can also be given directly with
+<code class="docutils literal notranslate"><span class="pre">avg_degree</span></code>, as shown in the next section.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">betas</span></a> <span class="o">=</span> <span class="p">[</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">]</span><span class="w">
 </span><a class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure"><span class="n">fig</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">axes</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">betas</span></a><span class="p">)</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">betas</span></a><span class="p">)</span><span class="p">,</span> <span class="mf">3.4</span><span class="p">)</span><span class="p">)</span><span class="w">
 </span><span class="k">for</span> <a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes"><span class="n">ax</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">beta</span></a> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">axes</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">betas</span></a><span class="p">)</span><span class="p">:</span><span class="w">
@@ -672,11 +676,10 @@ location; the coordinates of the nodes are never given to
 </span>    <a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_axis_off.html#matplotlib.axes.Axes.set_axis_off" title="matplotlib.axes.Axes.set_axis_off"><span class="n">ax</span><span class="o">.</span><span class="n">set_axis_off</span></a><span class="p">(</span><span class="p">)</span><span class="w">
 </span><a class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.tight_layout.html#matplotlib.figure.Figure.tight_layout" title="matplotlib.figure.Figure.tight_layout"><span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span></a><span class="p">(</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<img src="../_images/sphx_glr_learn_graph_005.png" srcset="../_images/sphx_glr_learn_graph_005.png" alt="Time point 1, Time point 2, Time point 3, Time point 4" class = "sphx-glr-single-img"/><p>We learn one graph from the first time point only, and one from all four. For a
-sparser graph, we use a small <code class="docutils literal notranslate"><span class="pre">alpha</span></code> rather than a small <code class="docutils literal notranslate"><span class="pre">beta</span></code>: the sparsity of
-the learned graph is determined by the product <code class="docutils literal notranslate"><span class="pre">alpha</span> <span class="pre">*</span> <span class="pre">beta</span></code>, whereas their ratio
-only rescales the weights <a class="footnote-reference brackets" href="#footcite-kalofolias2016" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>, and keeping <code class="docutils literal notranslate"><span class="pre">beta</span></code> away from
-<code class="docutils literal notranslate"><span class="pre">0</span></code> makes the optimization converge much faster.</p>
+<img src="../_images/sphx_glr_learn_graph_005.png" srcset="../_images/sphx_glr_learn_graph_005.png" alt="Time point 1, Time point 2, Time point 3, Time point 4" class = "sphx-glr-single-img"/><p>We learn one graph from the first time point only, and one from all four. Rather
+than tuning <code class="docutils literal notranslate"><span class="pre">alpha</span></code> and <code class="docutils literal notranslate"><span class="pre">beta</span></code>, we ask for graphs with about 5 edges per node on
+average with <code class="docutils literal notranslate"><span class="pre">avg_degree</span></code>, which selects the parameters automatically
+<a class="footnote-reference brackets" href="#footcite-kalofoliasperraudin2017" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>.</p>
 <p>With a single time point, nodes with similar <em>values</em> are connected, even if they lie
 far apart (on the same level line of the function), so the learned graph does not
 reflect the layout of the nodes. With all four time points, only nodes whose values
@@ -699,7 +702,10 @@ connected to a handful of its neighbors.</p>
 </span><span class="w">
 </span><a class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure"><span class="n">fig</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">axes</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">)</span><span class="p">)</span><span class="w">
 </span><span class="k">for</span> <a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes"><span class="n">ax</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">n_times_used</span></a> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">axes</span></a><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span><span class="p">)</span><span class="p">:</span><span class="w">
-</span>    <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../generated/mne_connectivity.Connectivity.html#mne_connectivity.Connectivity" title="mne_connectivity.Connectivity"><span class="n">conn_geo</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function reference internal" href="../generated/mne_connectivity.learn_graph.html#mne_connectivity.learn_graph" title="mne_connectivity.learn_graph"><span class="n">learn_graph</span></a><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">signals</span></a><span class="p">[</span><span class="p">:</span><span class="p">,</span> <span class="p">:</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">n_times_used</span></a><span class="p">]</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="w">
+</span>    <span class="c1"># a single time point needs more iterations to converge</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../generated/mne_connectivity.Connectivity.html#mne_connectivity.Connectivity" title="mne_connectivity.Connectivity"><span class="n">conn_geo</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-function reference internal" href="../generated/mne_connectivity.learn_graph.html#mne_connectivity.learn_graph" title="mne_connectivity.learn_graph"><span class="n">learn_graph</span></a><span class="p">(</span><span class="w">
+</span>        <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">signals</span></a><span class="p">[</span><span class="p">:</span><span class="p">,</span> <span class="p">:</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">n_times_used</span></a><span class="p">]</span><span class="p">,</span> <span class="n">avg_degree</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">5000</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="w">
+</span>    <span class="p">)</span><span class="w">
 </span>    <span class="n">plot_graph</span><span class="p">(</span><span class="w">
 </span>        <a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes"><span class="n">ax</span></a><span class="p">,</span><span class="w">
 </span>        <a class="sphx-glr-backref-module-mne_connectivity sphx-glr-backref-type-py-method reference internal" href="../generated/mne_connectivity.Connectivity.html#mne_connectivity.Connectivity.get_data" title="mne_connectivity.Connectivity.get_data"><span class="n">conn_geo</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(</span><span class="n">output</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">dense</span><span class="s2">&quot;</span><span class="p">)</span><span class="p">,</span><span class="w">
@@ -709,7 +715,7 @@ connected to a handful of its neighbors.</p>
 </span><span class="w">
 </span><a class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">(</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<img src="../_images/sphx_glr_learn_graph_006.png" srcset="../_images/sphx_glr_learn_graph_006.png" alt="Learned from 1 time point (average degree 21.3), Learned from 4 time points (average degree 5.3)" class = "sphx-glr-single-img"/></section>
+<img src="../_images/sphx_glr_learn_graph_006.png" srcset="../_images/sphx_glr_learn_graph_006.png" alt="Learned from 1 time point (average degree 3.7), Learned from 4 time points (average degree 4.6)" class = "sphx-glr-single-img"/></section>
 <section id="which-graph-is-learned-depends-on-what-makes-signals-similar">
 <h2>Which Graph Is Learned Depends on What Makes Signals Similar<a class="headerlink" href="#which-graph-is-learned-depends-on-what-makes-signals-similar" title="Link to this heading">#</a></h2>
 <p>In neurophysiological recordings, the signal of each node is its time course, and the
@@ -731,16 +737,20 @@ capture an underlying structure rather than coincidental similarities of values.
 <aside class="footnote-list brackets">
 <aside class="footnote brackets" id="footcite-kalofolias2016" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
-<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id3">2</a>,<a role="doc-backlink" href="#id4">3</a>)</span>
+<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id3">2</a>)</span>
 <p>Vassilis Kalofolias. How to learn a graph from smooth signals. In <em>Artificial intelligence and statistics</em>, 920–929. PMLR, 2016.</p>
 </aside>
 <aside class="footnote brackets" id="footcite-shabestarietal2026" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
 <p>Payam S Shabestari, Harry H Behjat, Dimitri Van De Ville, Christopher R Cederroth, Niklas K Edvall, Adrian Naas, Tobias Kleinjung, and Patrick Neff. Shared and individual resting-state MEG network signatures of tinnitus revealed by holistic graph learning. <em>IEEE Open Journal of Engineering in Medicine and Biology</em>, 7:203–213, 2026. <a class="reference external" href="https://doi.org/10.1109/OJEMB.2026.3690604">doi:10.1109/OJEMB.2026.3690604</a>.</p>
 </aside>
+<aside class="footnote brackets" id="footcite-kalofoliasperraudin2017" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">3</a><span class="fn-bracket">]</span></span>
+<p>Vassilis Kalofolias and Nathanaël Perraudin. Large scale graph learning from smooth signals. <em>arXiv</em>, 2017. <a class="reference external" href="https://doi.org/10.48550/arXiv.1710.05654">doi:10.48550/arXiv.1710.05654</a>.</p>
+</aside>
 </aside>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 4.911 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 9.614 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-learn-graph-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/4f192a219db7335cb069ec381242fe75/learn_graph.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">learn_graph.ipynb</span></code></a></p>
@@ -838,7 +848,7 @@ capture an underlying structure rather than coincidental similarities of values.
 
   <p class="copyright">
     
-      © Copyright 2021-2026, MNE Developers. Last updated on 2026-11-11.
+      © Copyright 2021-2026, MNE Developers. Last updated on 2026-11-12.
       <br/>
     
   </p>
