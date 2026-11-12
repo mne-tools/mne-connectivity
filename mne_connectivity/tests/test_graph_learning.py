@@ -266,9 +266,9 @@ def test_learn_graph_bad_inputs():
         learn_graph(X, alpha=0.5, avg_degree=2)
     with pytest.raises(ValueError, match="cannot be combined with avg_degree"):
         learn_graph(X, beta=0.5, avg_degree=2)
-    with pytest.raises(ValueError, match="avg_degree must be"):
+    with pytest.raises(ValueError, match="avg_degree must be >= 1"):
         learn_graph(X, avg_degree=0)
-    with pytest.raises(ValueError, match="avg_degree must be"):
+    with pytest.raises(ValueError, match="avg_degree must be at most n_nodes - 2 = 4"):
         learn_graph(X, avg_degree=5)
     with pytest.raises(TypeError, match="avg_degree"):
         learn_graph(X, avg_degree=2.5)
