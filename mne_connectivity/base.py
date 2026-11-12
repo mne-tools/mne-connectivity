@@ -8,6 +8,7 @@ import xarray as xr
 from mne.utils import (
     _check_combine,
     _check_event_id,
+    _check_fname,
     _check_option,
     _ensure_events,
     _on_missing,
@@ -15,6 +16,7 @@ from mne.utils import (
     copy_function_doc_to_method_doc,
     object_size,
     sizeof_fmt,
+    verbose,
     warn,
 )
 
@@ -956,7 +958,9 @@ class BaseConnectivity:
             self.get_data(), node_names=self.names, indices=self.indices, **kwargs
         )
 
-    def save(self, fname):
+    @verbose
+    @fill_doc
+    def save(self, fname, *, overwrite=False, verbose=None):
         """Save connectivity data to disk.
 
         Can later be loaded using the function
@@ -967,7 +971,14 @@ class BaseConnectivity:
         fname : str | pathlib.Path
             The filepath to save the data. Data is saved as netCDF files (``.nc``
             extension).
+        overwrite : bool
+            If True, overwrite the file if it exists.
+        %(verbose)s
         """
+        fname = _check_fname(
+            fname, overwrite=overwrite, must_exist=False, name="File to save"
+        )
+
         method = self.method
         indices = self.indices
         n_nodes = self.n_nodes
