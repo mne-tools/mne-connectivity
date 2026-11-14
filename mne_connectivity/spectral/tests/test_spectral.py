@@ -1354,8 +1354,9 @@ def test_spectral_connectivity_time_phaselocked(method, mode, data_option):
         assert np.all(con_matrix <= 0.5)
 
 
-def test_spectral_connectivity_time_delayed():
-    """Test per-epoch Granger causality with time-delayed data.
+@pytest.mark.parametrize("method", ["trgc", "dpli"])
+def test_spectral_connectivity_time_delayed(method):
+    """Test per-epoch Granger causality and dPLI with time-delayed data.
 
     N.B.: the spectral_connectivity_time method seems to be more unstable than
     spectral_connectivity_epochs for GC estimation. Accordingly, we assess
@@ -1372,52 +1373,65 @@ def test_spectral_connectivity_time_delayed():
         sfreq=100.0,
         duration=2.0,
         snr=0.5,
-        connection_delay=0.05,  # non-zero delay needed for GC to be >> 0
+        connection_delay=0.05,  # non-zero delay needed for connectivity to be >> 0
         trans_bandwidth=trans_bandwidth,
         rng_seed=0,
     )
 
     freqs = np.arange(3, 50)
     mode = "multitaper"  # stick with single mode in interest of time
-    indices = ([[0, 1]], [[2, 3]])
-    con_st = spectral_connectivity_time(
-        data,
-        freqs,
-        method=["gc", "gc_tr"],
-        indices=indices,
-        mode=mode,
-        gc_n_lags=20,
-        n_cycles=5,
-        average=True,
-    )
-    con_ts = spectral_connectivity_time(
-        data,
-        freqs,
-        method=["gc", "gc_tr"],
-        indices=(indices[1], indices[0]),
-        mode=mode,
-        gc_n_lags=20,
-        n_cycles=5,
-        average=True,
-    )
-    st = con_st[0].get_data()
-    st_tr = con_st[1].get_data()
-    ts = con_ts[0].get_data()
-    ts_tr = con_ts[1].get_data()
-    trgc = (st - ts) - (st_tr - ts_tr)
+    indices = ([0, 1], [2, 3])
+    if method == "trgc":
+        indices = ([indices[0]], [indices[1]])  # make indices multivariate
+        con_st = spectral_connectivity_time(
+            data,
+            freqs,
+            method=["gc", "gc_tr"],
+            indices=indices,
+            mode=mode,
+            gc_n_lags=20,
+            n_cycles=5,
+            average=True,
+        )
+        con_ts = spectral_connectivity_time(
+            data,
+            freqs,
+            method=["gc", "gc_tr"],
+            indices=(indices[1], indices[0]),
+            mode=mode,
+            gc_n_lags=20,
+            n_cycles=5,
+            average=True,
+        )
+        freqs = np.asarray(con_st[0].freqs)
+        st = con_st[0].get_data()
+        st_tr = con_st[1].get_data()
+        ts = con_ts[0].get_data()
+        ts_tr = con_ts[1].get_data()
+        con = (st - ts) - (st_tr - ts_tr)  # TRGC calculation
+    else:
+        con_st = spectral_connectivity_time(
+            data,
+            freqs,
+            method=["dpli"],
+            indices=indices,
+            mode=mode,
+            n_cycles=5,
+            average=True,
+        )
+        con = con_st.get_data() - 0.5  # center values around 0
+        freqs = np.asarray(con_st.freqs)
 
-    freqs = np.asarray(con_st[0].freqs)
     freqs_con = (freqs >= fstart) & (freqs <= fend)
     freqs_noise = (freqs < fstart - trans_bandwidth * 2) | (
         freqs > fend + trans_bandwidth * 2
     )
-    # assert that TRGC (i.e. net, noise-corrected connectivity) is positive and
-    # >> 0 (i.e. that there is indeed a flow of info. from  seeds to targets,
-    # as simulated)
-    assert_array_less(0, trgc[:, freqs_con])
-    assert_array_less(0.2, trgc[:, freqs_con].mean())
+    # assert that connectivity is positive and >> 0 (i.e. that there is indeed a flow of
+    # info. from  seeds to targets, as simulated)
+    assert_array_less(0, con[:, freqs_con])
+    assert_array_less(0.2, con[:, freqs_con].mean())
     # check that non-interacting freqs. have close to zero connectivity
-    assert_allclose(trgc[:, freqs_noise].mean(), 0, atol=0.1)
+    assert_allclose(con[:, freqs_noise].mean(), 0, atol=0.1)
 
 
 @pytest.mark.parametrize("method", ["coh", "cohy", "plv", "pli", "wpli", "ciplv"])

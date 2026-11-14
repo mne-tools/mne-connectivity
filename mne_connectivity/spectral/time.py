@@ -99,8 +99,8 @@ def spectral_connectivity_time(
         ``data.freqs`` is used and this parameter is ignored.
     method : str | list of str
         Connectivity measure(s) to compute. These can be ``['coh', 'cohy', 'imcoh',
-        'cacoh', 'mic', 'mim', 'plv', 'ciplv', 'pli', 'wpli', 'gc', 'gc_tr']``. These
-        are:
+        'cacoh', 'mic', 'mim', 'plv', 'ciplv', 'pli', 'dpli', 'wpli', 'gc', 'gc_tr']``.
+        These are:
 
         * %(coh)s
         * %(cohy)s
@@ -111,6 +111,7 @@ def spectral_connectivity_time(
         * %(plv)s
         * %(ciplv)s
         * %(pli)s
+        * %(dpli)s
         * %(wpli)s
         * %(gc)s
         * %(gc_tr)s
@@ -326,6 +327,11 @@ def spectral_connectivity_time(
         'pli' : Phase Lag Index (PLI) :footcite:`StamEtAl2007` given by::
 
             PLI = |E[sign(Im(Sxy))]|
+
+        'dpli' : Directed Phase Lag Index (DPLI) :footcite:`StamEtAl2012` given by
+        (where H is the Heaviside function)::
+
+            DPLI = E[H(Im(Sxy))]
 
         'wpli' : Weighted Phase Lag Index (WPLI) :footcite:`VinckEtAl2011` given by::
 
@@ -1357,6 +1363,24 @@ def _wpli(s_xy):
     return wpli
 
 
+def _dpli(s_xy):
+    """Compute directed phase-lag index given the cross power spectral density.
+
+    Parameters
+    ----------
+    s_xy : array, shape (n_freqs, n_times)
+        The cross PSD between channel 'x' and channel 'y' across frequency and time
+        points.
+
+    Returns
+    -------
+    dpli : array, shape (n_freqs, n_times)
+        The estimated dPLI.
+    """
+    dpli = np.heaviside(s_xy.imag.mean(axis=-1, keepdims=True), 0.5)
+    return dpli
+
+
 def _coh(s_xx, s_yy, s_xy):
     """Compute coherence given the cross spectral density and PSD.
 
@@ -1441,6 +1465,7 @@ _CON_METHOD_MAP_BIVARIATE_TIME = {
     "ciplv": _ciplv,
     "pli": _pli,
     "wpli": _wpli,
+    "dpli": _dpli,
     "coh": _coh,
     "cohy": _cohy,
     "imcoh": _imcoh,
