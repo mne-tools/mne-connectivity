@@ -100,7 +100,7 @@ def test_spectral_connectivity_parallel(method, mode, tmp_path):
             n_jobs=n_jobs,
         )
 
-        tmp_file = tmp_path / "temp_file.nc"
+        tmp_file = tmp_path / "temp_file.h5"
         con.save(tmp_file)
 
         read_con = read_connectivity(tmp_file)
@@ -1968,7 +1968,7 @@ def test_save(tmp_path):
     conn = spectral_connectivity_epochs(
         epochs, fmin=(4, 8, 13, 30), fmax=(8, 13, 30, 45), faverage=True
     )
-    conn.save(tmp_path / "foo.nc")
+    conn.save(tmp_path / "foo.h5")
 
 
 # marked with _gc_marks below
@@ -1984,7 +1984,7 @@ def test_multivar_save_load(tmp_path):
         rng_seed=0,
     )
 
-    tmp_file = os.path.join(tmp_path, "foo_mvc.nc")
+    tmp_file = os.path.join(tmp_path, "foo_mvc.h5")
 
     non_ragged_indices = ([[0, 1]], [[2, 3]])
     ragged_indices = ([[0, 1]], [[2]])
@@ -2028,7 +2028,7 @@ def test_spectral_connectivity_indices_roundtrip_io(tmp_path, method, indices):
     )
 
     freqs = np.arange(10, 31)
-    tmp_file = os.path.join(tmp_path, "foo_mvc.nc")
+    tmp_file = os.path.join(tmp_path, "foo_mvc.h5")
 
     # test the pair of method and indices defined to check the output indices
     con_epochs = spectral_connectivity_epochs(
@@ -2070,7 +2070,7 @@ def test_multivar_spectral_connectivity_indices_roundtrip_io(tmp_path, method):
     )
     indices = ([[0, 1]], [[2, 3]])
     freqs = np.arange(10, 31)
-    tmp_file = os.path.join(tmp_path, "foo_mvc.nc")
+    tmp_file = os.path.join(tmp_path, "foo_mvc.h5")
 
     # test the pair of method and indices defined to check the output indices
     if indices is None and method in ["gc", "gc_tr"]:
