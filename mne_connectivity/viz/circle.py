@@ -8,6 +8,8 @@
 import numpy as np
 from mne.viz.circle import _plot_connectivity_circle
 
+from .helpers import _setup_cmap, _setup_vmin_vmax
+
 
 def plot_connectivity_circle(
     con,
@@ -77,7 +79,7 @@ def plot_connectivity_circle(
     colormap : str | instance of matplotlib.colors.Colormap | None
         Colormap to use for coloring the connections. If ``None`` (default),
         ``"RdBu_r"`` is used when the plotted data has both positive and negative
-        values, otherwise ``"hot"``.
+        values, or when ``vmin`` and ``vmax`` span zero, otherwise ``"hot"``.
 
         .. versionchanged:: 1.0
            The default changed from ``"hot"`` to ``None``.
@@ -148,16 +150,12 @@ def plot_connectivity_circle(
     else:
         values = con.ravel()
     values = values[np.isfinite(values)]
-    signed = (
-        not np.iscomplexobj(values)
-        and values.size > 0
-        and values.min() < 0 < values.max()
-    )
-    if colormap is None:
-        colormap = "RdBu_r" if signed else "hot"
-    if signed and vmin is None and vmax is None:
-        vmax = np.abs(values).max()
-        vmin = -vmax
+    vmin_auto, vmax_auto = _setup_vmin_vmax(values, vmin, vmax)
+    if vmin_auto < 0 < vmax_auto:
+        vmin, vmax = vmin_auto, vmax_auto
+        colormap = _setup_cmap(colormap, vmin, vmax)
+    elif colormap is None:
+        colormap = "hot"
 
     return _plot_connectivity_circle(
         con=con,

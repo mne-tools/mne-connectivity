@@ -232,6 +232,11 @@ def test_plot_connectivity_circle_colormap():
     _, ax_hot = plot_connectivity_circle(pos, names, colormap="hot", show=False)
     np.testing.assert_array_equal(_line_colors(ax_auto), _line_colors(ax_hot))
 
+    # ...unless the requested limits span zero
+    _, ax = plot_connectivity_circle(pos, names, vmin=-1, vmax=1, show=False)
+    want = cmap(np.array([0.625, 0.75, 1.0]))  # (value + 1) / 2
+    np.testing.assert_allclose(_line_colors(ax), want)
+
     # the same applies to 1D data with indices
     indices = np.tril_indices(3, -1)
     _, ax = plot_connectivity_circle(con[indices], names, indices=indices, show=False)
