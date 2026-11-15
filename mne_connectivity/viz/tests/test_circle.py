@@ -226,6 +226,12 @@ def test_plot_connectivity_circle_colormap():
     _, ax_hot = plot_connectivity_circle(one_signed, names, colormap="hot", show=False)
     np.testing.assert_array_equal(_line_colors(ax_auto), _line_colors(ax_hot))
 
+    # the diagonal is not plotted either, so self-connections do not set the limits
+    with_diag = con.copy()
+    np.fill_diagonal(with_diag, 5.0)
+    _, ax = plot_connectivity_circle(with_diag, names, show=False)
+    np.testing.assert_allclose(_line_colors(ax), cmap(np.array([0.625, 0.75, 0.0])))
+
     # one-signed data keeps the previous default colormap and limits
     pos = np.abs(con)
     _, ax_auto = plot_connectivity_circle(pos, names, show=False)
