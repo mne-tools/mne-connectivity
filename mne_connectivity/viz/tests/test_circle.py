@@ -238,6 +238,15 @@ def test_plot_connectivity_circle_colormap():
     _, ax = plot_connectivity_circle(with_diag, names, show=False)
     np.testing.assert_allclose(_line_colors(ax), cmap(np.array([0.625, 0.75, 0.0])))
 
+    # only the n_lines strongest connections are drawn, so weak values of the other
+    # sign that are not drawn do not make the data count as two-sided
+    weak_neg = np.array([[0, 0, 0], [0.5, 0, 0], [0.25, -0.1, 0]])
+    _, ax_auto = plot_connectivity_circle(weak_neg, names, n_lines=2, show=False)
+    _, ax_hot = plot_connectivity_circle(
+        weak_neg, names, n_lines=2, colormap="hot", show=False
+    )
+    np.testing.assert_array_equal(_line_colors(ax_auto), _line_colors(ax_hot))
+
     # one-signed data keeps the previous default colormap and limits
     pos = np.abs(con)
     _, ax_auto = plot_connectivity_circle(pos, names, show=False)

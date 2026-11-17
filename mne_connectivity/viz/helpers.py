@@ -349,17 +349,23 @@ def _setup_vmin_vmax(data, vmin, vmax):
     return vmin, vmax
 
 
-def _setup_cmap(cmap, vmin, vmax):
-    """Handle colormap for visualizing connectivity."""
+def _setup_cmap(
+    cmap, vmin, vmax, *, pos_cmap="Reds", neg_cmap="Blues_r", pos_neg_cmap="RdBu_r"
+):
+    """Handle colormap for visualizing connectivity.
+
+    If ``cmap`` is None, ``pos_cmap``, ``neg_cmap``, or ``pos_neg_cmap`` is used for
+    positive, negative, or mixed-sign color limits, respectively.
+    """
     if isinstance(cmap, tuple):
         return cmap
 
     if cmap is None:
         if vmin >= 0 and vmax >= 0:
-            return "Reds"
+            return pos_cmap
         if vmin < 0 and vmax < 0:
-            return "Blues_r"
-        return "RdBu_r"
+            return neg_cmap
+        return pos_neg_cmap
 
     return cmap
 

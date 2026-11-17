@@ -80,7 +80,7 @@ def plot_connectivity_circle(
         Line width to use for connections.
     colormap : str | instance of matplotlib.colors.Colormap | None
         Colormap to use for coloring the connections. If ``None`` (default), a
-        diverging colormap is used when the plotted data has both positive and
+        diverging colormap is used when the drawn connections have both positive and
         negative values, or when ``vmin`` and ``vmax`` span zero: ``"berlin"`` on a
         dark ``facecolor`` (``"RdBu_r"`` with matplotlib < 3.10) and ``"RdBu_r"`` on a
         light one. Otherwise, ``"hot"`` is used.
@@ -91,8 +91,8 @@ def plot_connectivity_circle(
         Minimum value for colormap. If ``None``, it is determined automatically.
     vmax : float | None
         Maximum value for colormap. If ``None``, it is determined automatically.
-        If both ``vmin`` and ``vmax`` are ``None`` and the plotted data has both
-        positive and negative values, the limits are symmetric around zero.
+        If both ``vmin`` and ``vmax`` are ``None`` and the drawn connections have
+        both positive and negative values, the limits are symmetric around zero.
 
         .. versionchanged:: 1.0
            Automatic limits for data with both signs are symmetric around zero.
@@ -154,14 +154,16 @@ def plot_connectivity_circle(
     else:
         values = con.ravel()
     values = values[np.isfinite(values)]
-    vmin_auto, vmax_auto = _setup_vmin_vmax(values, vmin, vmax)
-    if vmin_auto < 0 < vmax_auto:
-        vmin, vmax = vmin_auto, vmax_auto
-        if colormap is None and np.mean(to_rgb(facecolor)) < 0.5:
-            colormap = "berlin" if "berlin" in matplotlib.colormaps else None
-        colormap = _setup_cmap(colormap, vmin, vmax)
-    elif colormap is None:
-        colormap = "hot"
+    if n_lines is not None and values.size > n_lines:  # only the strongest are drawn
+        values = values[np.abs(values) >= np.sort(np.abs(values))[-n_lines]]
+    vmin, vmax = _setup_vmin_vmax(values, vmin, vmax)
+    if np.mean(to_rgb(facecolor)) < 0.5 and "berlin" in matplotlib.colormaps:
+        pos_neg_cmap = "berlin"
+    else:
+        pos_neg_cmap = "RdBu_r"
+    colormap = _setup_cmap(
+        colormap, vmin, vmax, pos_cmap="hot", neg_cmap="hot", pos_neg_cmap=pos_neg_cmap
+    )
 
     return _plot_connectivity_circle(
         con=con,
