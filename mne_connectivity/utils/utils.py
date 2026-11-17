@@ -352,7 +352,7 @@ def degree(connectivity, threshold_prop=0.2):
     degree = connectivity.ravel()  # no need to copy because np.array does
     degree[:: n_nodes + 1] = 0.0
     n_keep = int(round((degree.size - len(connectivity)) * threshold_prop / split))
-    degree[np.argsort(degree)[:-n_keep]] = 0
+    degree[np.argsort(degree)[: degree.size - n_keep]] = 0  # n_keep can be 0
     degree = np.reshape(degree, connectivity.shape)
     if split == 2:
         degree += degree.T  # normally unsafe, but we know where our zeros are
