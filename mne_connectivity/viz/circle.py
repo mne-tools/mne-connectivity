@@ -5,7 +5,9 @@
 #
 # License: Simplified BSD
 
+import matplotlib
 import numpy as np
+from matplotlib.colors import to_rgb
 from mne.viz.circle import _plot_connectivity_circle
 
 from .helpers import _setup_cmap, _setup_vmin_vmax
@@ -77,9 +79,11 @@ def plot_connectivity_circle(
     linewidth : float
         Line width to use for connections.
     colormap : str | instance of matplotlib.colors.Colormap | None
-        Colormap to use for coloring the connections. If ``None`` (default),
-        ``"RdBu_r"`` is used when the plotted data has both positive and negative
-        values, or when ``vmin`` and ``vmax`` span zero, otherwise ``"hot"``.
+        Colormap to use for coloring the connections. If ``None`` (default), a
+        diverging colormap is used when the plotted data has both positive and
+        negative values, or when ``vmin`` and ``vmax`` span zero: ``"berlin"`` on a
+        dark ``facecolor`` (``"RdBu_r"`` with matplotlib < 3.10) and ``"RdBu_r"`` on a
+        light one. Otherwise, ``"hot"`` is used.
 
         .. versionchanged:: 1.0
            The default changed from ``"hot"`` to ``None``.
@@ -153,6 +157,8 @@ def plot_connectivity_circle(
     vmin_auto, vmax_auto = _setup_vmin_vmax(values, vmin, vmax)
     if vmin_auto < 0 < vmax_auto:
         vmin, vmax = vmin_auto, vmax_auto
+        if colormap is None and np.mean(to_rgb(facecolor)) < 0.5:
+            colormap = "berlin" if "berlin" in matplotlib.colormaps else None
         colormap = _setup_cmap(colormap, vmin, vmax)
     elif colormap is None:
         colormap = "hot"

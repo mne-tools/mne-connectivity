@@ -204,10 +204,16 @@ def test_plot_connectivity_circle_colormap():
     # lines are drawn in order of increasing absolute value: 0.25, 0.5, -1
     con = np.array([[0, 0, 0], [-1, 0, 0], [0.5, 0.25, 0]])
 
-    # mixed signs: diverging colormap with limits symmetric around zero
+    # mixed signs: diverging colormap with limits symmetric around zero, with a dark
+    # center on the default black background...
     _, ax = plot_connectivity_circle(con, names, show=False)
-    cmap = mpl.colormaps["RdBu_r"]
+    cmap = mpl.colormaps["berlin" if "berlin" in mpl.colormaps else "RdBu_r"]
     want = cmap(np.array([0.625, 0.75, 0.0]))  # (value + 1) / 2
+    np.testing.assert_allclose(_line_colors(ax), want)
+
+    # ...and a light center on a light background
+    _, ax = plot_connectivity_circle(con, names, facecolor="white", show=False)
+    want = mpl.colormaps["RdBu_r"](np.array([0.625, 0.75, 0.0]))
     np.testing.assert_allclose(_line_colors(ax), want)
 
     # symmetric limits also apply to a user-specified colormap...

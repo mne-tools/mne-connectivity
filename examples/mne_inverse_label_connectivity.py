@@ -278,6 +278,7 @@ fig.tight_layout()
 # plots are too small for node names, so we add a legend for the lobe colors
 # instead.
 
+vmax = max(con_res[method].max() for method in con_methods)
 fig, axes = plt.subplots(
     1, 3, figsize=(8, 4), facecolor="black", subplot_kw=dict(polar=True)
 )
@@ -289,6 +290,8 @@ for ax, method in zip(axes, con_methods):
         n_lines=300,
         node_angles=lobe_angles,
         node_colors=lobe_node_colors,
+        vmin=0.1,
+        vmax=vmax,
         title=method,
         padding=0,
         fontsize_colorbar=6,
