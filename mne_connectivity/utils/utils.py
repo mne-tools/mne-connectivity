@@ -31,14 +31,14 @@ def parallel_loop(func, n_jobs=1, verbose=1):
 
     if not n_jobs:
         if verbose:
-            logger.info("running ", func, " serially")
+            logger.info(f"running {func} serially")
 
         def par(x):
             return list(x)
 
     else:
         if verbose:
-            logger.info("running ", func, " in parallel")
+            logger.info(f"running {func} in parallel")
         func = delayed(func)
         par = Parallel(n_jobs=n_jobs, verbose=verbose)
 

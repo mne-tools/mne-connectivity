@@ -7,6 +7,7 @@ from mne_connectivity.utils import (
     _check_indices,
     _check_multivariate_indices,
     degree,
+    parallel_loop,
     seed_target_indices,
     seed_target_multivariate_indices,
 )
@@ -187,3 +188,15 @@ def test_degree():
     conn = Connectivity(data=np.zeros((4,)), n_nodes=2)
     deg = degree(conn)
     assert_array_equal(deg, [0, 0])
+
+
+def test_parallel_loop_logging():
+    """Test that parallel_loop logs a properly formatted message."""
+    from mne.utils import catch_logging, use_log_level
+
+    with use_log_level("info"), catch_logging() as log:
+        par, func = parallel_loop(len, n_jobs=None, verbose=1)
+        message = log.getvalue()
+    assert "built-in function len" in message
+    assert "serially" in message
+    assert par(func(x) for x in ([1], [1, 2])) == [1, 2]
