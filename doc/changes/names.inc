@@ -5,6 +5,7 @@
 .. _Daniel McCloy: https://dan.mccloy.info
 .. _Don Yin: https://github.com/Don-Yin
 .. _Eric Larson: https://github.com/larsoner
+.. _Eva B: https://github.com/evadiva3
 .. _Giovanni Marraffini: https://github.com/GioMarraffini
 .. _Kenji Marshall: https://github.com/kenjimarshall
 .. _Laouen Belloli: https://github.com/Laouen
