@@ -13,6 +13,8 @@ from mne.viz.circle import _plot_connectivity_circle
 from .helpers import _setup_cmap, _setup_vmin_vmax
 
 
+# TODO VERSION when matplotlib >= 3.10 is the minimum, always use "berlin" on dark
+# backgrounds: drop the "RdBu_r" fallback below and its mention in the docstring
 def plot_connectivity_circle(
     con,
     node_names,
