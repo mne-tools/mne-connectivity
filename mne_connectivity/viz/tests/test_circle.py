@@ -5,10 +5,15 @@
 # License: Simplified BSD
 
 
+import matplotlib as mpl
 import numpy as np
 import pytest
+from matplotlib.figure import Figure
+from matplotlib.patches import PathPatch
+from matplotlib.projections.polar import PolarAxes
 from mne.viz import circular_layout
 
+from mne_connectivity import Connectivity
 from mne_connectivity.viz import plot_connectivity_circle
 
 
@@ -168,9 +173,93 @@ def test_plot_connectivity_circle():
         title="test",
     )
 
+    # the plot_circle method of connectivity containers returns the figure and axes
+    con = Connectivity(
+        data=np.array([0.25, 0.5, 0.75]),
+        n_nodes=3,
+        names=["a", "b", "c"],
+        indices="lower",
+        method="coh",
+    )
+    fig, ax = con.plot_circle(show=False)
+    assert isinstance(fig, Figure)
+    assert isinstance(ax, PolarAxes)
+
     pytest.raises(
         ValueError, circular_layout, label_names, node_order, group_boundaries=[-1]
     )
     pytest.raises(
         ValueError, circular_layout, label_names, node_order, group_boundaries=[20, 0]
     )
+
+
+def _line_colors(ax):
+    """Get the colors of the connection lines, in drawing order."""
+    return np.array([p.get_edgecolor() for p in ax.patches if isinstance(p, PathPatch)])
+
+
+def test_plot_connectivity_circle_colormap():
+    """Test automatic colormap and color limits of the circle plot."""
+    names = ["a", "b", "c"]
+    # lines are drawn in order of increasing absolute value: 0.25, 0.5, -1
+    con = np.array([[0, 0, 0], [-1, 0, 0], [0.5, 0.25, 0]])
+
+    # mixed signs: diverging colormap with limits symmetric around zero, with a dark
+    # center on the default black background...
+    _, ax = plot_connectivity_circle(con, names, show=False)
+    cmap = mpl.colormaps["berlin" if "berlin" in mpl.colormaps else "RdBu_r"]
+    want = cmap(np.array([0.625, 0.75, 0.0]))  # (value + 1) / 2
+    np.testing.assert_allclose(_line_colors(ax), want)
+
+    # ...and a light center on a light background
+    _, ax = plot_connectivity_circle(con, names, facecolor="white", show=False)
+    want = mpl.colormaps["RdBu_r"](np.array([0.625, 0.75, 0.0]))
+    np.testing.assert_allclose(_line_colors(ax), want)
+
+    # symmetric limits also apply to a user-specified colormap...
+    _, ax = plot_connectivity_circle(con, names, colormap="viridis", show=False)
+    want = mpl.colormaps["viridis"](np.array([0.625, 0.75, 0.0]))
+    np.testing.assert_allclose(_line_colors(ax), want)
+
+    # ...but not when the user gives the limits
+    _, ax = plot_connectivity_circle(con, names, vmin=-1, vmax=0.5, show=False)
+    want = cmap(np.array([1.25 / 1.5, 1.0, 0.0]))  # (value + 1) / 1.5
+    np.testing.assert_allclose(_line_colors(ax), want)
+
+    # only the lower triangle is plotted, so the upper triangle's sign is ignored
+    one_signed = np.abs(con) - np.abs(con).T  # negative only in the upper triangle
+    _, ax_auto = plot_connectivity_circle(one_signed, names, show=False)
+    _, ax_hot = plot_connectivity_circle(one_signed, names, colormap="hot", show=False)
+    np.testing.assert_array_equal(_line_colors(ax_auto), _line_colors(ax_hot))
+
+    # the diagonal is not plotted either, so self-connections do not set the limits
+    with_diag = con.copy()
+    np.fill_diagonal(with_diag, 5.0)
+    _, ax = plot_connectivity_circle(with_diag, names, show=False)
+    np.testing.assert_allclose(_line_colors(ax), cmap(np.array([0.625, 0.75, 0.0])))
+
+    # only the n_lines strongest connections are drawn, so weak values of the other
+    # sign that are not drawn do not make the data count as two-sided
+    weak_neg = np.array([[0, 0, 0], [0.5, 0, 0], [0.25, -0.1, 0]])
+    _, ax_auto = plot_connectivity_circle(weak_neg, names, n_lines=2, show=False)
+    _, ax_hot = plot_connectivity_circle(
+        weak_neg, names, n_lines=2, colormap="hot", show=False
+    )
+    np.testing.assert_array_equal(_line_colors(ax_auto), _line_colors(ax_hot))
+
+    # one-signed data keeps the previous default colormap and limits
+    pos = np.abs(con)
+    _, ax_auto = plot_connectivity_circle(pos, names, show=False)
+    _, ax_hot = plot_connectivity_circle(pos, names, colormap="hot", show=False)
+    np.testing.assert_array_equal(_line_colors(ax_auto), _line_colors(ax_hot))
+
+    # ...unless the requested limits span zero
+    _, ax = plot_connectivity_circle(pos, names, vmin=-1, vmax=1, show=False)
+    want = cmap(np.array([0.625, 0.75, 1.0]))  # (value + 1) / 2
+    np.testing.assert_allclose(_line_colors(ax), want)
+
+    # the same applies to 1D data with indices
+    indices = np.tril_indices(3, -1)
+    _, ax = plot_connectivity_circle(con[indices], names, indices=indices, show=False)
+    want = cmap(np.array([0.625, 0.75, 0.0]))
+    np.testing.assert_allclose(_line_colors(ax), want)

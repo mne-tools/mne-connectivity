@@ -952,7 +952,7 @@ class BaseConnectivity:
 
     @copy_function_doc_to_method_doc(plot_connectivity_circle)
     def plot_circle(self, **kwargs):
-        plot_connectivity_circle(
+        return plot_connectivity_circle(
             self.get_data(), node_names=self.names, indices=self.indices, **kwargs
         )
 
