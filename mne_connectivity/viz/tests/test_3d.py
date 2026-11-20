@@ -5,9 +5,10 @@ import numpy as np
 import pytest
 from matplotlib import colormaps
 from mne.datasets import testing
-from numpy.testing import assert_almost_equal
+from numpy.testing import assert_almost_equal, assert_array_equal
 
 from mne_connectivity.viz import plot_sensors_connectivity
+from mne_connectivity.viz._3d import _get_strongest_connections
 
 data_dir = testing.data_path(download=False)
 
@@ -75,3 +76,62 @@ def test_plot_sensors_connectivity_error_catch(renderer):
     # no surviving connections for minimum distance
     with pytest.raises(ValueError, match=r"No.*connections were at least.*apart"):
         plot_sensors_connectivity(info=info, con=con, picks=picks, min_distance=1e6)
+
+
+def test_get_strongest_connections():
+    """Test selecting the strongest connections to plot between sensors."""
+    # symmetric, with self-connections on the diagonal (like coherence)
+    con = np.array(
+        [
+            [1.0, 0.2, 0.7, 0.1],
+            [0.2, 1.0, 0.3, 0.9],
+            [0.7, 0.3, 1.0, 0.4],
+            [0.1, 0.9, 0.4, 1.0],
+        ]
+    )
+    rows, cols, values = _get_strongest_connections(con, n_con=3)
+    # each pair once, strongest first, no self-connections
+    assert_array_equal(np.sort([rows, cols], axis=0).T, [[1, 3], [0, 2], [2, 3]])
+    assert_array_equal(values, [0.9, 0.7, 0.4])
+
+    # antisymmetric (like imcoh): the positive direction of each pair is used
+    con = np.array([[0.0, 0.5, -0.8], [-0.5, 0.0, 0.1], [0.8, -0.1, 0.0]])
+    rows, cols, values = _get_strongest_connections(con, n_con=2)
+    assert_array_equal(values, [0.8, 0.5])
+    assert_array_equal(values, con[rows, cols])
+
+    # signed: rank by absolute value
+    con = np.array([[0.0, 0.0, 0.0], [-0.9, 0.0, 0.0], [0.5, 0.7, 0.0]])
+    rows, cols, values = _get_strongest_connections(con, n_con=2)
+    assert_array_equal(values, [-0.9, 0.7])
+
+    # only one triangle filled
+    con = np.tril([[0.0, 0.0, 0.0], [0.3, 0.0, 0.0], [-0.6, 0.2, 0.0]])
+    rows, cols, values = _get_strongest_connections(con, n_con=2)
+    assert_array_equal(values, [-0.6, 0.3])
+    rows, cols, values = _get_strongest_connections(con.T, n_con=2)
+    assert_array_equal(values, [-0.6, 0.3])
+
+    # directed (like Granger causality): the stronger direction is used
+    con = np.array([[0.0, 0.2, 0.0], [0.6, 0.0, 0.1], [0.0, 0.4, 0.0]])
+    rows, cols, values = _get_strongest_connections(con, n_con=3)
+    assert_array_equal(values, [0.6, 0.4, 0.0])
+    assert_array_equal(values, con[rows, cols])
+
+    # NaNs are ignored, and asking for more connections than exist returns all
+    con = np.array([[np.nan, np.nan, 0.5], [np.nan, np.nan, np.nan], [0.5, 0.2, 0]])
+    rows, cols, values = _get_strongest_connections(con, n_con=10)
+    assert_array_equal(values, [0.5, 0.2])
+
+
+@testing.requires_testing_data
+def test_plot_sensors_connectivity_self_connections(renderer):
+    """Test that self-connections do not take the place of real connections."""
+    raw_fname = op.join(data_dir, "MEG", "sample", "sample_audvis_trunc_raw.fif")
+    info = mne.io.read_raw_fif(raw_fname).info
+    picks = mne.pick_types(info, meg="grad", exclude="bads")
+    rng = np.random.default_rng(0)
+    con = rng.uniform(0, 0.9, (len(picks), len(picks)))
+    con = (con + con.T) / 2
+    np.fill_diagonal(con, 1.0)  # coherence of a channel with itself
+    plot_sensors_connectivity(info=info, con=con, picks=picks, n_con=5)

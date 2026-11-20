@@ -44,7 +44,15 @@ def plot_sensors_connectivity(
     cbar_label : str
         Label for the colorbar.
     n_con : int
-        Number of strongest connections shown (default 20).
+        Number of strongest connections shown (default 20). Strength is the absolute
+        value of the connectivity, and each pair of sensors is counted once: if the
+        two directions of a pair differ, the stronger one is shown. Connections between
+        sensors closer than ``min_distance`` are then removed, so fewer than ``n_con``
+        connections may be shown.
+
+        .. versionchanged:: 1.0
+           Self-connections are ignored, each pair of sensors is counted once, and
+           strength is the absolute value.
     cmap : str | instance of matplotlib.colors.Colormap
         Colormap for coloring connections by strength. If a str, must be a valid
         Matplotlib colormap (i.e. a valid key of `matplotlib.colormaps`). Default is
@@ -57,7 +65,7 @@ def plot_sensors_connectivity(
 
     Returns
     -------
-    fig : instance of Renderer
+    fig : instance of mne.viz.Figure3D
         The 3D figure.
     """
     _validate_type(info, "info")
@@ -102,17 +110,12 @@ def plot_sensors_connectivity(
     )
 
     # Get the strongest n_con connections
-    threshold = np.sort(con, axis=None)[-n_con]
-    ii, jj = np.where(con >= threshold)
+    ii, jj, con_val = _get_strongest_connections(con, n_con)
 
     # Remove close connections
-    con_nodes = list()
-    con_val = list()
-    for i, j in zip(ii, jj):
-        if np.linalg.norm(sens_loc[i] - sens_loc[j]) > min_distance:
-            con_nodes.append((i, j))
-            con_val.append(con[i, j])
-    con_val = np.array(con_val)
+    far = np.linalg.norm(sens_loc[ii] - sens_loc[jj], axis=1) > min_distance
+    con_nodes = list(zip(ii[far], jj[far]))
+    con_val = con_val[far]
 
     if con_val.size == 0:
         raise ValueError(
@@ -161,3 +164,25 @@ def plot_sensors_connectivity(
     )
     renderer.show()
     return renderer.scene()
+
+
+def _get_strongest_connections(con, n_con):
+    """Get the strongest connections between distinct sensors, each pair once.
+
+    Strength is the absolute value. For each pair, the direction with the stronger
+    value is used, or the larger value if both are equally strong (e.g., the positive
+    direction of an antisymmetric matrix). This covers symmetric, antisymmetric,
+    directed, and triangular matrices alike. NaNs are ignored.
+    """
+    rows, cols = np.tril_indices(len(con), k=-1)
+    lower, upper = con[rows, cols], con[cols, rows]
+    use_upper = (np.abs(upper) > np.abs(lower)) | (
+        (np.abs(upper) == np.abs(lower)) & (upper > lower)
+    )
+    use_upper |= np.isnan(lower)
+    rows, cols = np.where(use_upper, cols, rows), np.where(use_upper, rows, cols)
+    values = np.where(use_upper, upper, lower)
+
+    order = np.argsort(-np.abs(values), kind="stable")
+    order = order[~np.isnan(values[order])][:n_con]
+    return rows[order], cols[order], values[order]
