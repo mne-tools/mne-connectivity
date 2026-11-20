@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mne_connectivity.EpochSpectralConnectivity &#8212; MNE-Connectivity 0.10.0.dev64+gd6114ffc8 documentation</title>
+    <title>mne_connectivity.EpochSpectralConnectivity &#8212; MNE-Connectivity 0.10.0.dev65+gd65d8b55f documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="../_static/documentation_options.js?v=1ba663d8"></script>
+    <script src="../_static/documentation_options.js?v=8733565c"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -136,7 +136,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.10.0.dev64+gd6114ffc8 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.10.0.dev65+gd65d8b55f documentation</p>
   
 </a></div>
     
@@ -912,11 +912,23 @@ used, e.g., RGBA tuples, named colors.</p>
 </dd>
 <dt><strong>linewidth</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>Line width to use for connections.</p>
 </dd>
-<dt><strong>colormap</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | instance of <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.colors.LinearSegmentedColormap.html#matplotlib.colors.LinearSegmentedColormap" title="(in Matplotlib v3.11.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.colors.LinearSegmentedColormap</span></code></a></span></dt><dd><p>Colormap to use for coloring the connections.</p>
+<dt><strong>colormap</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | instance of <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.colors.Colormap.html#matplotlib.colors.Colormap" title="(in Matplotlib v3.11.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.colors.Colormap</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Colormap to use for coloring the connections. If <code class="docutils literal notranslate"><span class="pre">None</span></code> (default), a
+diverging colormap is used when the drawn connections have both positive and
+negative values, or when <code class="docutils literal notranslate"><span class="pre">vmin</span></code> and <code class="docutils literal notranslate"><span class="pre">vmax</span></code> span zero: <code class="docutils literal notranslate"><span class="pre">&quot;berlin&quot;</span></code> on a
+dark <code class="docutils literal notranslate"><span class="pre">facecolor</span></code> (<code class="docutils literal notranslate"><span class="pre">&quot;RdBu_r&quot;</span></code> with matplotlib &lt; 3.10) and <code class="docutils literal notranslate"><span class="pre">&quot;RdBu_r&quot;</span></code> on a
+light one. Otherwise, <code class="docutils literal notranslate"><span class="pre">&quot;hot&quot;</span></code> is used.</p>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 1.0: </span>The default changed from <code class="docutils literal notranslate"><span class="pre">&quot;hot&quot;</span></code> to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</div>
 </dd>
 <dt><strong>vmin</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Minimum value for colormap. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, it is determined automatically.</p>
 </dd>
-<dt><strong>vmax</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Maximum value for colormap. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, it is determined automatically.</p>
+<dt><strong>vmax</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Maximum value for colormap. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, it is determined automatically.
+If both <code class="docutils literal notranslate"><span class="pre">vmin</span></code> and <code class="docutils literal notranslate"><span class="pre">vmax</span></code> are <code class="docutils literal notranslate"><span class="pre">None</span></code> and the drawn connections have
+both positive and negative values, the limits are symmetric around zero.</p>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 1.0: </span>Automatic limits for data with both signs are symmetric around zero.</p>
+</div>
 </dd>
 <dt><strong>colorbar</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#bltin-boolean-values" title="(in Python v3.15)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>Display a colorbar or not.</p>
 </dd>
