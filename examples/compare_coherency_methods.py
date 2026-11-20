@@ -98,7 +98,7 @@ data_delay = make_signals_in_freq_bands(
     freq_band=(10, 12),  # 10-12 Hz interaction
     duration=2.0,
     connection_delay=0.02,  # seconds; non-zero time-lag
-    rng_seed=42,
+    rng=42,
 )
 
 data_no_delay = make_signals_in_freq_bands(
@@ -107,7 +107,7 @@ data_no_delay = make_signals_in_freq_bands(
     freq_band=(23, 25),  # 23-25 Hz interaction
     duration=2.0,
     connection_delay=0.0,  # seconds; zero time-lag
-    rng_seed=44,
+    rng=44,
 )
 
 # Combine data into a single object
@@ -353,7 +353,7 @@ data_10_12 = make_signals_in_freq_bands(
     freq_band=(10, 12),  # 10-12 Hz interaction
     duration=2.0,
     connection_delay=0.01,  # seconds
-    rng_seed=40,
+    rng=40,
 )
 
 data_23_25 = make_signals_in_freq_bands(
@@ -362,7 +362,7 @@ data_23_25 = make_signals_in_freq_bands(
     freq_band=(23, 25),  # 23-25 Hz interaction
     duration=2.0,
     connection_delay=0.01,  # seconds
-    rng_seed=42,
+    rng=42,
 )
 
 # Combine data into a single array

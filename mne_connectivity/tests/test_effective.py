@@ -26,7 +26,7 @@ def test_psi_properties(psi_func):
         freq_band=(fmin[0], fmax[0]),
         duration=2.0,
         connection_delay=0.05,
-        rng_seed=42,
+        rng=42,
     )
     data_25_30 = make_signals_in_freq_bands(
         n_seeds=1,
@@ -34,7 +34,7 @@ def test_psi_properties(psi_func):
         freq_band=(fmin[1], fmax[1]),
         duration=2.0,
         connection_delay=0.1,
-        rng_seed=44,
+        rng=44,
     )
     data = data_10_15.add_channels([data_25_30])
 

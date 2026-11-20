@@ -429,7 +429,7 @@ class DynamicMixin:
         return predicted_data
 
     @fill_doc
-    def simulate(self, n_samples, noise_func=None, random_state=None):
+    def simulate(self, n_samples, noise_func=None, rng=None):
         """Simulate data using the vector autoregressive (VAR) model.
 
         Parameters
@@ -440,7 +440,7 @@ class DynamicMixin:
             The function used to create the generating noise process. Each call to this
             function should return an array of shape ``(n_nodes,)``. If ``None``,
             Gaussian white noise with zero mean and unit variance is used.
-        %(random_state)s
+        %(rng)s
 
         Returns
         -------
@@ -471,7 +471,7 @@ class DynamicMixin:
 
         # set noise function
         if noise_func is None:
-            rng = np.random.default_rng(random_state)
+            rng = np.random.default_rng(rng)
 
             def noise_func():
                 return rng.normal(size=(1, n_nodes))

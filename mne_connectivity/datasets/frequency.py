@@ -25,7 +25,7 @@ def make_signals_in_freq_bands(
     tmin=0.0,
     ch_names=None,
     ch_types="eeg",
-    rng_seed=None,
+    rng=None,
 ):
     """Simulate signals interacting in a given frequency band.
 
@@ -88,7 +88,7 @@ def make_signals_in_freq_bands(
         Types of the channels in the simulated data. Must be a recognised data channel
         type (see :term:`mne:data channels`). If specified as a list, must be a
         list of ``n_seeds + n_targets`` channel names.
-    rng_seed : int | array-like of int | SeedSequence | BitGenerator | Generator | None
+    rng : int | array-like of int | SeedSequence | BitGenerator | Generator | None
         Seed passed to :func:`numpy.random.default_rng`. If ``None`` (default), a new
         :class:`numpy.random.Generator` seeded from entropy is used.
 
@@ -187,7 +187,7 @@ def make_signals_in_freq_bands(
         )
 
     # simulate data
-    rng = np.random.default_rng(rng_seed)
+    rng = np.random.default_rng(rng)
 
     # simulate signal source at desired frequency band
     signal = rng.standard_normal(size=(1, n_epochs * n_times + np.abs(n_delay_times)))

@@ -41,7 +41,7 @@ def test_spectral_decomposition(method, mode):
         trans_bandwidth=trans_bandwidth,
         snr=0.5,
         connection_delay=0.1,  # ~90° interaction angle for 11-14 Hz band
-        rng_seed=44,
+        rng=44,
     )
 
     # Get data with connectivity to ignore
@@ -56,7 +56,7 @@ def test_spectral_decomposition(method, mode):
         trans_bandwidth=trans_bandwidth,
         snr=0.5,
         connection_delay=0.06,  # ~90° interaction angle for 21-24 Hz band
-        rng_seed=42,
+        rng=42,
     )
 
     # Combine data and get indices
@@ -327,7 +327,7 @@ def test_spectral_decomposition(method, mode):
                 trans_bandwidth=trans_bandwidth,
                 snr=snr,
                 connection_delay=delay,
-                rng_seed=seed,
+                rng=seed,
             )
         )
     data = data_sims[0].add_channels(data_sims[1:])
@@ -435,7 +435,7 @@ def test_spectral_decomposition_parallel(method, mode):
         n_targets=n_targets,
         freq_band=(fmin, fmax),
         snr=0.5,
-        rng_seed=44,
+        rng=44,
     )
 
     # RUN DECOMPOSITION
@@ -463,7 +463,7 @@ def test_spectral_decomposition_error_catch(method, mode):
     fmin = 15
     fmax = 20
     epochs = make_signals_in_freq_bands(
-        n_seeds=n_seeds, n_targets=n_targets, freq_band=(fmin, fmax), rng_seed=44
+        n_seeds=n_seeds, n_targets=n_targets, freq_band=(fmin, fmax), rng=44
     )
     indices = (np.arange(n_seeds), np.arange(n_targets) + n_seeds)
     cwt_freqs = np.arange(fmin, fmax + 0.5, 0.5)
