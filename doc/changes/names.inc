@@ -7,6 +7,7 @@
 .. _Eric Larson: https://github.com/larsoner
 .. _Eva B: https://github.com/evadiva3
 .. _Giovanni Marraffini: https://github.com/GioMarraffini
+.. _hrishihrishihrishi: https://github.com/hrishihrishihrishi
 .. _Kenji Marshall: https://github.com/kenjimarshall
 .. _Laouen Belloli: https://github.com/Laouen
 .. _Marieke De Vylder: https://github.com/mariekedevylder

@@ -957,7 +957,7 @@ class BaseConnectivity:
         )
 
     def save(self, fname):
-        """Save connectivity data to disk.
+        """Save connectivity data to disk (in HDF5 format).
 
         Can later be loaded using the function
         :func:`~mne_connectivity.read_connectivity`.
@@ -965,9 +965,10 @@ class BaseConnectivity:
         Parameters
         ----------
         fname : str | pathlib.Path
-            The filepath to save the data. Data is saved as netCDF files (``.nc``
-            extension).
+            The filepath to save the data. Data is saved as HDF5 files (the ``.h5``
+            or ``.hdf5`` extension is recommended).
         """
+        check_fname(fname, "connectivity", (".h5", ".hdf5"))
         method = self.method
         indices = self.indices
         n_nodes = self.n_nodes
@@ -992,7 +993,7 @@ class BaseConnectivity:
             if val is None:
                 self.attrs[key] = "n/a"
 
-        # save as a netCDF file
+        # save as an HDF5 file
         # note this requires the netcdf4 python library
         # and h5netcdf library.
         # The engine specified requires the ability to save
