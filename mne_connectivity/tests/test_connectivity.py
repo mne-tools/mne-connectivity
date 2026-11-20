@@ -902,3 +902,22 @@ def test_combine_errors(conn_cls, aggr_dim):
             match="To ensure the interpretability of the connectivity data",
         ):
             combine_meth("mean")
+
+
+def test_save_overwrite(tmp_path):
+    """Test that save overwrites only when requested."""
+    data = np.ones((2**2,))
+    conn = Connectivity(data=data, n_nodes=2, method="coh")
+    fname = tmp_path / "connectivity.nc"
+
+    # first save to a new path
+    conn.save(fname, verbose=False)
+
+    # saving again requires overwrite
+    with pytest.raises(FileExistsError, match="Destination file exists"):
+        conn.save(fname, verbose=False)
+
+    # overwrite and read back
+    conn.save(fname, overwrite=True, verbose=False)
+    new_conn = read_connectivity(fname)
+    assert_array_equal(conn.get_data(), new_conn.get_data())
