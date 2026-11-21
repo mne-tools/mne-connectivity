@@ -127,17 +127,17 @@ data_epoch.plot(n_epochs=2, scalings=0.6)  # Visualize the data
 # %%
 
 # Freq bands of interest
-Freq_Bands = {"theta": [4.0, 8.0], "alpha": [8.0, 13.0], "beta": [13.0, 30.0]}
-n_freq_bands = len(Freq_Bands)
-min_freq = np.min(list(Freq_Bands.values()))
-max_freq = np.max(list(Freq_Bands.values()))
+freq_bands = {"theta": [4.0, 8.0], "alpha": [8.0, 13.0], "beta": [13.0, 30.0]}
+n_freq_bands = len(freq_bands)
+min_freq = np.min(list(freq_bands.values()))
+max_freq = np.max(list(freq_bands.values()))
 
 # Provide the freq points
 freqs = np.linspace(min_freq, max_freq, int((max_freq - min_freq) * 4 + 1))
 
 # The dictionary with frequencies are converted to tuples for the function
-fmin = tuple([list(Freq_Bands.values())[f][0] for f in range(len(Freq_Bands))])
-fmax = tuple([list(Freq_Bands.values())[f][1] for f in range(len(Freq_Bands))])
+fmin = tuple([list(freq_bands.values())[f][0] for f in range(len(freq_bands))])
+fmax = tuple([list(freq_bands.values())[f][1] for f in range(len(freq_bands))])
 
 # Compute connectivity for two different connectivity measures over trials
 connectivity_methods = ["coh", "plv"]
@@ -166,7 +166,7 @@ con_epochs = spectral_connectivity_epochs(
 # %%
 
 # In this example, we will just show alpha
-alpha_fmin, alpha_fmax = Freq_Bands["alpha"]
+alpha_fmin, alpha_fmax = freq_bands["alpha"]
 
 for con in con_epochs:
     # average over times, then select the alpha band
@@ -333,16 +333,16 @@ epochs.load_data()  # load the data
 
 sfreq = epochs.info["sfreq"]  # the sampling frequency
 tmin = 0.0  # exclude the baseline period for connectivity estimation
-Freq_Bands = {"theta": [4.0, 8.0]}  # frequency of interest
-n_freq_bands = len(Freq_Bands)
-min_freq = np.min(list(Freq_Bands.values()))
-max_freq = np.max(list(Freq_Bands.values()))
+freq_bands = {"theta": [4.0, 8.0]}  # frequency of interest
+n_freq_bands = len(freq_bands)
+min_freq = np.min(list(freq_bands.values()))
+max_freq = np.max(list(freq_bands.values()))
 
 # Prepare the freq points
 freqs = np.linspace(min_freq, max_freq, int((max_freq - min_freq) * 4 + 1))
 
-fmin = tuple([list(Freq_Bands.values())[f][0] for f in range(len(Freq_Bands))])
-fmax = tuple([list(Freq_Bands.values())[f][1] for f in range(len(Freq_Bands))])
+fmin = tuple([list(freq_bands.values())[f][0] for f in range(len(freq_bands))])
+fmax = tuple([list(freq_bands.values())[f][1] for f in range(len(freq_bands))])
 
 # Compute connectivity over trials
 con_epochs = spectral_connectivity_epochs(
