@@ -64,8 +64,9 @@ spectrum = epochs.compute_psd(method="multitaper", tmin=tmin, output="complex")
 # Compute connectivity for the frequency band containing the evoked response
 fmin, fmax = 4.0, 9.0
 con = spectral_connectivity_epochs(
-    data=spectrum, method="pli", fmin=fmin, fmax=fmax, faverage=True, n_jobs=1
+    data=spectrum, method="pli", fmin=fmin, fmax=fmax, n_jobs=1
 )
+con = con.combine_freqs()  # average over the frequencies of the band
 
 # Now, visualize the connectivity in 3D:
-plot_sensors_connectivity(epochs.info, con.get_data(output="dense")[:, :, 0])
+plot_sensors_connectivity(epochs.info, con)

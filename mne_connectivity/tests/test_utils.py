@@ -178,6 +178,8 @@ def test_degree():
     corr = (corr + corr.T) / 2.0
     assert_array_equal(degree(corr, 0.33), [0, 1, 1])
     assert_array_equal(degree(corr, 0.66), [1, 2, 1])
+    # a proportion that keeps no connection at all
+    assert_array_equal(degree(corr, 0.1), [0, 0, 0])
 
     # check error when connectivity array is > 2D
     with pytest.raises(ValueError, match="connectivity must be have shape"):

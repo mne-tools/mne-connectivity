@@ -23,12 +23,7 @@ import mne
 import numpy as np
 from mne.datasets import sample
 
-from mne_connectivity import (
-    Connectivity,
-    TemporalConnectivity,
-    spectral_connectivity_epochs,
-    spectral_connectivity_time,
-)
+from mne_connectivity import spectral_connectivity_epochs, spectral_connectivity_time
 from mne_connectivity.viz import (
     plot_connectivity,
     plot_sensors_connectivity,
@@ -132,17 +127,17 @@ data_epoch.plot(n_epochs=2, scalings=0.6)  # Visualize the data
 # %%
 
 # Freq bands of interest
-Freq_Bands = {"theta": [4.0, 8.0], "alpha": [8.0, 13.0], "beta": [13.0, 30.0]}
-n_freq_bands = len(Freq_Bands)
-min_freq = np.min(list(Freq_Bands.values()))
-max_freq = np.max(list(Freq_Bands.values()))
+freq_bands = {"theta": [4.0, 8.0], "alpha": [8.0, 13.0], "beta": [13.0, 30.0]}
+n_freq_bands = len(freq_bands)
+min_freq = np.min(list(freq_bands.values()))
+max_freq = np.max(list(freq_bands.values()))
 
 # Provide the freq points
 freqs = np.linspace(min_freq, max_freq, int((max_freq - min_freq) * 4 + 1))
 
 # The dictionary with frequencies are converted to tuples for the function
-fmin = tuple([list(Freq_Bands.values())[f][0] for f in range(len(Freq_Bands))])
-fmax = tuple([list(Freq_Bands.values())[f][1] for f in range(len(Freq_Bands))])
+fmin = tuple([list(freq_bands.values())[f][0] for f in range(len(freq_bands))])
+fmax = tuple([list(freq_bands.values())[f][1] for f in range(len(freq_bands))])
 
 # Compute connectivity for two different connectivity measures over trials
 connectivity_methods = ["coh", "plv"]
@@ -171,16 +166,13 @@ con_epochs = spectral_connectivity_epochs(
 # %%
 
 # In this example, we will just show alpha
-foi = list(Freq_Bands.keys()).index("alpha")  # frequency of interest
+alpha_fmin, alpha_fmax = freq_bands["alpha"]
 
 for con in con_epochs:
-    con_array = con.combine_times("mean").get_data("raveled")  # average over times
-    con_array = con_array[..., foi]  # select frequency band of interest
-    con_method = Connectivity(
-        con_array, con.n_nodes, con.names, con.indices, con.method
-    )
+    # average over times, then select the alpha band
+    con_alpha = con.combine_times().combine_freqs(fmin=alpha_fmin, fmax=alpha_fmax)
     plot_connectivity(
-        con_method, info=data_epoch.info, node_labels="names", vmin=0.0, vmax=1.0
+        con_alpha, info=data_epoch.info, node_labels="names", vmin=0.0, vmax=1.0
     )
 
 ###############################################################################
@@ -212,13 +204,9 @@ con_time = spectral_connectivity_time(
 # %%
 
 for con in con_time:
-    con_array = con.get_data("raveled")
-    con_array = con_array[..., foi]  # select frequency band of interest
-    con_method = Connectivity(
-        con_array, con.n_nodes, con.names, con.indices, con.method
-    )
+    con_alpha = con.combine_freqs(fmin=alpha_fmin, fmax=alpha_fmax)  # select alpha
     plot_connectivity(
-        con_method, info=data_epoch.info, node_labels="names", vmin=0.0, vmax=1.0
+        con_alpha, info=data_epoch.info, node_labels="names", vmin=0.0, vmax=1.0
     )
 
 ###############################################################################
@@ -271,13 +259,10 @@ con_epochs = spectral_connectivity_epochs(
 )
 
 for con in con_epochs:
-    con_array = con.combine_times("mean").get_data("raveled")  # average over times
-    con_array = con_array[..., foi]  # select frequency band of interest
-    con_method = Connectivity(
-        con_array, con.n_nodes, con.names, con.indices, con.method
-    )
+    # average over times, then select the alpha band
+    con_alpha = con.combine_times().combine_freqs(fmin=alpha_fmin, fmax=alpha_fmax)
     plot_connectivity(
-        con_method, info=data_epoch.info, node_labels="names", vmin=0.0, vmax=1.0
+        con_alpha, info=data_epoch.info, node_labels="names", vmin=0.0, vmax=1.0
     )
 
 ###############################################################################
@@ -300,13 +285,9 @@ con_time = spectral_connectivity_time(
 )
 
 for con in con_time:
-    con_array = con.get_data("raveled")
-    con_array = con_array[..., foi]  # select frequency band of interest
-    con_method = Connectivity(
-        con_array, con.n_nodes, con.names, con.indices, con.method
-    )
+    con_alpha = con.combine_freqs(fmin=alpha_fmin, fmax=alpha_fmax)  # select alpha
     plot_connectivity(
-        con_method, info=data_epoch.info, node_labels="names", vmin=0.0, vmax=1.0
+        con_alpha, info=data_epoch.info, node_labels="names", vmin=0.0, vmax=1.0
     )
 
 ###############################################################################
@@ -352,16 +333,16 @@ epochs.load_data()  # load the data
 
 sfreq = epochs.info["sfreq"]  # the sampling frequency
 tmin = 0.0  # exclude the baseline period for connectivity estimation
-Freq_Bands = {"theta": [4.0, 8.0]}  # frequency of interest
-n_freq_bands = len(Freq_Bands)
-min_freq = np.min(list(Freq_Bands.values()))
-max_freq = np.max(list(Freq_Bands.values()))
+freq_bands = {"theta": [4.0, 8.0]}  # frequency of interest
+n_freq_bands = len(freq_bands)
+min_freq = np.min(list(freq_bands.values()))
+max_freq = np.max(list(freq_bands.values()))
 
 # Prepare the freq points
 freqs = np.linspace(min_freq, max_freq, int((max_freq - min_freq) * 4 + 1))
 
-fmin = tuple([list(Freq_Bands.values())[f][0] for f in range(len(Freq_Bands))])
-fmax = tuple([list(Freq_Bands.values())[f][1] for f in range(len(Freq_Bands))])
+fmin = tuple([list(freq_bands.values())[f][0] for f in range(len(freq_bands))])
+fmax = tuple([list(freq_bands.values())[f][1] for f in range(len(freq_bands))])
 
 # Compute connectivity over trials
 con_epochs = spectral_connectivity_epochs(
@@ -384,15 +365,8 @@ con_epochs = spectral_connectivity_epochs(
 
 # %%
 
-# Convert to TemporalConnectivity object for plotting over time
-con_epochs = TemporalConnectivity(
-    con_epochs.get_data("raveled")[:, 0, :],
-    con_epochs.times,
-    con_epochs.n_nodes,
-    con_epochs.names,
-    con_epochs.indices,
-    con_epochs.method,
-)
+# Select the theta band (the only one) to get connectivity over time
+con_epochs = con_epochs.combine_freqs()
 
 # Get the timepoint with highest global connectivity right after stimulus
 max_con_idx = np.argmax(
@@ -420,13 +394,7 @@ plot_temporal_connectivity(
 # %%
 
 # Plot the connectivity matrix at the timepoint with highest global wPLI
-max_con = Connectivity(
-    con_epochs.get_data("raveled")[:, max_con_idx],
-    con_epochs.n_nodes,
-    con_epochs.names,
-    con_epochs.indices,
-    con_epochs.method,
-)
+max_con = con_epochs.combine_times(tmin=max_con_time, tmax=max_con_time)
 plot_connectivity(max_con, info=epochs.info, node_labels="names")
 
 # Visualize top 20 connections in 3D
