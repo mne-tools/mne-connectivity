@@ -11,10 +11,12 @@
 
 import inspect
 
+import mne
 import numpy as np
 from mne.io.constants import FIFF
-from mne.io.pick import _picks_to_idx
 from mne.utils import _validate_type, fill_doc, verbose
+
+from .helpers import _check_data_is_real, _check_info, _handle_data_and_indices
 
 verbose_dec = verbose
 FIDUCIAL_ORDER = (FIFF.FIFFV_POINT_LPA, FIFF.FIFFV_POINT_NASION, FIFF.FIFFV_POINT_RPA)
@@ -24,7 +26,6 @@ FIDUCIAL_ORDER = (FIFF.FIFFV_POINT_LPA, FIFF.FIFFV_POINT_NASION, FIFF.FIFFV_POIN
 def plot_sensors_connectivity(
     info,
     con,
-    picks=None,
     *,
     cbar_label="Connectivity",
     n_con=20,
@@ -36,22 +37,26 @@ def plot_sensors_connectivity(
     Parameters
     ----------
     info : mne.Info
-        The measurement info.
-    con : array, shape (n_channels, n_channels) | Connectivity
+        The measurement info, containing the locations of all channels in
+        ``con.names``. Connections involving channels marked as bad in ``info`` are
+        not shown.
+    con : ~mne_connectivity.Connectivity
         The connectivity data to plot.
-    %(picks_good_data)s
-        Indices of selected channels.
+
+        .. versionchanged:: 1.0
+           Arrays are no longer supported, and the ``picks`` parameter was removed:
+           the channels are taken from ``con.names``.
     cbar_label : str
         Label for the colorbar.
     n_con : int
         Number of strongest connections shown (default 20). Strength is the absolute
-        value of the connectivity, and each pair of sensors is counted once: if the
-        two directions of a pair differ, the stronger one is shown. Connections between
-        sensors closer than ``min_distance`` are then removed, so fewer than ``n_con``
-        connections may be shown.
+        value of the connectivity. Self-connections are ignored if they are the same
+        for all channels (e.g., coherence), and symmetric data is counted once per
+        pair of channels. Connections between sensors closer than ``min_distance`` are
+        then removed, so fewer than ``n_con`` connections may be shown.
 
         .. versionchanged:: 1.0
-           Self-connections are ignored, each pair of sensors is counted once, and
+           Self-connections and the duplicate half of symmetric data are ignored, and
            strength is the absolute value.
     cmap : str | instance of matplotlib.colors.Colormap
         Colormap for coloring connections by strength. If a str, must be a valid
@@ -68,29 +73,18 @@ def plot_sensors_connectivity(
     fig : instance of mne.viz.Figure3D
         The 3D figure.
     """
-    _validate_type(info, "info")
-
     from mne.viz.backends.renderer import _get_renderer
 
-    from mne_connectivity.base import BaseConnectivity
+    from mne_connectivity import Connectivity
 
-    if isinstance(con, BaseConnectivity):
-        con = con.get_data("dense")
-
-    renderer = _get_renderer(size=(600, 600), bgcolor=(0.5, 0.5, 0.5))
-
-    if con.ndim != 2 or con.shape[0] != con.shape[1]:
-        raise ValueError(
-            "Connectivity data must be a 2D array of shape (n_channels, n_channels), "
-            f"got shape {con.shape}"
-        )
-
-    picks = _picks_to_idx(info, picks)
-    if len(picks) != len(con):
-        raise ValueError(
-            f"The number of channels picked ({len(picks)}) does not correspond to the "
-            f"size of the connectivity data ({len(con)})"
-        )
+    _validate_type(info, "info")
+    _validate_type(con, Connectivity, "`con`", "Connectivity")
+    _check_data_is_real(con.get_data("raveled"))
+    _check_info(info, con.names)
+    # keep only the channels in con, so that other bad channels are ignored
+    info = mne.pick_info(
+        info, mne.pick_channels(info["ch_names"], con.names, ordered=True)
+    )
 
     if min_distance <= 0:
         raise ValueError(
@@ -98,21 +92,11 @@ def plot_sensors_connectivity(
             f"{min_distance} m"
         )
 
-    # Plot the sensor locations
-    sens_loc = [info["chs"][k]["loc"][:3] for k in picks]
-    sens_loc = np.array(sens_loc)
-
-    renderer.sphere(
-        np.c_[sens_loc[:, 0], sens_loc[:, 1], sens_loc[:, 2]],
-        color=(1, 1, 1),
-        opacity=1,
-        scale=0.005,
-    )
-
     # Get the strongest n_con connections
-    ii, jj, con_val = _get_strongest_connections(con, n_con)
+    ii, jj, con_val = _get_strongest_connections(con, info, n_con)
 
     # Remove close connections
+    sens_loc = np.array([ch["loc"][:3] for ch in info["chs"]])
     far = np.linalg.norm(sens_loc[ii] - sens_loc[jj], axis=1) > min_distance
     con_nodes = list(zip(ii[far], jj[far]))
     con_val = con_val[far]
@@ -123,6 +107,15 @@ def plot_sensors_connectivity(
             "apart. Try decreasing `min_distance` or increasing `n_con`, and check "
             "that the coordinates of your channels in `info` are not NaNs"
         )
+
+    # Plot the sensor locations, only once all errors have been checked
+    renderer = _get_renderer(size=(600, 600), bgcolor=(0.5, 0.5, 0.5))
+    renderer.sphere(
+        np.c_[sens_loc[:, 0], sens_loc[:, 1], sens_loc[:, 2]],
+        color=(1, 1, 1),
+        opacity=1,
+        scale=0.005,
+    )
 
     # Show the connections as tubes between sensors
     vmax = np.max(con_val)
@@ -152,9 +145,7 @@ def plot_sensors_connectivity(
         kwargs["scale"] = 0.005
     for node in nodes_shown:
         x, y, z = sens_loc[node]
-        renderer.text3d(
-            x, y, z, text=info["ch_names"][picks[node]], color=(0, 0, 0), **kwargs
-        )
+        renderer.text3d(x, y, z, text=con.names[node], color=(0, 0, 0), **kwargs)
 
     renderer.set_camera(
         azimuth=-88.7,
@@ -166,23 +157,18 @@ def plot_sensors_connectivity(
     return renderer.scene()
 
 
-def _get_strongest_connections(con, n_con):
-    """Get the strongest connections between distinct sensors, each pair once.
+def _get_strongest_connections(con, info, n_con):
+    """Get the seeds, targets, and values of the strongest connections to plot.
 
-    Strength is the absolute value. For each pair, the direction with the stronger
-    value is used, or the larger value if both are equally strong (e.g., the positive
-    direction of an antisymmetric matrix). This covers symmetric, antisymmetric,
-    directed, and triangular matrices alike. NaNs are ignored.
+    Strength is the absolute value. Trivial self-connections, the duplicate half of
+    symmetric data, and connections of bad channels are dropped beforehand.
     """
-    rows, cols = np.tril_indices(len(con), k=-1)
-    lower, upper = con[rows, cols], con[cols, rows]
-    use_upper = (np.abs(upper) > np.abs(lower)) | (
-        (np.abs(upper) == np.abs(lower)) & (upper > lower)
+    data, indices, is_multivar, _, duplicate_cons_mask = _handle_data_and_indices(
+        con, info
     )
-    use_upper |= np.isnan(lower)
-    rows, cols = np.where(use_upper, cols, rows), np.where(use_upper, rows, cols)
-    values = np.where(use_upper, upper, lower)
-
-    order = np.argsort(-np.abs(values), kind="stable")
-    order = order[~np.isnan(values[order])][:n_con]
-    return rows[order], cols[order], values[order]
+    if is_multivar:
+        raise ValueError("Multivariate connectivity is not supported.")
+    keep = ~duplicate_cons_mask
+    data, seeds, targets = data[keep], indices[0][keep], indices[1][keep]
+    order = np.argsort(-np.abs(data), kind="stable")[:n_con]
+    return seeds[order], targets[order], data[order]
