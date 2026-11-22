@@ -121,16 +121,14 @@ con = spectral_connectivity_epochs(
     sfreq=sfreq,
     fmin=fmin,
     fmax=fmax,
-    faverage=True,
     mt_adaptive=True,
     n_jobs=1,
 )
 
-# con is a 3D array, get the connectivity for the first (and only) freq. band
-# for each method
+# Average the connectivity over the frequencies of the band for each method
 con_res = dict()
 for method, c in zip(con_methods, con):
-    con_res[method] = c.get_data(output="dense")[:, :, 0]
+    con_res[method] = c.combine_freqs().get_data(output="dense")
 
 ###############################################################################
 # Make a connectivity plot

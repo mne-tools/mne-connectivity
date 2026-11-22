@@ -22,7 +22,7 @@ import mne
 import numpy as np
 from mne.datasets import sample
 
-from mne_connectivity import Connectivity, spectral_connectivity_epochs
+from mne_connectivity import spectral_connectivity_epochs
 from mne_connectivity.viz import plot_connectivity
 
 ###############################################################################
@@ -365,14 +365,7 @@ for method in methods:
         mt_adaptive=False,
         n_jobs=1,
     )
-    con_data = con.get_data("raveled").mean(axis=-1)  # average across frequencies
-    cons[method] = Connectivity(
-        con_data,
-        n_nodes=con.n_nodes,
-        names=con.names,
-        indices=con.indices,
-        method=method,
-    )
+    cons[method] = con.combine_freqs()  # average across frequencies
 
 ###############################################################################
 # In this example, there is strong connectivity between sensors 190-200 and
