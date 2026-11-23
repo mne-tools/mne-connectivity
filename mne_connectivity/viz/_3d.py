@@ -81,7 +81,7 @@ def plot_sensors_connectivity(
     _validate_type(con, Connectivity, "`con`", "Connectivity")
     _check_data_is_real(con.get_data("raveled"))
     _check_info(info, con.names)
-    # keep only the channels in con, so that other bad channels are ignored
+    # keep only the channels in con, in the same order, for the sensor locations
     info = mne.pick_info(
         info, mne.pick_channels(info["ch_names"], con.names, ordered=True)
     )

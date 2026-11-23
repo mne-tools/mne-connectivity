@@ -695,6 +695,14 @@ def test_plot_connectivity_channel_types(kind, info):
     assert len(figs) == len(axes) == len(types) - 1
     assert [ax.get_title().split(" | ")[0] for ax in axes] == types[1:]
 
+    # bad channels that are not in the connectivity data are ignored
+    info_extra = mne.create_info(
+        info["ch_names"] + ["x"], 100.0, ["eeg", "eeg", "grad", "grad", "eeg"]
+    )
+    info_extra["bads"] = ["e1", "x"]
+    figs = plot_func(con, info=info_extra, show=False)
+    assert [fig.axes[0].get_title().split(" | ")[0] for fig in figs] == types[1:]
+
 
 @pytest.mark.parametrize("kind", list(PLOTTERS))
 @pytest.mark.parametrize("form", ("dense", "ragged", "masked"))
