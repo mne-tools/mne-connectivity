@@ -90,14 +90,14 @@ onset_sec = onset_sample / raw.info["sfreq"]
 raw = raw.crop(tmin=0, tmax=onset_sec, include_tmax=False)
 
 # %%
-# Create Windows of Data (Epochs) Using MNE-Python
+# Create windows of data (epochs) using MNE-Python
 # ------------------------------------------------
 # We have a continuous iEEG snapshot that is about 60 seconds long
 # (after cropping). We would like to estimate a VAR model over a sliding window
 # of 500 milliseconds with a 250 millisecond step size.
 #
-# We can use `mne.make_fixed_length_epochs` to create an Epochs data structure
-# representing this sliding window.
+# We can use `mne.make_fixed_length_epochs` to create an :class:`~mne.Epochs` data
+# structure representing this sliding window.
 
 epochs = make_fixed_length_epochs(raw=raw, duration=0.5, overlap=0.25)
 times = epochs.times
@@ -112,12 +112,12 @@ print(epochs.events)
 # %%
 # Compute the VAR model for all windows
 # -------------------------------------
-# Now, we are ready to compute our VAR model. We will compute a VAR model for
-# each Epoch and return an EpochConnectivity data structure. Each Epoch here
-# represents a separate VAR model. Taken together, these represent a
+# Now, we are ready to compute our VAR model. We will compute a VAR model for each
+# epoch and return an :class:`~mne_connectivity.EpochVARConnectivity` class.
+# Each epoch here represents a separate VAR model. Taken together, these represent a
 # time-varying linear system.
 
-conn = vector_auto_regression(data=epochs.get_data(), times=times, names=ch_names)
+conn = vector_auto_regression(data=epochs, times=times, names=ch_names)
 
 # this returns a connectivity structure over time
 print(conn)
@@ -160,13 +160,14 @@ fig.colorbar(im, cax=cax, orientation="horizontal")
 # %%
 # Compute one VAR model using all epochs
 # --------------------------------------
-# By setting ``model='avg-epochs'``, we instead treat each Epoch as a sample of
-# the same VAR model and thus we only estimate one VAR model. One might do this
+# By setting ``model='avg-epochs'``, we instead treat each epoch as a sample of
+# the same VAR model and thus we only estimate one VAR model, returned as a
+# :class:`~mne_connectivity.VARConnectivity` class. One might do this
 # when one suspects the data is stationary and one VAR model represents all
 # epochs.
 
 conn = vector_auto_regression(
-    data=epochs.get_data(), times=times, names=ch_names, model="avg-epochs"
+    data=epochs, times=times, names=ch_names, model="avg-epochs"
 )
 
 # this returns a connectivity structure over time

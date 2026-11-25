@@ -1,0 +1,1 @@
+Remove VAR model-specific methods and properties (``predict``, ``simulate``, ``companion``, ``eigvals``, ``is_stable``) from :class:`~mne_connectivity.Connectivity`, :class:`~mne_connectivity.EpochConnectivity`, :class:`~mne_connectivity.TemporalConnectivity`, and :class:`~mne_connectivity.EpochTemporalConnectivity` classes, by `Thomas Binns`_.
