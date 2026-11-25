@@ -206,7 +206,6 @@ def phase_slope_index(
         times = None
     freqs = np.array(cohy.freqs)
     names = cohy.names
-    n_tapers = cohy.attrs.get("n_tapers")
     n_epochs_used = cohy.n_epochs_used
     n_nodes = cohy.n_nodes
     metadata = cohy.metadata
@@ -237,7 +236,6 @@ def phase_slope_index(
             indices=indices,
             freqs_computed=freqs_computed,
             n_epochs_used=n_epochs_used,
-            n_tapers=n_tapers,
             metadata=metadata,
         )
     else:
@@ -253,7 +251,6 @@ def phase_slope_index(
             indices=indices,
             freqs_computed=freqs_computed,
             n_epochs_used=n_epochs_used,
-            n_tapers=n_tapers,
             metadata=metadata,
         )
 
@@ -448,7 +445,6 @@ def phase_slope_index_time(
     # extract class properties from the spectral connectivity structure
     freqs = np.array(cohy.freqs)
     names = cohy.names
-    n_tapers = cohy.attrs.get("n_tapers")
     n_epochs = cohy.n_epochs
     n_nodes = cohy.n_nodes
     metadata = cohy.metadata
@@ -476,7 +472,6 @@ def phase_slope_index_time(
         spec_method=mode,
         indices=indices,
         freqs_computed=freqs_computed,
-        n_tapers=n_tapers,
         metadata=metadata,
     )
     if average:

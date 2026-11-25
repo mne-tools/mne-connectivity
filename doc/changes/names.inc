@@ -3,7 +3,9 @@
 .. _Alexander Kroner: https://github.com/alexanderkroner
 .. _Britta Westner: https://github.com/britta-wstnr
 .. _Daniel McCloy: https://dan.mccloy.info
+.. _Don Yin: https://github.com/Don-Yin
 .. _Eric Larson: https://github.com/larsoner
+.. _Eva B: https://github.com/evadiva3
 .. _Giovanni Marraffini: https://github.com/GioMarraffini
 .. _Kenji Marshall: https://github.com/kenjimarshall
 .. _Laouen Belloli: https://github.com/Laouen
@@ -11,6 +13,8 @@
 .. _Marijn van Vliet: https://github.com/wmvanvliet
 .. _Mina Jamshidi: https://github.com/minajamshidi
 .. _Mohammad Orabe: https://github.com/orabe
+.. _Okan Tiktas: https://github.com/OKAN-SOFTWARE
+.. _Payam S. Shabestari: https://github.com/payamsash
 .. _Qianliang Li: https://github.com/Avoide
 .. _Rebecca Stevenson: https://github.com/RebeccaStevenson
 .. _Richard Höchenberger: https://github.com/hoechenberger

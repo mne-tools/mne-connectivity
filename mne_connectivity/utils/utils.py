@@ -3,46 +3,7 @@
 #
 # License: BSD (3-clause)
 import numpy as np
-from mne.utils import _prepare_write_metadata, logger
-
-
-def parallel_loop(func, n_jobs=1, verbose=1):
-    """Run loops in parallel, if joblib is available.
-
-    Parameters
-    ----------
-    func : function
-        function to be executed in parallel
-    n_jobs : int | None
-        Number of jobs. If set to ``None``, do not attempt to use joblib.
-    verbose : int
-        verbosity level
-
-    Notes
-    -----
-    Execution of the main script must be guarded with ``if __name__ == '__main__':``
-    when using parallelization.
-    """
-    if n_jobs:
-        try:
-            from joblib import Parallel, delayed
-        except ImportError:
-            n_jobs = None
-
-    if not n_jobs:
-        if verbose:
-            logger.info("running ", func, " serially")
-
-        def par(x):
-            return list(x)
-
-    else:
-        if verbose:
-            logger.info("running ", func, " in parallel")
-        func = delayed(func)
-        par = Parallel(n_jobs=n_jobs, verbose=verbose)
-
-    return par, func
+from mne.utils import _prepare_write_metadata
 
 
 def _check_indices(indices):
@@ -352,7 +313,7 @@ def degree(connectivity, threshold_prop=0.2):
     degree = connectivity.ravel()  # no need to copy because np.array does
     degree[:: n_nodes + 1] = 0.0
     n_keep = int(round((degree.size - len(connectivity)) * threshold_prop / split))
-    degree[np.argsort(degree)[:-n_keep]] = 0
+    degree[np.argsort(degree)[: degree.size - n_keep]] = 0
     degree = np.reshape(degree, connectivity.shape)
     if split == 2:
         degree += degree.T  # normally unsafe, but we know where our zeros are

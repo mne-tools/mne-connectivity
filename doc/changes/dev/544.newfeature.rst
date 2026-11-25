@@ -1,0 +1,1 @@
+Add directed phase lag index (dPLI) method to :func:`~mne_connectivity.spectral_connectivity_time`, by `Thomas Binns`_.

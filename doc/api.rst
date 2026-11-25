@@ -52,6 +52,7 @@ on numpy array inputs.
    spectral_connectivity_epochs
    spectral_connectivity_time
    wsmi
+   learn_graph
 
 Decoding classes
 ================

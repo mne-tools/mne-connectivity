@@ -5,9 +5,16 @@
 #
 # License: Simplified BSD
 
+import matplotlib
+import numpy as np
+from matplotlib.colors import to_rgb
 from mne.viz.circle import _plot_connectivity_circle
 
+from .helpers import _setup_cmap, _setup_vmin_vmax
 
+
+# TODO VERSION when matplotlib >= 3.10 is the minimum, always use "berlin" on dark
+# backgrounds: drop the "RdBu_r" fallback below and its mention in the docstring
 def plot_connectivity_circle(
     con,
     node_names,
@@ -21,7 +28,7 @@ def plot_connectivity_circle(
     textcolor="white",
     node_edgecolor="black",
     linewidth=1.5,
-    colormap="hot",
+    colormap=None,
     vmin=None,
     vmax=None,
     colorbar=True,
@@ -73,12 +80,24 @@ def plot_connectivity_circle(
         Color to use for lines around nodes. See :mod:`matplotlib.colors`.
     linewidth : float
         Line width to use for connections.
-    colormap : str | instance of matplotlib.colors.LinearSegmentedColormap
-        Colormap to use for coloring the connections.
+    colormap : str | instance of matplotlib.colors.Colormap | None
+        Colormap to use for coloring the connections. If ``None`` (default), a
+        diverging colormap is used when the drawn connections have both positive and
+        negative values, or when ``vmin`` and ``vmax`` span zero: ``"berlin"`` on a
+        dark ``facecolor`` (``"RdBu_r"`` with matplotlib < 3.10) and ``"RdBu_r"`` on a
+        light one. Otherwise, ``"hot"`` is used.
+
+        .. versionchanged:: 1.0
+           The default changed from ``"hot"`` to ``None``.
     vmin : float | None
         Minimum value for colormap. If ``None``, it is determined automatically.
     vmax : float | None
         Maximum value for colormap. If ``None``, it is determined automatically.
+        If both ``vmin`` and ``vmax`` are ``None`` and the drawn connections have
+        both positive and negative values, the limits are symmetric around zero.
+
+        .. versionchanged:: 1.0
+           Automatic limits for data with both signs are symmetric around zero.
     colorbar : bool
         Display a colorbar or not.
     title : str
@@ -129,6 +148,24 @@ def plot_connectivity_circle(
 
     if isinstance(con, BaseConnectivity):
         con = con.get_data()
+
+    # choose the colormap and limits
+    con = np.asarray(con)
+    if con.ndim == 2 and con.shape[0] == con.shape[1]:
+        values = con[np.tril_indices(con.shape[0], -1)]
+    else:
+        values = con.ravel()
+    values = values[np.isfinite(values)]
+    if n_lines is not None and values.size > n_lines:  # only the strongest are drawn
+        values = values[np.abs(values) >= np.sort(np.abs(values))[-n_lines]]
+    vmin, vmax = _setup_vmin_vmax(values, vmin, vmax)
+    if np.mean(to_rgb(facecolor)) < 0.5 and "berlin" in matplotlib.colormaps:
+        pos_neg_cmap = "berlin"
+    else:
+        pos_neg_cmap = "RdBu_r"
+    colormap = _setup_cmap(
+        colormap, vmin, vmax, pos_cmap="hot", neg_cmap="hot", pos_neg_cmap=pos_neg_cmap
+    )
 
     return _plot_connectivity_circle(
         con=con,

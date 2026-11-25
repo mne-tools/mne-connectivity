@@ -12,15 +12,17 @@ dev = [
 ]
 doc = [
   "intersphinx-registry",
+  "joblib",  # for parallelisation in examples
   "memory-profiler",
   "mne-bids",
-  "mne-connectivity[full]",
   "mne-qt-browser",
   "nibabel",
   "nilearn",
   "numpydoc",
   "pooch",
   "pydata-sphinx-theme >= 0.14.1",
+  "pyvista >= 0.44",  # released 2024-07-07, will become 0.45 on 2027-04-19
+  "pyvistaqt >= 0.11",  # released 2023-06-30, will become 0.12 on 2028-07-01
   "sphinx != 8.1.0",
   "sphinx-copybutton",
   "sphinx-design",
@@ -42,15 +44,14 @@ style = [
   "yamllint",
 ]
 test = [
-  "joblib",
-  "mne-bids",
-  "mne-connectivity[full]",
-  "pymatreader",
-  "pytest",
-  "pytest-cov",
-  "pytest-timeout",
-  "pytest-xdist",
-  "statsmodels",
+  "h5netcdf >= 1.4",
+  "h5py >= 3.12",
+  "joblib >= 0.8",
+  "pytest >= 8.0, != 9.1.0",  # https://github.com/pytest-dev/pytest/issues/14591
+  "pytest-cov >= 4.1",
+  "pytest-timeout >= 2.2",
+  "pytest-xdist >= 3.6.1",
+  "statsmodels >= 0.15",
   "threadpoolctl",
 ]
 
@@ -73,13 +74,13 @@ classifiers = [
 dependencies = [
   "matplotlib >= 3.9",  # released 2024-05-15, will become 3.10 on 2026-12-14
   "mne >= 1.8",
-  "netCDF4 >= 1.6",
+  "netCDF4 >= 1.7.2",
   "numpy >= 2.1",  # released 2024-08-18, will become 2.2 on 2026-12-08
   "pandas >= 2.2",  # released 2024-01-20, will become 2.3 on 2027-06-05
   "scikit-learn >= 1.5",  # released 2024-05-21, will become 1.6 on 2026-12-09
   "scipy >= 1.14",  # released 2024-06-24, will become 1.15 on 2027-01-03
-  "tqdm",
-  "xarray >= 2023.11.0",
+  "tqdm >= 4.66",
+  "xarray >= 2024.10.0",
 ]
 description = "mne-connectivity: A module for connectivity data analysis with MNE."
 dynamic = ["version"]
@@ -101,8 +102,9 @@ full = [
   "PySide6 >= 6.8.1, != 6.9.1",  # can bump min to 6.10 in Oct 2027
 ]
 full-no-qt = [
-  "h5netcdf",
-  "joblib",
+  "h5netcdf >= 1.4",
+  "h5py >= 3.12",
+  "joblib >= 0.8",
   "numba >= 0.60",  # released 2024-06-13, will become 0.61 on 2027-01-20
   "pyvista >= 0.44",  # released 2024-07-07, will become 0.45 on 2027-04-19
   "pyvistaqt >= 0.11",  # released 2023-06-30, will become 0.12 on 2028-07-01

@@ -329,7 +329,6 @@ def _assemble_spectral_params(
 ):
     """Prepare time-frequency decomposition."""
     spectral_params = dict(eigvals=None, window_fun=None, wavelets=None, weights=None)
-    n_tapers = None
     n_times_spectrum = 0
     is_tfr_con = False
     if mode == "multitaper":
@@ -362,7 +361,7 @@ def _assemble_spectral_params(
         is_tfr_con = True
     else:
         raise ValueError("mode has an invalid value")
-    return spectral_params, mt_adaptive, n_times_spectrum, n_tapers, is_tfr_con
+    return spectral_params, mt_adaptive, n_times_spectrum, is_tfr_con
 
 
 ########################################################################
@@ -539,14 +538,17 @@ def _epoch_spectral_connectivity(
 
     # compute tapered spectra
     if spectrum_computed:  # use existing spectral info
-        # Select entries of interest (flexible indexing for optional tapers dim)
+        # Select entries of interest
         if tmin_idx is not None and tmax_idx is not None:  # TFR spectra
+            # Flexible indexing for optional tapers dim
             x_t = np.asarray(data)[:, sig_idx][..., freq_mask, tmin_idx:tmax_idx]
         else:  # normal spectra
-            x_t = np.asarray(data)[:, sig_idx][..., freq_mask]
-            if weights is None:  # assumes no tapers dim, i.e., for Fourier/Welch mode
-                x_t = np.expand_dims(x_t, axis=2)  # CSD construction expects tapers dim
-                weights = np.ones((1, 1, 1))  # assign dummy weights
+            x_t = np.asarray(data)[:, sig_idx]
+            if mode == "fourier":  # Welch: treat segments like equally-weighted tapers
+                # (..., freqs, segments) -> (..., segments, freqs)
+                x_t = np.moveaxis(x_t, -1, -2)
+                weights = np.ones((x_t.shape[-2], 1))  # one weight per segment
+            x_t = x_t[..., freq_mask]
         if accumulate_psd:
             if weights is not None:  # mode == 'multitaper' or 'fourier'
                 if not is_tfr_con:  # normal spectra (multitaper or Fourier)
@@ -1150,18 +1152,26 @@ def spectral_connectivity_epochs(
                     "contain complex-valued Fourier coefficients, such as that "
                     "returned from Epochs.compute_psd/tfr() with `output='complex'`"
                 )
-            if "segment" in data._dims:
-                raise ValueError(
-                    "`data` cannot contain Fourier coefficients for individual segments"
-                )
             mode = data.method
             if isinstance(data, EpochsSpectrum):
                 if isinstance(data, EpochsSpectrumArray):  # infer mode from dimensions
+                    if "taper" not in data._dims and "segment" not in data._dims:
+                        raise ValueError(
+                            "if `data` is an EpochsSpectrumArray object, `dim_names` "
+                            "must contain a 'taper' or 'segment' dimension; got "
+                            f"{data._dims}"
+                        )
                     # Currently, actual mode doesn't matter as long as we handle tapers
                     # and their weights in the same way as for multitaper spectra
                     mode = "multitaper" if "taper" in data._dims else "fourier"
                 else:  # read mode from object
                     mode = "fourier" if mode == "welch" else mode
+                    if mode == "fourier" and "segment" not in data._dims:
+                        raise ValueError(
+                            "if `data` is an EpochsSpectrum object containing Welch "
+                            "coefficients, it must have a 'segment' dimension (i.e., "
+                            "be computed with `average=None`)"
+                        )
             else:
                 if isinstance(data, EpochsTFRArray):  # infer mode from dimensions
                     # Currently, actual mode doesn't matter as long as we handle tapers
@@ -1258,7 +1268,7 @@ def spectral_connectivity_epochs(
 
             # get the window function, wavelets, etc for different modes
             if not spectrum_computed:
-                spectral_params, mt_adaptive, n_times_spectrum, n_tapers, is_tfr_con = (
+                spectral_params, mt_adaptive, n_times_spectrum, is_tfr_con = (
                     _assemble_spectral_params(
                         mode=mode,
                         n_times=n_times,
@@ -1277,7 +1287,6 @@ def spectral_connectivity_epochs(
                     eigvals=None, window_fun=None, wavelets=None, weights=weights
                 )
                 n_times_spectrum = n_times  # 0 if no times
-                n_tapers = None if weights is None else weights.shape[0]
 
             # unique signals for which we actually need to compute PSD etc.
             if multivariate_con:
@@ -1541,7 +1550,6 @@ def spectral_connectivity_epochs(
             n_epochs_used=n_epochs,
             freqs_used=freqs_used,
             times_used=times,
-            n_tapers=n_tapers,
             metadata=metadata,
             rank=rank,
             n_lags=gc_n_lags if _method in _gc_methods else None,

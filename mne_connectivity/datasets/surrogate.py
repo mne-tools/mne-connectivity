@@ -25,9 +25,9 @@ def make_surrogate_resting_data(
             Added support for :class:`mne.Epochs` objects.
     n_shuffles : int (default 1000)
         The number of surrogate datasets to create.
-    rng_seed : int | None (default None)
-        The seed to use for the random number generator. If ``None``, no seed is
-        specified.
+    rng_seed : int | array-like of int | SeedSequence | BitGenerator | Generator | None
+        Seed passed to :func:`numpy.random.default_rng`. If ``None`` (default), a new
+        :class:`numpy.random.Generator` seeded from entropy is used.
     return_generator : bool (default True)
         Whether or not to return the surrogate data as a generator object instead of a
         list. This allows iterating over the surrogates without having to keep them all
@@ -146,9 +146,9 @@ def make_surrogate_evoked_data(
         :meth:`mne.Epochs.compute_tfr` with ``output='complex'``.
     n_shuffles : int (default 1000)
         The number of surrogate datasets to create.
-    rng_seed : int | None (default None)
-        The seed to use for the random number generator. If ``None``, no seed is
-        specified.
+    rng_seed : int | array-like of int | SeedSequence | BitGenerator | Generator | None
+        Seed passed to :func:`numpy.random.default_rng`. If ``None`` (default), a new
+        :class:`numpy.random.Generator` seeded from entropy is used.
     return_generator : bool (default True)
         Whether or not to return the surrogate data as a generator object instead of a
         list. This allows iterating over the surrogates without having to keep them all

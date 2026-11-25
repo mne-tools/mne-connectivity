@@ -3,6 +3,7 @@ from collections.abc import Generator
 import numpy as np
 import pytest
 from mne import EpochsArray, create_info
+from mne.utils import check_version
 
 from mne_connectivity import (
     make_signals_in_freq_bands,
@@ -13,6 +14,9 @@ from mne_connectivity import (
 )
 
 
+@pytest.mark.skipif(
+    not check_version("mne", "1.10"), reason="Requires MNE v1.10.0 or higher"
+)  # Taper weights in TFR objects added in MNE v1.10.0
 @pytest.mark.parametrize("n_seeds", [1, 3])
 @pytest.mark.parametrize("n_targets", [1, 3])
 @pytest.mark.parametrize("snr", ["high", "low"])
@@ -74,7 +78,15 @@ def test_make_signals_in_freq_bands(
             method=mode, freqs=freqs, n_cycles=freqs / 2, output="complex"
         )
     else:
-        coeffs = data.compute_psd(method=mode, fmin=fmin, fmax=fmax, output="complex")
+        # complex Welch requires average=None in MNE >= 1.14
+        kwargs = dict()
+        if mode == "welch":
+            kwargs.update(n_fft=int(sfreq * duration) // 2, average=None)  # 2 segments
+        coeffs = data.compute_psd(
+            method=mode, fmin=fmin, fmax=fmax, output="complex", **kwargs
+        )
+        if mode == "welch":
+            assert coeffs.get_data().shape[-1] == 2
     con = spectral_connectivity_epochs(coeffs, method=methods, indices=indices)
     freqs = np.array(con[0].freqs)
     if mode == "morlet":
@@ -284,6 +296,9 @@ def test_make_signals_in_freq_bands_error_catch():
         )
 
 
+@pytest.mark.skipif(
+    not check_version("mne", "1.10"), reason="Requires MNE v1.10.0 or higher"
+)  # Taper weights in TFR objects added in MNE v1.10.0
 @pytest.mark.parametrize(("snr", "should_be_significant"), ([0.7, True], [0.2, False]))
 @pytest.mark.parametrize(
     ("use_coeffs", "state", "method"),
@@ -344,8 +359,10 @@ def test_make_surrogate_data(snr, should_be_significant, use_coeffs, state, meth
                 method=method, freqs=freqs, n_cycles=n_cycles, output="complex"
             )
         else:
+            # complex Welch requires average=None in MNE >= 1.14
+            kwargs = dict(average=None) if method == "welch" else dict()
             data = data.compute_psd(
-                method=method, fmin=fmin, fmax=fmax, output="complex"
+                method=method, fmin=fmin, fmax=fmax, output="complex", **kwargs
             )
     else:  # prepare for coeff computation in connectivity func call
         if method == "morlet":

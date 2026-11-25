@@ -13,6 +13,7 @@ from mne import create_info, make_fixed_length_epochs
 from mne.annotations import Annotations
 from mne.epochs import BaseEpochs
 from mne.io import RawArray
+from mne.utils import check_version
 from numpy.testing import assert_allclose, assert_array_equal
 
 from mne_connectivity import (
@@ -42,8 +43,8 @@ def _make_test_epochs():
     n_signals = 3
     n_epochs = 10
     n_times = 500
-    rng = np.random.RandomState(42)
-    data = rng.randn(n_signals, n_epochs * n_times)
+    rng = np.random.default_rng(42)
+    data = rng.standard_normal((n_signals, n_epochs * n_times))
 
     # create Epochs
     info = create_info(
@@ -448,6 +449,9 @@ def test_make_full_with_indices():
     assert_array_equal(con_ind.get_data("dense"), con_all.get_data())
 
 
+@pytest.mark.skipif(
+    not check_version("mne", "1.10"), reason="Requires MNE v1.10.0 or higher"
+)  # Taper weights in TFR objects added in MNE v1.10.0
 # Time-resolved CIPLV can involve division by zero on diagonal
 @pytest.mark.filterwarnings("ignore:divide by zero encountered in divide")
 @pytest.mark.parametrize("kind", ["epochs", "time"])
@@ -463,7 +467,9 @@ def test_make_spec_conn_full(data_make_full, kind):
 
     # Get spectral coeffs
     if kind == "epochs":
-        coeffs = data_make_full.compute_psd(method="welch", output="complex")
+        coeffs = data_make_full.compute_psd(
+            method="welch", average=None, output="complex"
+        )
         methods += ("ppc", "pli2_unbiased", "dpli", "wpli2_debiased")
         conn_func = spectral_connectivity_epochs
     else:  # kind == "time"
@@ -491,6 +497,9 @@ def test_make_spec_conn_full(data_make_full, kind):
         assert_allclose(lower_data, full_data, atol=1e-6)
 
 
+@pytest.mark.skipif(
+    not check_version("mne", "1.10"), reason="Requires MNE v1.10.0 or higher"
+)  # Taper weights in TFR objects added in MNE v1.10.0
 @pytest.mark.parametrize("kind", ["epochs", "time"])
 def test_make_psi_full(data_make_full, kind):
     """Test that filling missing values in PSI data works correctly."""
@@ -498,7 +507,9 @@ def test_make_psi_full(data_make_full, kind):
 
     # Get spectral coeffs
     if kind == "epochs":
-        coeffs = data_make_full.compute_psd(method="welch", output="complex")
+        coeffs = data_make_full.compute_psd(
+            method="welch", average=None, output="complex"
+        )
     else:  # kind == "time"
         coeffs = data_make_full.compute_tfr(
             method="morlet", freqs=np.arange(15, 20), n_cycles=3, output="complex"
@@ -670,7 +681,8 @@ def test_deprecated_var_io(dynamic, n_lags, tmpdir):
         EpochVARConnectivity,
     ],
 )
-def test_append(conn_cls):
+@pytest.mark.parametrize("has_metadata", [False, True])
+def test_append(conn_cls, has_metadata, tmp_path):
     """Test appending connectivity data."""
     correct_numpy_shape, extra_kwargs = _prep_correct_connectivity_input(
         conn_cls, n_nodes=2, tril=False, n_epochs=4
@@ -682,15 +694,43 @@ def test_append(conn_cls):
     events[:, 0] = np.linspace(0, 3, len(events))
 
     # create the connectivity data structure
-    conn = conn_cls(data=correct_numpy_input, n_nodes=2, events=events, **extra_kwargs)
+    metadata = pd.DataFrame({"batch": [0] * len(events)}) if has_metadata else None
+    conn = conn_cls(
+        data=correct_numpy_input,
+        n_nodes=2,
+        events=events,
+        event_id={"event_1": 1},
+        metadata=metadata,
+        **extra_kwargs,
+    )
 
     # create a copy of the connectivity
     conn_2 = conn.copy()
+    if has_metadata:
+        conn_2.metadata["batch"] = 1
+
+    # the same event key must not map to different values
+    conn_2.events[:, 2] = 2
+    conn_2.event_id["event_1"] = 2
+    with pytest.raises(ValueError, match="event_id values must be the same"):
+        conn.append(conn_2)
+    conn_2.event_id["event_2"] = conn_2.event_id.pop("event_1")
 
     # append epochs
     conn.append(conn_2)
     assert conn.n_epochs == conn_2.n_epochs * 2
     assert len(conn.events) == conn.n_epochs
+    assert conn.event_id == {"event_1": 1, "event_2": 2}
+    if has_metadata:
+        assert conn.metadata["batch"].tolist() == [0] * len(events) + [1] * len(events)
+        assert len(conn_2.metadata) == len(events)
+    else:
+        assert conn.metadata.empty
+
+    fname = tmp_path / "connectivity.nc"
+    conn.save(fname)
+    reloaded = read_connectivity(fname)
+    assert_array_equal(reloaded.metadata.to_numpy(), conn.metadata.to_numpy())
 
 
 @pytest.mark.parametrize(
@@ -717,7 +757,7 @@ def test_events_handling(conn_func):
 
 
 @pytest.mark.parametrize(
-    "epochs", [_make_test_epochs(), np.random.RandomState(0).random((10, 3, 500))]
+    "epochs", [_make_test_epochs(), np.random.default_rng(0).random((10, 3, 500))]
 )
 @pytest.mark.parametrize(
     "func",

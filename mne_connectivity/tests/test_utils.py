@@ -17,7 +17,7 @@ def test_seed_target_indices():
     # bivariate indices
     n_seeds_test = [1, 3, 4]
     n_targets_test = [2, 3, 200]
-    rng = np.random.RandomState(42)
+    rng = np.random.default_rng(42)
     for n_seeds in n_seeds_test:
         for n_targets in n_targets_test:
             idx = rng.permutation(np.arange(n_seeds + n_targets))
@@ -178,6 +178,8 @@ def test_degree():
     corr = (corr + corr.T) / 2.0
     assert_array_equal(degree(corr, 0.33), [0, 1, 1])
     assert_array_equal(degree(corr, 0.66), [1, 2, 1])
+    # a proportion that keeps no connection at all
+    assert_array_equal(degree(corr, 0.1), [0, 0, 0])
 
     # check error when connectivity array is > 2D
     with pytest.raises(ValueError, match="connectivity must be have shape"):
