@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>API &#8212; MNE-Connectivity 0.10.0.dev68+g56185d39f documentation</title>
+    <title>API &#8212; MNE-Connectivity 0.10.0.dev69+g0d02d8890 documentation</title>
   
   
   
@@ -33,8 +33,8 @@
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css?v=c83e6b79" />
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery-binder.css?v=f4aeca0c" />
-    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-dataframe.css?v=2082cf3c" />
-    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-dataframe.css?v=694cfeda" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-rendered-html.css?v=8caa3077" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="_static/style.css?v=31c91a46" />
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="_static/documentation_options.js?v=4cec7b04"></script>
+    <script src="_static/documentation_options.js?v=e2927b5d"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/sg-tags.js?v=d80f6fa4"></script>
@@ -136,7 +136,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.10.0.dev68+g56185d39f documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.10.0.dev69+g0d02d8890 documentation</p>
   
 </a></div>
     
@@ -402,10 +402,12 @@
 <li class="toctree-l1"><a class="reference internal" href="generated/mne_connectivity.TemporalConnectivity.html">mne_connectivity.TemporalConnectivity</a></li>
 <li class="toctree-l1"><a class="reference internal" href="generated/mne_connectivity.SpectralConnectivity.html">mne_connectivity.SpectralConnectivity</a></li>
 <li class="toctree-l1"><a class="reference internal" href="generated/mne_connectivity.SpectroTemporalConnectivity.html">mne_connectivity.SpectroTemporalConnectivity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generated/mne_connectivity.VARConnectivity.html">mne_connectivity.VARConnectivity</a></li>
 <li class="toctree-l1"><a class="reference internal" href="generated/mne_connectivity.EpochConnectivity.html">mne_connectivity.EpochConnectivity</a></li>
 <li class="toctree-l1"><a class="reference internal" href="generated/mne_connectivity.EpochTemporalConnectivity.html">mne_connectivity.EpochTemporalConnectivity</a></li>
 <li class="toctree-l1"><a class="reference internal" href="generated/mne_connectivity.EpochSpectralConnectivity.html">mne_connectivity.EpochSpectralConnectivity</a></li>
 <li class="toctree-l1"><a class="reference internal" href="generated/mne_connectivity.EpochSpectroTemporalConnectivity.html">mne_connectivity.EpochSpectroTemporalConnectivity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generated/mne_connectivity.EpochVARConnectivity.html">mne_connectivity.EpochVARConnectivity</a></li>
 </ul>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="generated/mne_connectivity.envelope_correlation.html">mne_connectivity.envelope_correlation</a></li>
@@ -526,17 +528,23 @@ and are described below.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/mne_connectivity.SpectroTemporalConnectivity.html#mne_connectivity.SpectroTemporalConnectivity" title="mne_connectivity.SpectroTemporalConnectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SpectroTemporalConnectivity</span></code></a>(data, freqs, ...)</p></td>
 <td><p>Connectivity class with frequency and time dimensions.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_connectivity.EpochConnectivity.html#mne_connectivity.EpochConnectivity" title="mne_connectivity.EpochConnectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EpochConnectivity</span></code></a>(data, n_nodes[, names, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_connectivity.VARConnectivity.html#mne_connectivity.VARConnectivity" title="mne_connectivity.VARConnectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">VARConnectivity</span></code></a>(data, lags, n_nodes[, ...])</p></td>
+<td><p>Connectivity class for vector autoregressive models (VAR).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/mne_connectivity.EpochConnectivity.html#mne_connectivity.EpochConnectivity" title="mne_connectivity.EpochConnectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EpochConnectivity</span></code></a>(data, n_nodes[, names, ...])</p></td>
 <td><p>Connectivity class with epoch dimension.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/mne_connectivity.EpochTemporalConnectivity.html#mne_connectivity.EpochTemporalConnectivity" title="mne_connectivity.EpochTemporalConnectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EpochTemporalConnectivity</span></code></a>(data, times, n_nodes)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_connectivity.EpochTemporalConnectivity.html#mne_connectivity.EpochTemporalConnectivity" title="mne_connectivity.EpochTemporalConnectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EpochTemporalConnectivity</span></code></a>(data, times, n_nodes)</p></td>
 <td><p>Connectivity class with epoch and time dimensions.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_connectivity.EpochSpectralConnectivity.html#mne_connectivity.EpochSpectralConnectivity" title="mne_connectivity.EpochSpectralConnectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EpochSpectralConnectivity</span></code></a>(data, freqs, n_nodes)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/mne_connectivity.EpochSpectralConnectivity.html#mne_connectivity.EpochSpectralConnectivity" title="mne_connectivity.EpochSpectralConnectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EpochSpectralConnectivity</span></code></a>(data, freqs, n_nodes)</p></td>
 <td><p>Connectivity class with epoch and frequency dimensions.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/mne_connectivity.EpochSpectroTemporalConnectivity.html#mne_connectivity.EpochSpectroTemporalConnectivity" title="mne_connectivity.EpochSpectroTemporalConnectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EpochSpectroTemporalConnectivity</span></code></a>(data, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_connectivity.EpochSpectroTemporalConnectivity.html#mne_connectivity.EpochSpectroTemporalConnectivity" title="mne_connectivity.EpochSpectroTemporalConnectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EpochSpectroTemporalConnectivity</span></code></a>(data, ...)</p></td>
 <td><p>Connectivity class with epoch, frequency, and time dimensions.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/mne_connectivity.EpochVARConnectivity.html#mne_connectivity.EpochVARConnectivity" title="mne_connectivity.EpochVARConnectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EpochVARConnectivity</span></code></a>(data, lags, n_nodes[, ...])</p></td>
+<td><p>Connectivity class for vector autoregressive models (VAR) with epoch dimension.</p></td>
 </tr>
 </tbody>
 </table>
@@ -762,7 +770,7 @@ connectivity, amplifying the signal-to-noise ratio of these interactions.</p>
 
   <p class="copyright">
     
-      © Copyright 2021-2026, MNE Developers. Last updated on 2026-11-23.
+      © Copyright 2021-2026, MNE Developers. Last updated on 2026-11-25.
       <br/>
     
   </p>

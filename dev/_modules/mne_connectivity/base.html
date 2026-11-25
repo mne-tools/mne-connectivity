@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_connectivity.base &#8212; MNE-Connectivity 0.10.0.dev68+g56185d39f documentation</title>
+    <title>mne_connectivity.base &#8212; MNE-Connectivity 0.10.0.dev69+g0d02d8890 documentation</title>
   
   
   
@@ -32,8 +32,8 @@
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=c83e6b79" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=694cfeda" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=8caa3077" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=31c91a46" />
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="../../_static/documentation_options.js?v=4cec7b04"></script>
+    <script src="../../_static/documentation_options.js?v=e2927b5d"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -133,7 +133,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.10.0.dev68+g56185d39f documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.10.0.dev69+g0d02d8890 documentation</p>
   
 </a></div>
     
@@ -435,8 +435,7 @@
                 <article class="bd-article">
                   
   <h1>Source code for mne_connectivity.base</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">copy</span><span class="p">,</span> <span class="n">deepcopy</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -564,8 +563,8 @@
 
     <span class="n">is_epoched</span> <span class="o">=</span> <span class="kc">True</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">events</span><span class="p">,</span> <span class="n">event_id</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">events</span><span class="p">,</span> <span class="n">event_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
         <span class="c1"># Epochs should have the events array that informs user of</span>
         <span class="c1"># sample points at which each Epoch was taken from.</span>
@@ -704,6 +703,10 @@
                 <span class="n">con_cls</span> <span class="o">=</span> <span class="n">SpectroTemporalConnectivity</span>
                 <span class="n">cls_kwargs</span><span class="p">[</span><span class="s2">"freqs"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">freqs</span>
                 <span class="n">cls_kwargs</span><span class="p">[</span><span class="s2">"times"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">times</span>
+            <span class="k">case</span> <span class="s2">"EpochVARConnectivity"</span><span class="p">:</span>
+                <span class="n">con_cls</span> <span class="o">=</span> <span class="n">VARConnectivity</span>
+                <span class="n">cls_kwargs</span><span class="p">[</span><span class="s2">"lags"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lags</span>
+                <span class="k">del</span> <span class="n">cls_kwargs</span><span class="p">[</span><span class="s2">"indices"</span><span class="p">]</span>  <span class="c1"># Will be set internally</span>
 
         <span class="k">return</span> <span class="n">con_cls</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">,</span> <span class="o">**</span><span class="n">cls_kwargs</span><span class="p">)</span>
 
@@ -725,8 +728,21 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">DynamicMixin</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Mixin class for VAR models."""</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s2">"indices"</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">"`indices` should not be provided for VAR models. These models are "</span>
+                <span class="s2">"expected to represent the interactions between all channels, making "</span>
+                <span class="s2">"`indices` implicitly 'all'."</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="s2">"components"</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                <span class="s2">"VAR models with multiple components are not currently supported."</span>
+            <span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">indices</span><span class="o">=</span><span class="s2">"all"</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">_check_is_var</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">"^var(?:_dynamic)?$"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">!=</span> <span class="s2">"var"</span><span class="p">:</span>
             <span class="n">warn</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">"The connectivity data comes from a method (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="si">}</span><span class="s2">) that is "</span>
                 <span class="s2">"not a recognised vector autoregressive (VAR) model. The output of "</span>
@@ -734,33 +750,32 @@
                 <span class="ne">UserWarning</span><span class="p">,</span>
             <span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">is_stable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">companion_mat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">companion</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigvals</span><span class="p">(</span><span class="n">companion_mat</span><span class="p">))</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">1.0</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">lags</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""The lags of the VAR model."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">xarray</span><span class="o">.</span><span class="n">coords</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"lags"</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
 
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_stable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Whether the VAR model is stable."""</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">eigvals</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">1.0</span>
+
+    <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">eigvals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Eigenvalues of the companion matrix for the VAR model."""</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigvals</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">companion</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">companion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""Generate block companion matrix for a vector autoregressive (VAR) model.</span>
-
-<span class="sd">        Returns the data matrix if the VAR model order (i.e., the number of lags) is 1.</span>
-<span class="sd">        """</span>
+<span class="w">        </span><span class="sd">"""Block companion matrix for the VAR model."""</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">.vector_ar.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_block_companion</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_is_var</span><span class="p">()</span>
 
-        <span class="k">if</span> <span class="s2">"components"</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dims</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-                <span class="s2">"Companion matrix generation is not currently supported for VAR "</span>
-                <span class="s2">"models with multiple components."</span>
-            <span class="p">)</span>
-
-        <span class="n">lags</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"lags"</span><span class="p">)</span>
+        <span class="n">n_lags</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="s2">"lags"</span><span class="p">])</span>
         <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="s2">"dense"</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">lags</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">data</span>
+        <span class="k">if</span> <span class="n">n_lags</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># return the coefficients without singleton lags</span>
+            <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_epoched</span><span class="p">:</span>
             <span class="n">n_epochs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_epochs</span>
@@ -769,12 +784,44 @@
             <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
         <span class="n">arrs</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_epochs</span><span class="p">):</span>
-            <span class="n">blocks</span> <span class="o">=</span> <span class="n">_block_companion</span><span class="p">([</span><span class="n">data</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="n">jdx</span><span class="p">]</span> <span class="k">for</span> <span class="n">jdx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">lags</span><span class="p">)])</span>
+            <span class="n">blocks</span> <span class="o">=</span> <span class="n">_block_companion</span><span class="p">([</span><span class="n">data</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="n">jdx</span><span class="p">]</span> <span class="k">for</span> <span class="n">jdx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_lags</span><span class="p">)])</span>
             <span class="n">arrs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">blocks</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_epoched</span><span class="p">:</span>
             <span class="n">arrs</span> <span class="o">=</span> <span class="n">arrs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">arrs</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">indices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Indices of connectivity data.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        indices : ``'all'``</span>
+<span class="sd">            VAR models represent the interactions between all channels.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">indices</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s2">"compact"</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Get connectivity data as a numpy array.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        output : ``'compact'`` | ``'raveled'`` | ``'dense'``</span>
+<span class="sd">            How to format the output:</span>
+
+<span class="sd">            - ``'raveled'`` will represent each connectivity matrix as a</span>
+<span class="sd">              ``(..., n_connections, ...)`` array.</span>
+<span class="sd">            - ``'dense'`` will return each connectivity matrix as a ``(..., n_nodes,</span>
+<span class="sd">              n_nodes, ...)`` array.</span>
+<span class="sd">            - ``'compact'`` (default) is an alias for ``'dense'``.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        data : array</span>
+<span class="sd">            The output connectivity data.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">output</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Predict samples on data using the vector autoregressive (VAR) model.</span>
@@ -819,12 +866,6 @@
         <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_epoched</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"For a time-varying VAR model, `data` must be a 3D array."</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="s2">"components"</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dims</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-                <span class="s2">"Prediction is not currently supported from VAR models with multiple "</span>
-                <span class="s2">"components."</span>
-            <span class="p">)</span>
-
         <span class="n">n_var</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_epochs</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_epoched</span> <span class="k">else</span> <span class="mi">1</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_epoched</span> <span class="ow">and</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">n_var</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
@@ -846,19 +887,19 @@
         <span class="c1"># prepare VAR model</span>
         <span class="n">n_epochs</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">n_times</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span>
         <span class="n">var_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">output</span><span class="o">=</span><span class="s2">"dense"</span><span class="p">)</span>
-        <span class="n">lags</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"lags"</span><span class="p">)</span>
+        <span class="n">n_lags</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="s2">"lags"</span><span class="p">])</span>
 
         <span class="c1"># reshape the coeffs for prediction (and add epochs dim if not present)</span>
-        <span class="n">var_model</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">var_model</span><span class="p">,</span> <span class="p">(</span><span class="n">n_var</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_nodes</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_nodes</span> <span class="o">*</span> <span class="n">lags</span><span class="p">))</span>
+        <span class="n">var_model</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">var_model</span><span class="p">,</span> <span class="p">(</span><span class="n">n_var</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_nodes</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_nodes</span> <span class="o">*</span> <span class="n">n_lags</span><span class="p">))</span>
 
         <span class="c1"># predict the data by applying forward model</span>
         <span class="n">predicted_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">lag_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">lags</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">lag_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_lags</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">epo_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_epochs</span><span class="p">):</span>
                 <span class="n">var_idx</span> <span class="o">=</span> <span class="n">epo_idx</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_epoched</span> <span class="k">else</span> <span class="mi">0</span>
-                <span class="n">bp</span> <span class="o">=</span> <span class="n">var_model</span><span class="p">[</span><span class="n">var_idx</span><span class="p">,</span> <span class="p">:,</span> <span class="p">(</span><span class="n">lag_idx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="p">::</span> <span class="n">lags</span><span class="p">]</span>
-                <span class="n">predicted_data</span><span class="p">[</span><span class="n">epo_idx</span><span class="p">,</span> <span class="p">:,</span> <span class="n">lags</span><span class="p">:]</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span>
-                    <span class="n">bp</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="n">epo_idx</span><span class="p">,</span> <span class="p">:,</span> <span class="p">(</span><span class="n">lags</span> <span class="o">-</span> <span class="n">lag_idx</span><span class="p">)</span> <span class="p">:</span> <span class="p">(</span><span class="n">n_times</span> <span class="o">-</span> <span class="n">lag_idx</span><span class="p">)]</span>
+                <span class="n">bp</span> <span class="o">=</span> <span class="n">var_model</span><span class="p">[</span><span class="n">var_idx</span><span class="p">,</span> <span class="p">:,</span> <span class="p">(</span><span class="n">lag_idx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="p">::</span> <span class="n">n_lags</span><span class="p">]</span>
+                <span class="n">predicted_data</span><span class="p">[</span><span class="n">epo_idx</span><span class="p">,</span> <span class="p">:,</span> <span class="n">n_lags</span><span class="p">:]</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span>
+                    <span class="n">bp</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="n">epo_idx</span><span class="p">,</span> <span class="p">:,</span> <span class="p">(</span><span class="n">n_lags</span> <span class="o">-</span> <span class="n">lag_idx</span><span class="p">)</span> <span class="p">:</span> <span class="p">(</span><span class="n">n_times</span> <span class="o">-</span> <span class="n">lag_idx</span><span class="p">)]</span>
                 <span class="p">)</span>
         <span class="k">if</span> <span class="n">data_ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>  <span class="c1"># remove unwanted epochs dim</span>
             <span class="n">predicted_data</span> <span class="o">=</span> <span class="n">predicted_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -891,20 +932,14 @@
 <span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_is_var</span><span class="p">()</span>
 
-        <span class="k">if</span> <span class="s2">"components"</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dims</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-                <span class="s2">"Simulation is not currently supported from VAR models with multiple "</span>
-                <span class="s2">"components."</span>
-            <span class="p">)</span>
-
         <span class="n">var_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">output</span><span class="o">=</span><span class="s2">"dense"</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_epoched</span><span class="p">:</span>
             <span class="n">var_model</span> <span class="o">=</span> <span class="n">var_model</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
         <span class="c1"># reshape the coeffs for simulation</span>
         <span class="n">n_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_nodes</span>
-        <span class="n">lags</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"lags"</span><span class="p">)</span>
-        <span class="n">var_model</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">var_model</span><span class="p">,</span> <span class="p">(</span><span class="n">n_nodes</span><span class="p">,</span> <span class="n">n_nodes</span> <span class="o">*</span> <span class="n">lags</span><span class="p">))</span>
+        <span class="n">n_lags</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="s2">"lags"</span><span class="p">])</span>
+        <span class="n">var_model</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">var_model</span><span class="p">,</span> <span class="p">(</span><span class="n">n_nodes</span><span class="p">,</span> <span class="n">n_nodes</span> <span class="o">*</span> <span class="n">n_lags</span><span class="p">))</span>
 
         <span class="c1"># set noise function</span>
         <span class="k">if</span> <span class="n">noise_func</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -913,20 +948,22 @@
             <span class="k">def</span><span class="w"> </span><span class="nf">noise_func</span><span class="p">():</span>
                 <span class="k">return</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_nodes</span><span class="p">))</span>
 
-        <span class="n">n</span> <span class="o">=</span> <span class="n">n_samples</span> <span class="o">+</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">lags</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">n_samples</span> <span class="o">+</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">n_lags</span>
 
         <span class="c1"># simulated data</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">n_nodes</span><span class="p">))</span>
         <span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">n_nodes</span><span class="p">))</span>
 
-        <span class="k">for</span> <span class="n">jdx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">lags</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">jdx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_lags</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
             <span class="n">e</span> <span class="o">=</span> <span class="n">noise_func</span><span class="p">()</span>
             <span class="n">res</span><span class="p">[</span><span class="n">jdx</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">e</span>
             <span class="n">data</span><span class="p">[</span><span class="n">jdx</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">e</span>
-            <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">lags</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
-                <span class="n">data</span><span class="p">[</span><span class="n">jdx</span><span class="p">,</span> <span class="p">:]</span> <span class="o">+=</span> <span class="n">var_model</span><span class="p">[:,</span> <span class="p">(</span><span class="n">idx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="p">::</span> <span class="n">lags</span><span class="p">]</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">jdx</span> <span class="o">-</span> <span class="n">idx</span><span class="p">,</span> <span class="p">:])</span>
+            <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_lags</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="n">data</span><span class="p">[</span><span class="n">jdx</span><span class="p">,</span> <span class="p">:]</span> <span class="o">+=</span> <span class="n">var_model</span><span class="p">[:,</span> <span class="p">(</span><span class="n">idx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="p">::</span> <span class="n">n_lags</span><span class="p">]</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span>
+                    <span class="n">data</span><span class="p">[</span><span class="n">jdx</span> <span class="o">-</span> <span class="n">idx</span><span class="p">,</span> <span class="p">:]</span>
+                <span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="mi">10</span> <span class="o">*</span> <span class="n">lags</span> <span class="p">:,</span> <span class="p">:]</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="mi">10</span> <span class="o">*</span> <span class="n">n_lags</span> <span class="p">:,</span> <span class="p">:]</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">BaseConnectivity</span><span class="p">:</span>
@@ -1008,14 +1045,14 @@
         <span class="n">r</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="w"> </span><span class="ow">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="kc">None</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">'Unknown method'</span><span class="si">}</span><span class="s2"> | "</span>
 
         <span class="n">dim_info</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">dim</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"epochs"</span><span class="p">,</span> <span class="s2">"connections"</span><span class="p">,</span> <span class="s2">"components"</span><span class="p">,</span> <span class="s2">"freqs"</span><span class="p">,</span> <span class="s2">"times"</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">dim</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"epochs"</span><span class="p">,</span> <span class="s2">"connections"</span><span class="p">,</span> <span class="s2">"components"</span><span class="p">,</span> <span class="s2">"freqs"</span><span class="p">,</span> <span class="s2">"times"</span><span class="p">,</span> <span class="s2">"lags"</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">dim</span> <span class="o">==</span> <span class="s2">"connections"</span><span class="p">:</span>
                 <span class="n">dim_info</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_connections</span><span class="si">}</span><span class="s2"> connections"</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">dim</span> <span class="o">==</span> <span class="s2">"freqs"</span> <span class="ow">and</span> <span class="n">dim</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dims</span><span class="p">:</span>
                 <span class="n">dim_info</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">freqs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">freqs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> Hz"</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">dim</span> <span class="o">==</span> <span class="s2">"times"</span> <span class="ow">and</span> <span class="n">dim</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dims</span><span class="p">:</span>
                 <span class="n">dim_info</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">times</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">times</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> s"</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">dim</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dims</span><span class="p">:</span>  <span class="c1"># epochs or components</span>
+            <span class="k">elif</span> <span class="n">dim</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dims</span><span class="p">:</span>  <span class="c1"># epochs/components/lags</span>
                 <span class="n">dim_info</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="n">dim</span><span class="p">])</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">dim</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="n">dim_info</span> <span class="o">=</span> <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dim_info</span><span class="p">)</span> <span class="o">+</span> <span class="s2">" | "</span>
         <span class="n">r</span> <span class="o">+=</span> <span class="n">dim_info</span>
@@ -1050,6 +1087,9 @@
         <span class="k">if</span> <span class="s2">"times"</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
             <span class="n">coords</span><span class="p">[</span><span class="s2">"times"</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"times"</span><span class="p">)</span>
             <span class="n">dims</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"times"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">"lags"</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">coords</span><span class="p">[</span><span class="s2">"lags"</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"lags"</span><span class="p">)</span>
+            <span class="n">dims</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"lags"</span><span class="p">)</span>
 
         <span class="c1"># convert all numpy arrays to lists</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -1447,7 +1487,7 @@
 <div class="viewcode-block" id="Connectivity">
 <a class="viewcode-back" href="../../generated/mne_connectivity.Connectivity.html#mne_connectivity.Connectivity">[docs]</a>
 <span class="nd">@fill_doc</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">Connectivity</span><span class="p">(</span><span class="n">BaseConnectivity</span><span class="p">,</span> <span class="n">DynamicMixin</span><span class="p">,</span> <span class="n">NonEpochMixin</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Connectivity</span><span class="p">(</span><span class="n">BaseConnectivity</span><span class="p">,</span> <span class="n">NonEpochMixin</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Connectivity class without additional dimensions.</span>
 
 <span class="sd">    The underlying data is an array of shape</span>
@@ -1465,7 +1505,7 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    mne_connectivity.vector_auto_regression</span>
+<span class="sd">    mne_connectivity.wsmi</span>
 <span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -1547,7 +1587,7 @@
 <div class="viewcode-block" id="TemporalConnectivity">
 <a class="viewcode-back" href="../../generated/mne_connectivity.TemporalConnectivity.html#mne_connectivity.TemporalConnectivity">[docs]</a>
 <span class="nd">@fill_doc</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">TemporalConnectivity</span><span class="p">(</span><span class="n">BaseConnectivity</span><span class="p">,</span> <span class="n">TimeMixin</span><span class="p">,</span> <span class="n">DynamicMixin</span><span class="p">,</span> <span class="n">NonEpochMixin</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TemporalConnectivity</span><span class="p">(</span><span class="n">BaseConnectivity</span><span class="p">,</span> <span class="n">TimeMixin</span><span class="p">,</span> <span class="n">NonEpochMixin</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Connectivity class with time dimension.</span>
 
 <span class="sd">    The underlying data is an array of shape</span>
@@ -1647,10 +1687,55 @@
 
 
 
+<div class="viewcode-block" id="VARConnectivity">
+<a class="viewcode-back" href="../../generated/mne_connectivity.VARConnectivity.html#mne_connectivity.VARConnectivity">[docs]</a>
+<span class="nd">@fill_doc</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">VARConnectivity</span><span class="p">(</span><span class="n">DynamicMixin</span><span class="p">,</span> <span class="n">BaseConnectivity</span><span class="p">,</span> <span class="n">NonEpochMixin</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Connectivity class for vector autoregressive models (VAR).</span>
+
+<span class="sd">    The underlying data is an array of shape ``%(data_shape_VARConnectivity)s``.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    %(data_VARConnectivity)s</span>
+<span class="sd">    %(lags)s</span>
+<span class="sd">    %(n_nodes)s</span>
+<span class="sd">    %(names)s</span>
+<span class="sd">    %(method)s</span>
+<span class="sd">    %(n_epochs_used)s</span>
+<span class="sd">    %(connectivity_kwargs)s</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    mne_connectivity.vector_auto_regression</span>
+<span class="sd">    """</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">,</span>
+        <span class="n">lags</span><span class="p">,</span>
+        <span class="n">n_nodes</span><span class="p">,</span>
+        <span class="n">names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">method</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">n_epochs_used</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+            <span class="n">lags</span><span class="o">=</span><span class="n">lags</span><span class="p">,</span>
+            <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
+            <span class="n">n_nodes</span><span class="o">=</span><span class="n">n_nodes</span><span class="p">,</span>
+            <span class="n">n_epochs_used</span><span class="o">=</span><span class="n">n_epochs_used</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+
 <div class="viewcode-block" id="EpochConnectivity">
 <a class="viewcode-back" href="../../generated/mne_connectivity.EpochConnectivity.html#mne_connectivity.EpochConnectivity">[docs]</a>
 <span class="nd">@fill_doc</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">EpochConnectivity</span><span class="p">(</span><span class="n">EpochMixin</span><span class="p">,</span> <span class="n">BaseConnectivity</span><span class="p">,</span> <span class="n">DynamicMixin</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EpochConnectivity</span><span class="p">(</span><span class="n">EpochMixin</span><span class="p">,</span> <span class="n">BaseConnectivity</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Connectivity class with epoch dimension.</span>
 
 <span class="sd">    This underlying data is an array of shape</span>
@@ -1669,7 +1754,7 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    mne_connectivity.vector_auto_regression</span>
+<span class="sd">    mne_connectivity.wsmi</span>
 <span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -1754,7 +1839,7 @@
 <div class="viewcode-block" id="EpochTemporalConnectivity">
 <a class="viewcode-back" href="../../generated/mne_connectivity.EpochTemporalConnectivity.html#mne_connectivity.EpochTemporalConnectivity">[docs]</a>
 <span class="nd">@fill_doc</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">EpochTemporalConnectivity</span><span class="p">(</span><span class="n">EpochMixin</span><span class="p">,</span> <span class="n">BaseConnectivity</span><span class="p">,</span> <span class="n">TimeMixin</span><span class="p">,</span> <span class="n">DynamicMixin</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EpochTemporalConnectivity</span><span class="p">(</span><span class="n">EpochMixin</span><span class="p">,</span> <span class="n">BaseConnectivity</span><span class="p">,</span> <span class="n">TimeMixin</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Connectivity class with epoch and time dimensions.</span>
 
 <span class="sd">    The underlying data is an array of shape</span>
@@ -1860,6 +1945,54 @@
 
 
 
+<div class="viewcode-block" id="EpochVARConnectivity">
+<a class="viewcode-back" href="../../generated/mne_connectivity.EpochVARConnectivity.html#mne_connectivity.EpochVARConnectivity">[docs]</a>
+<span class="nd">@fill_doc</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EpochVARConnectivity</span><span class="p">(</span><span class="n">EpochMixin</span><span class="p">,</span> <span class="n">DynamicMixin</span><span class="p">,</span> <span class="n">BaseConnectivity</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Connectivity class for vector autoregressive models (VAR) with epoch dimension.</span>
+
+<span class="sd">    The underlying data is an array of shape ``%(data_shape_EpochVARConnectivity)s``.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    %(data_EpochVARConnectivity)s</span>
+<span class="sd">    %(lags)s</span>
+<span class="sd">    %(n_nodes)s</span>
+<span class="sd">    %(names)s</span>
+<span class="sd">    %(method)s</span>
+<span class="sd">    %(events)s</span>
+<span class="sd">    %(event_id)s</span>
+<span class="sd">    %(connectivity_kwargs)s</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    mne_connectivity.vector_auto_regression</span>
+<span class="sd">    """</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">,</span>
+        <span class="n">lags</span><span class="p">,</span>
+        <span class="n">n_nodes</span><span class="p">,</span>
+        <span class="n">names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">method</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">events</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">event_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+            <span class="n">lags</span><span class="o">=</span><span class="n">lags</span><span class="p">,</span>
+            <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
+            <span class="n">n_nodes</span><span class="o">=</span><span class="n">n_nodes</span><span class="p">,</span>
+            <span class="n">events</span><span class="o">=</span><span class="n">events</span><span class="p">,</span>
+            <span class="n">event_id</span><span class="o">=</span><span class="n">event_id</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+
 <span class="k">def</span><span class="w"> </span><span class="nf">_combine</span><span class="p">(</span>
     <span class="n">con</span><span class="p">:</span> <span class="n">BaseConnectivity</span><span class="p">,</span>
     <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Callable</span><span class="p">,</span>
@@ -1946,7 +2079,7 @@
 
   <p class="copyright">
     
-      © Copyright 2021-2026, MNE Developers. Last updated on 2026-11-23.
+      © Copyright 2021-2026, MNE Developers. Last updated on 2026-11-25.
       <br/>
     
   </p>
