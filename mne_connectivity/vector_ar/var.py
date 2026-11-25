@@ -96,21 +96,6 @@ def vector_auto_regression(
     This results in one VAR model for each epoch. This is done according to the model in
     :footcite:`li_linear_2017`.
 
-    *b* is of shape [m, m*p], with sub matrices arranged as follows:
-
-    +------+------+------+------+
-    | b_00 | b_01 | ...  | b_0m |
-    +------+------+------+------+
-    | b_10 | b_11 | ...  | b_1m |
-    +------+------+------+------+
-    | ...  | ...  | ...  | ...  |
-    +------+------+------+------+
-    | b_m0 | b_m1 | ...  | b_mm |
-    +------+------+------+------+
-
-    Each sub matrix b_ij is a column vector of length p that contains the filter
-    coefficients from channel j (source) to channel i (sink).
-
     In order to optimize RAM usage, the estimating equations are set up by iterating
     over sample points. This assumes that there are in general more sample points than
     channels. You should not estimate a VAR model using less sample points than
