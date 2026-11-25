@@ -166,7 +166,7 @@ def vector_auto_regression(
         )
 
     model_kwargs = dict(
-        lags=np.arange(lags),
+        lags=np.arange(1, lags + 1),
         n_nodes=n_nodes,
         names=names,
         method="var",

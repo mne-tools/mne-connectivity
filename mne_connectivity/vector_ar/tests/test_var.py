@@ -268,10 +268,15 @@ def test_vector_auto_regression():
     assert_array_almost_equal(
         conn.get_data().mean(axis=0), single_conn.get_data(), decimal=1
     )
+    assert_array_equal(single_conn.lags, np.array([1]))  # check lags is singleton
 
     # compute single var with multiple lags
-    single_conn_plags = vector_auto_regression(data, model="avg-epochs", lags=2)
+    n_lags = 2
+    single_conn_plags = vector_auto_regression(data, model="avg-epochs", lags=n_lags)
     single_conn_plags.get_data("dense")  # just check data can be reshaped properly
+    assert_array_equal(
+        single_conn_plags.lags, np.arange(1, n_lags + 1)
+    )  # check lags start from 1
 
     # compute residuals
     residuals = data - parr_conn.predict(data)
