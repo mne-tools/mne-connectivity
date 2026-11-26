@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_connectivity.viz._3d &#8212; MNE-Connectivity 0.10.0.dev69+g0d02d8890 documentation</title>
+    <title>mne_connectivity.viz._3d &#8212; MNE-Connectivity 0.10.0.dev70+gcaf96d1dd documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="../../../_static/documentation_options.js?v=e2927b5d"></script>
+    <script src="../../../_static/documentation_options.js?v=a050794b"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -133,7 +133,7 @@
   
   
   
-    <p class="title logo__title">MNE-Connectivity 0.10.0.dev69+g0d02d8890 documentation</p>
+    <p class="title logo__title">MNE-Connectivity 0.10.0.dev70+gcaf96d1dd documentation</p>
   
 </a></div>
     
@@ -448,10 +448,17 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">inspect</span>
 
+<span class="kn">import</span><span class="w"> </span><span class="nn">mne</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne.io.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">FIFF</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">mne.io.pick</span><span class="w"> </span><span class="kn">import</span> <span class="n">_picks_to_idx</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_validate_type</span><span class="p">,</span> <span class="n">fill_doc</span><span class="p">,</span> <span class="n">verbose</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.helpers</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_check_data_is_real</span><span class="p">,</span>
+    <span class="n">_check_info</span><span class="p">,</span>
+    <span class="n">_handle_data_and_indices</span><span class="p">,</span>
+    <span class="n">_handle_picks</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="n">verbose_dec</span> <span class="o">=</span> <span class="n">verbose</span>
 <span class="n">FIDUCIAL_ORDER</span> <span class="o">=</span> <span class="p">(</span><span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_LPA</span><span class="p">,</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_NASION</span><span class="p">,</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_RPA</span><span class="p">)</span>
@@ -475,15 +482,35 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    info : mne.Info</span>
-<span class="sd">        The measurement info.</span>
-<span class="sd">    con : array, shape (n_channels, n_channels) | Connectivity</span>
+<span class="sd">        The measurement info, containing the locations of all channels in</span>
+<span class="sd">        ``con.names``. Connections involving channels marked as bad in ``info`` are</span>
+<span class="sd">        not shown.</span>
+<span class="sd">    con : ~mne_connectivity.Connectivity</span>
 <span class="sd">        The connectivity data to plot.</span>
-<span class="sd">    %(picks_good_data)s</span>
-<span class="sd">        Indices of selected channels.</span>
+
+<span class="sd">        .. versionchanged:: 1.0</span>
+<span class="sd">           Arrays are no longer supported.</span>
+<span class="sd">    picks : str | array_like | slice | None</span>
+<span class="sd">        Channels to include in the plot. Connections involving any of these channels</span>
+<span class="sd">        are shown. Slices and lists of integers are interpreted as indices of the</span>
+<span class="sd">        channels in ``con.names``. In lists, channel type strings (e.g.,</span>
+<span class="sd">        ``['meg', 'eeg']``) pick channels of those types, and channel name strings</span>
+<span class="sd">        (e.g., ``['MEG0111', 'MEG2623']``) pick the given channels. Can also be the</span>
+<span class="sd">        string values ``'all'`` to pick all channels, or ``'data'`` to pick data</span>
+<span class="sd">        channels. None (default) picks all good channels.</span>
+
+<span class="sd">        .. versionchanged:: 1.0</span>
+<span class="sd">           Selects the channels whose connections are shown, as in</span>
+<span class="sd">           :func:`~mne_connectivity.viz.plot_connectivity`, instead of the channels</span>
+<span class="sd">           in ``info`` that correspond to the rows of an array.</span>
 <span class="sd">    cbar_label : str</span>
 <span class="sd">        Label for the colorbar.</span>
 <span class="sd">    n_con : int</span>
-<span class="sd">        Number of strongest connections shown (default 20).</span>
+<span class="sd">        Number of strongest connections shown (default 20). Strength is the absolute</span>
+<span class="sd">        value of the connectivity. Self-connections are ignored if they are the same</span>
+<span class="sd">        for all channels (e.g., coherence), and symmetric data is counted once per</span>
+<span class="sd">        pair of channels. Connections between sensors closer than ``min_distance`` are</span>
+<span class="sd">        then removed, so fewer than ``n_con`` connections may be shown.</span>
 <span class="sd">    cmap : str | instance of matplotlib.colors.Colormap</span>
 <span class="sd">        Colormap for coloring connections by strength. If a str, must be a valid</span>
 <span class="sd">        Matplotlib colormap (i.e. a valid key of `matplotlib.colormaps`). Default is</span>
@@ -496,32 +523,21 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    fig : instance of Renderer</span>
+<span class="sd">    fig : instance of mne.viz.Figure3D</span>
 <span class="sd">        The 3D figure.</span>
 <span class="sd">    """</span>
-    <span class="n">_validate_type</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="s2">"info"</span><span class="p">)</span>
-
     <span class="kn">from</span><span class="w"> </span><span class="nn">mne.viz.backends.renderer</span><span class="w"> </span><span class="kn">import</span> <span class="n">_get_renderer</span>
 
-    <span class="kn">from</span><span class="w"> </span><span class="nn">mne_connectivity.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseConnectivity</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">mne_connectivity</span><span class="w"> </span><span class="kn">import</span> <span class="n">Connectivity</span>
 
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="n">BaseConnectivity</span><span class="p">):</span>
-        <span class="n">con</span> <span class="o">=</span> <span class="n">con</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="s2">"dense"</span><span class="p">)</span>
-
-    <span class="n">renderer</span> <span class="o">=</span> <span class="n">_get_renderer</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">600</span><span class="p">,</span> <span class="mi">600</span><span class="p">),</span> <span class="n">bgcolor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">))</span>
-
-    <span class="k">if</span> <span class="n">con</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">2</span> <span class="ow">or</span> <span class="n">con</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">con</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="s2">"Connectivity data must be a 2D array of shape (n_channels, n_channels), "</span>
-            <span class="sa">f</span><span class="s2">"got shape </span><span class="si">{</span><span class="n">con</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">"</span>
-        <span class="p">)</span>
-
-    <span class="n">picks</span> <span class="o">=</span> <span class="n">_picks_to_idx</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">picks</span><span class="p">)</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">picks</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">con</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">"The number of channels picked (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">picks</span><span class="p">)</span><span class="si">}</span><span class="s2">) does not correspond to the "</span>
-            <span class="sa">f</span><span class="s2">"size of the connectivity data (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">con</span><span class="p">)</span><span class="si">}</span><span class="s2">)"</span>
-        <span class="p">)</span>
+    <span class="n">_validate_type</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="s2">"info"</span><span class="p">)</span>
+    <span class="n">_validate_type</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="n">Connectivity</span><span class="p">,</span> <span class="s2">"`con`"</span><span class="p">,</span> <span class="s2">"Connectivity"</span><span class="p">)</span>
+    <span class="n">_check_data_is_real</span><span class="p">(</span><span class="n">con</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="s2">"raveled"</span><span class="p">))</span>
+    <span class="n">_check_info</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">con</span><span class="o">.</span><span class="n">names</span><span class="p">)</span>
+    <span class="c1"># keep only the channels in con, in the same order, for the sensor locations</span>
+    <span class="n">info</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">pick_info</span><span class="p">(</span>
+        <span class="n">info</span><span class="p">,</span> <span class="n">mne</span><span class="o">.</span><span class="n">pick_channels</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s2">"ch_names"</span><span class="p">],</span> <span class="n">con</span><span class="o">.</span><span class="n">names</span><span class="p">,</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">min_distance</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
@@ -529,29 +545,14 @@
             <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">min_distance</span><span class="si">}</span><span class="s2"> m"</span>
         <span class="p">)</span>
 
-    <span class="c1"># Plot the sensor locations</span>
-    <span class="n">sens_loc</span> <span class="o">=</span> <span class="p">[</span><span class="n">info</span><span class="p">[</span><span class="s2">"chs"</span><span class="p">][</span><span class="n">k</span><span class="p">][</span><span class="s2">"loc"</span><span class="p">][:</span><span class="mi">3</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">picks</span><span class="p">]</span>
-    <span class="n">sens_loc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">sens_loc</span><span class="p">)</span>
-
-    <span class="n">renderer</span><span class="o">.</span><span class="n">sphere</span><span class="p">(</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">c_</span><span class="p">[</span><span class="n">sens_loc</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">sens_loc</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">sens_loc</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]],</span>
-        <span class="n">color</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
-        <span class="n">opacity</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-        <span class="n">scale</span><span class="o">=</span><span class="mf">0.005</span><span class="p">,</span>
-    <span class="p">)</span>
-
     <span class="c1"># Get the strongest n_con connections</span>
-    <span class="n">threshold</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">)[</span><span class="o">-</span><span class="n">n_con</span><span class="p">]</span>
-    <span class="n">ii</span><span class="p">,</span> <span class="n">jj</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">con</span> <span class="o">&gt;=</span> <span class="n">threshold</span><span class="p">)</span>
+    <span class="n">ii</span><span class="p">,</span> <span class="n">jj</span><span class="p">,</span> <span class="n">con_val</span> <span class="o">=</span> <span class="n">_get_strongest_connections</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="n">info</span><span class="p">,</span> <span class="n">n_con</span><span class="p">,</span> <span class="n">picks</span><span class="o">=</span><span class="n">picks</span><span class="p">)</span>
 
     <span class="c1"># Remove close connections</span>
-    <span class="n">con_nodes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
-    <span class="n">con_val</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
-    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ii</span><span class="p">,</span> <span class="n">jj</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">sens_loc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">sens_loc</span><span class="p">[</span><span class="n">j</span><span class="p">])</span> <span class="o">&gt;</span> <span class="n">min_distance</span><span class="p">:</span>
-            <span class="n">con_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">))</span>
-            <span class="n">con_val</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">con</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">])</span>
-    <span class="n">con_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">con_val</span><span class="p">)</span>
+    <span class="n">sens_loc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">ch</span><span class="p">[</span><span class="s2">"loc"</span><span class="p">][:</span><span class="mi">3</span><span class="p">]</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">info</span><span class="p">[</span><span class="s2">"chs"</span><span class="p">]])</span>
+    <span class="n">far</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">sens_loc</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span> <span class="o">-</span> <span class="n">sens_loc</span><span class="p">[</span><span class="n">jj</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">min_distance</span>
+    <span class="n">con_nodes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">ii</span><span class="p">[</span><span class="n">far</span><span class="p">],</span> <span class="n">jj</span><span class="p">[</span><span class="n">far</span><span class="p">]))</span>
+    <span class="n">con_val</span> <span class="o">=</span> <span class="n">con_val</span><span class="p">[</span><span class="n">far</span><span class="p">]</span>
 
     <span class="k">if</span> <span class="n">con_val</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
@@ -559,6 +560,15 @@
             <span class="s2">"apart. Try decreasing `min_distance` or increasing `n_con`, and check "</span>
             <span class="s2">"that the coordinates of your channels in `info` are not NaNs"</span>
         <span class="p">)</span>
+
+    <span class="c1"># Plot the sensor locations, only once all errors have been checked</span>
+    <span class="n">renderer</span> <span class="o">=</span> <span class="n">_get_renderer</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">600</span><span class="p">,</span> <span class="mi">600</span><span class="p">),</span> <span class="n">bgcolor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">))</span>
+    <span class="n">renderer</span><span class="o">.</span><span class="n">sphere</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">c_</span><span class="p">[</span><span class="n">sens_loc</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">sens_loc</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">sens_loc</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]],</span>
+        <span class="n">color</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+        <span class="n">opacity</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">scale</span><span class="o">=</span><span class="mf">0.005</span><span class="p">,</span>
+    <span class="p">)</span>
 
     <span class="c1"># Show the connections as tubes between sensors</span>
     <span class="n">vmax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">con_val</span><span class="p">)</span>
@@ -588,9 +598,7 @@
         <span class="n">kwargs</span><span class="p">[</span><span class="s2">"scale"</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.005</span>
     <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes_shown</span><span class="p">:</span>
         <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">sens_loc</span><span class="p">[</span><span class="n">node</span><span class="p">]</span>
-        <span class="n">renderer</span><span class="o">.</span><span class="n">text3d</span><span class="p">(</span>
-            <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">info</span><span class="p">[</span><span class="s2">"ch_names"</span><span class="p">][</span><span class="n">picks</span><span class="p">[</span><span class="n">node</span><span class="p">]],</span> <span class="n">color</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span>
-        <span class="p">)</span>
+        <span class="n">renderer</span><span class="o">.</span><span class="n">text3d</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">con</span><span class="o">.</span><span class="n">names</span><span class="p">[</span><span class="n">node</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="n">renderer</span><span class="o">.</span><span class="n">set_camera</span><span class="p">(</span>
         <span class="n">azimuth</span><span class="o">=-</span><span class="mf">88.7</span><span class="p">,</span>
@@ -601,6 +609,28 @@
     <span class="n">renderer</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">renderer</span><span class="o">.</span><span class="n">scene</span><span class="p">()</span></div>
 
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_strongest_connections</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="n">info</span><span class="p">,</span> <span class="n">n_con</span><span class="p">,</span> <span class="n">picks</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Get the seeds, targets, and values of the strongest connections to plot.</span>
+
+<span class="sd">    Strength is the absolute value. Trivial self-connections, the duplicate half of</span>
+<span class="sd">    symmetric data, connections of bad channels, and connections not involving any</span>
+<span class="sd">    picked channel are dropped beforehand. ``info`` must contain exactly the channels</span>
+<span class="sd">    in ``con.names``, in the same order.</span>
+<span class="sd">    """</span>
+    <span class="n">data</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">is_multivar</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">duplicate_cons_mask</span> <span class="o">=</span> <span class="n">_handle_data_and_indices</span><span class="p">(</span>
+        <span class="n">con</span><span class="p">,</span> <span class="n">info</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">is_multivar</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Multivariate connectivity is not supported."</span><span class="p">)</span>
+    <span class="n">keep</span> <span class="o">=</span> <span class="o">~</span><span class="n">duplicate_cons_mask</span>
+    <span class="n">picked</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+    <span class="n">picked</span><span class="p">[</span><span class="n">_handle_picks</span><span class="p">(</span><span class="n">picks</span><span class="p">,</span> <span class="s2">"bads"</span><span class="p">,</span> <span class="n">info</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">is_multivar</span><span class="p">,</span> <span class="s2">"both"</span><span class="p">)]</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">keep</span> <span class="o">&amp;=</span> <span class="n">picked</span>
+    <span class="n">data</span><span class="p">,</span> <span class="n">seeds</span><span class="p">,</span> <span class="n">targets</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">keep</span><span class="p">],</span> <span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">keep</span><span class="p">],</span> <span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">keep</span><span class="p">]</span>
+    <span class="n">order</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">kind</span><span class="o">=</span><span class="s2">"stable"</span><span class="p">)[:</span><span class="n">n_con</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">seeds</span><span class="p">[</span><span class="n">order</span><span class="p">],</span> <span class="n">targets</span><span class="p">[</span><span class="n">order</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="n">order</span><span class="p">]</span>
 </pre></div>
 
                 </article>
@@ -642,7 +672,7 @@
 
   <p class="copyright">
     
-      © Copyright 2021-2026, MNE Developers. Last updated on 2026-11-25.
+      © Copyright 2021-2026, MNE Developers. Last updated on 2026-11-26.
       <br/>
     
   </p>
