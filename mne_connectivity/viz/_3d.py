@@ -72,10 +72,6 @@ def plot_sensors_connectivity(
         for all channels (e.g., coherence), and symmetric data is counted once per
         pair of channels. Connections between sensors closer than ``min_distance`` are
         then removed, so fewer than ``n_con`` connections may be shown.
-
-        .. versionchanged:: 1.0
-           Self-connections and the duplicate half of symmetric data are ignored, and
-           strength is the absolute value.
     cmap : str | instance of matplotlib.colors.Colormap
         Colormap for coloring connections by strength. If a str, must be a valid
         Matplotlib colormap (i.e. a valid key of `matplotlib.colormaps`). Default is
