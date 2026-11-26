@@ -91,7 +91,7 @@ def _handle_data_and_indices(con, ch_info):
     data = data[indices]
     bad_idcs = []
     if ch_info is not None:
-        bad_idcs = [con.names.index(bad) for bad in ch_info["bads"]]
+        bad_idcs = [con.names.index(bad) for bad in ch_info["bads"] if bad in con.names]
     if len(bad_idcs) > 0:
         good_con_mask = np.ones(data.shape[0], dtype=bool)
         for con_idx, (seed, target) in enumerate(zip(*indices)):
