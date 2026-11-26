@@ -135,6 +135,15 @@ def test_get_strongest_connections():
     assert_array_equal([seeds, targets], [[3], [2]])
     assert_array_equal(values, [0.5])
 
+    # picks keeps the connections involving any of the picked channels
+    dense = np.arange(16.0).reshape(4, 4)
+    dense = dense + dense.T  # symmetric
+    np.fill_diagonal(dense, 0.0)
+    seeds, targets, _ = _get_strongest_connections(
+        all_to_all(dense), info, 6, picks=["a"]
+    )
+    assert_array_equal(np.sort([seeds, targets], axis=0).T, [[0, 3], [0, 2], [0, 1]])
+
     # explicit indices are used as given
     con = Connectivity(
         np.array([0.3, -0.6]),

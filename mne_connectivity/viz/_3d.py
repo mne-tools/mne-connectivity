@@ -16,7 +16,12 @@ import numpy as np
 from mne.io.constants import FIFF
 from mne.utils import _validate_type, fill_doc, verbose
 
-from .helpers import _check_data_is_real, _check_info, _handle_data_and_indices
+from .helpers import (
+    _check_data_is_real,
+    _check_info,
+    _handle_data_and_indices,
+    _handle_picks,
+)
 
 verbose_dec = verbose
 FIDUCIAL_ORDER = (FIFF.FIFFV_POINT_LPA, FIFF.FIFFV_POINT_NASION, FIFF.FIFFV_POINT_RPA)
@@ -26,6 +31,7 @@ FIDUCIAL_ORDER = (FIFF.FIFFV_POINT_LPA, FIFF.FIFFV_POINT_NASION, FIFF.FIFFV_POIN
 def plot_sensors_connectivity(
     info,
     con,
+    picks=None,
     *,
     cbar_label="Connectivity",
     n_con=20,
@@ -44,8 +50,20 @@ def plot_sensors_connectivity(
         The connectivity data to plot.
 
         .. versionchanged:: 1.0
-           Arrays are no longer supported, and the ``picks`` parameter was removed:
-           the channels are taken from ``con.names``.
+           Arrays are no longer supported.
+    picks : str | array_like | slice | None
+        Channels to include in the plot. Connections involving any of these channels
+        are shown. Slices and lists of integers are interpreted as indices of the
+        channels in ``con.names``. In lists, channel type strings (e.g.,
+        ``['meg', 'eeg']``) pick channels of those types, and channel name strings
+        (e.g., ``['MEG0111', 'MEG2623']``) pick the given channels. Can also be the
+        string values ``'all'`` to pick all channels, or ``'data'`` to pick data
+        channels. None (default) picks all good channels.
+
+        .. versionchanged:: 1.0
+           Selects the channels whose connections are shown, as in
+           :func:`~mne_connectivity.viz.plot_connectivity`, instead of the channels
+           in ``info`` that correspond to the rows of an array.
     cbar_label : str
         Label for the colorbar.
     n_con : int
@@ -93,7 +111,7 @@ def plot_sensors_connectivity(
         )
 
     # Get the strongest n_con connections
-    ii, jj, con_val = _get_strongest_connections(con, info, n_con)
+    ii, jj, con_val = _get_strongest_connections(con, info, n_con, picks=picks)
 
     # Remove close connections
     sens_loc = np.array([ch["loc"][:3] for ch in info["chs"]])
@@ -157,11 +175,13 @@ def plot_sensors_connectivity(
     return renderer.scene()
 
 
-def _get_strongest_connections(con, info, n_con):
+def _get_strongest_connections(con, info, n_con, picks=None):
     """Get the seeds, targets, and values of the strongest connections to plot.
 
     Strength is the absolute value. Trivial self-connections, the duplicate half of
-    symmetric data, and connections of bad channels are dropped beforehand.
+    symmetric data, connections of bad channels, and connections not involving any
+    picked channel are dropped beforehand. ``info`` must contain exactly the channels
+    in ``con.names``, in the same order.
     """
     data, indices, is_multivar, _, duplicate_cons_mask = _handle_data_and_indices(
         con, info
@@ -169,6 +189,9 @@ def _get_strongest_connections(con, info, n_con):
     if is_multivar:
         raise ValueError("Multivariate connectivity is not supported.")
     keep = ~duplicate_cons_mask
+    picked = np.zeros(len(data), dtype=bool)
+    picked[_handle_picks(picks, "bads", info, indices, is_multivar, "both")] = True
+    keep &= picked
     data, seeds, targets = data[keep], indices[0][keep], indices[1][keep]
     order = np.argsort(-np.abs(data), kind="stable")[:n_con]
     return seeds[order], targets[order], data[order]
