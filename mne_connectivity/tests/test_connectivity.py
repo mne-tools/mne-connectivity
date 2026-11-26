@@ -923,6 +923,72 @@ def test_combine(conn_cls, n_components, method):
 
 
 @pytest.mark.parametrize(
+    "method, freq_value, time_value",
+    [("mean", 3, 14.5), ("median", 2, 14.5), (partial(np.max, axis=2), 6, 21)],
+)
+def test_combine_spatial_maps(method, freq_value, time_value, tmp_path):
+    """Combine spatial maps over the selected bins without mixing channels."""
+    # Epoch, connection, frequency, time. Each spatial map also has
+    # a seed/target and a channel dimension, which must survive both reductions.
+    grid = np.array([0, 1, 2, 6, 30])[:, None] + np.array([0, 8, 21])
+    offsets = np.arange(8).reshape(2, 2, 1, 2) * 100
+    patterns = offsets[..., None, None] + grid
+    con = EpochSpectroTemporalConnectivity(
+        data=np.broadcast_to(grid, (2, 1, 5, 3)),
+        n_nodes=4,
+        indices=([[0, 1]], [[2, 3]]),
+        freqs=np.arange(5),
+        times=np.arange(3),
+        patterns=patterns,
+        filters=patterns + 50,
+    )
+    by_freq = con.combine_freqs(method, fmin=1, fmax=3)
+    combined = by_freq.combine_times(method, tmin=1)
+    combined.save(tmp_path / "combined.nc")
+    reloaded = read_connectivity(tmp_path / "combined.nc")
+    for key, offset in (("patterns", offsets), ("filters", offsets + 50)):
+        assert_allclose(con.attrs[key], offset[..., None, None] + grid)
+        assert_allclose(by_freq.attrs[key], offset[..., None] + freq_value + [0, 8, 21])
+        assert_allclose(combined.attrs[key], offset + freq_value + time_value)
+        assert_allclose(reloaded.attrs[key], combined.attrs[key])
+
+
+@pytest.mark.parametrize("after_epochs", [False, True])
+@pytest.mark.parametrize("reducer", ["sum", "argmax", "weighted"])
+def test_combine_ragged_patterns(reducer, after_epochs):
+    """Exclude padding, including when the scores no longer have an epoch axis."""
+    # The second seed has two channels, the first has only one.
+    offset = np.arange(2 * 3 * 2 * 2, dtype=float).reshape(2, 3, 2, 2)
+    offset[0, :, 0, 1] = np.nan
+    patterns = offset[..., None] + [9, 2, 6, 1]
+    con = EpochSpectralConnectivity(
+        data=np.ones((3, 2, 4)),
+        n_nodes=4,
+        indices=([[0], [0, 1]], [[2, 3], [2, 3]]),
+        freqs=np.arange(4),
+        patterns=patterns,
+    )
+    if after_epochs:
+        con = con.combine_epochs()
+    axis = con.dims.index("freqs")
+    if reducer == "sum":
+        func, expected = partial(np.nansum, axis=axis), 3 * offset + 9
+    elif reducer == "argmax":
+        func = partial(np.nanargmax, axis=axis)
+        expected = np.where(np.isnan(offset), np.nan, 1)
+    else:
+        # Reducers may use different frequency weights for each connection.
+        weights = np.array([[1, 0, 0], [0, 1, 0]])
+
+        def func(x):
+            return (x * weights).sum(axis=axis)
+
+        expected = offset + np.array([[2], [6]])
+    result = con.combine_freqs(func, fmin=1)
+    assert_allclose(result.attrs["patterns"], expected)
+
+
+@pytest.mark.parametrize(
     "conn_cls, aggr_dim",
     [
         (EpochConnectivity, "epochs"),

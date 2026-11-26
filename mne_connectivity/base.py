@@ -1536,7 +1536,8 @@ def _combine(
     expected_shape = tuple(
         n for n, dim in zip(con.shape, con.dims) if dim != combine_dim
     )
-    dim_axis = con.dims.index(combine_dim)
+    # Frequency and time have the same axes from the right in data and spatial maps.
+    dim_axis = con.dims.index(combine_dim) - len(con.dims)
     func = _check_combine(method, valid=("mean", "median"), axis=dim_axis)
     dim_vals = np.array(con.coords[combine_dim])
     vmin = -np.inf if vmin is None else vmin
@@ -1566,8 +1567,51 @@ def _combine(
         )
 
     cls_kwargs = copy(con.attrs)
+    if combine_dim in ("freqs", "times"):
+        for key in ("patterns", "filters"):
+            if cls_kwargs.get(key) is None:
+                continue
+            maps = np.take(cls_kwargs[key], dim_indices, axis=dim_axis)
+            if callable(method):
+                cls_kwargs[key] = _combine_map_channels(con, maps, func, expected_shape)
+            else:
+                cls_kwargs[key] = func(maps)
     cls_kwargs["names"] = cls_kwargs.pop("node_names")
     if "components" in con.dims:
         cls_kwargs["components"] = con.coords["components"].values.tolist()
 
     return data, vmin, vmax, cls_kwargs
+
+
+def _combine_map_channels(con, maps, func, expected_shape):
+    """Apply a custom reducer with the connectivity axes, excluding padding."""
+    # Bring side and channel to the front, followed by any epochs retained by
+    # combine_epochs(). Each remaining slice then has the connectivity axes.
+    ch_axis = -1 - sum(dim in con.dims for dim in ("freqs", "times"))
+    planes = np.moveaxis(maps, ch_axis, 1)
+    outer = planes.shape[: -len(con.dims)]
+    n_channels = np.array(
+        [[np.ma.count(node) for node in side] for side in con.indices]
+    )
+    conn_axis = con.dims.index("connections")
+    results = []
+    for pos in np.ndindex(outer):
+        side, channel = pos[:2]
+        valid = channel < n_channels[side]
+        if not valid.any():
+            result = np.full(expected_shape, np.nan)
+        elif valid.all():
+            result = func(planes[pos])
+        else:
+            # Keep connection positions (e.g. for per-connection weights). Use
+            # the connection's first real channel for padding during the call
+            # so even reducers like nanargmax work, then discard those results.
+            mask_shape = [1] * len(con.dims)
+            mask_shape[conn_axis] = -1
+            valid = valid.reshape(mask_shape)
+            first = planes[(side, 0, *pos[2:])]
+            result = func(np.where(valid, planes[pos], first))
+            result = np.where(valid[..., 0], result, np.nan)
+        results.append(result)
+    combined = np.stack(results).reshape(outer + expected_shape)
+    return np.moveaxis(combined, 1, ch_axis + 1)
