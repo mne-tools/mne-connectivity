@@ -124,7 +124,9 @@ def plot_spectrotemporal_connectivity(
     con_info = _get_con_info(ch_info, node_names, indices, node_indices, is_multivar)
 
     # Get requested connections
-    picks = _handle_picks(picks, exclude, ch_info, indices, is_multivar, selection)
+    picks, duplicate_cons_mask = _handle_picks(
+        picks, exclude, ch_info, indices, is_multivar, selection, duplicate_cons_mask
+    )
     data = data[picks]
     indices = (indices[0][picks], indices[1][picks])
     node_indices = (node_indices[0][picks], node_indices[1][picks])

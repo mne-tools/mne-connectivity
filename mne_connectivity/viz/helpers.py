@@ -3,10 +3,12 @@ import numpy as np
 from mne._fiff.pick import _picks_to_idx
 from mne.defaults import DEFAULTS
 from mne.stats.permutations import bootstrap_confidence_interval
+from mne.utils import logger, warn
 from mne.utils.check import _check_if_nan
 
 from ..utils import (
     _check_if_multivariate_indices,
+    _check_if_tuple_indices,
     _get_unique_multivariate_nodes_and_indices,
 )
 
@@ -204,25 +206,96 @@ def _get_con_info(ch_info, node_names, indices, node_indices, is_multivar):
     return con_info
 
 
-def _handle_picks(picks, exclude, ch_info, indices, is_multivar, selection):
-    """Handle picks for connectivity data."""
-    ch_picks = _picks_to_idx(info=ch_info, picks=picks, none="all", exclude=exclude)
-    con_picks = []
-    for con_idx, (seed, target) in enumerate(zip(*indices)):
-        if not is_multivar:
-            seed, target = [seed], [target]
-        if selection == "both":
-            con_nodes = np.concatenate([seed, target])
-        elif selection == "seeds":
-            con_nodes = seed
-        else:  # selection == "targets"
-            con_nodes = target
-        if picks is not None:
-            con_nodes = [node for node in con_nodes if node in ch_picks]
-        if np.any([ch in ch_picks for ch in con_nodes]):
-            con_picks.append(con_idx)
+def _handle_picks(
+    picks,
+    exclude,
+    ch_info,
+    indices,
+    is_multivar,
+    selection,
+    duplicate_cons_mask,
+    warn_selection_with_picks_indices=True,
+):
+    """Handle picks for connectivity data.
 
-    return con_picks
+    Also returns the duplicate connections mask, with explicitly picked connections
+    not marked as duplicates, so that they are always plotted.
+    """
+    # Check if picks are connection indices or channel names/types/indices
+    if _check_if_tuple_indices(picks):  # picks are connection indices
+        logger.info("Treating `picks` as connection indices.")
+        if len(picks[0]) != len(picks[1]):
+            raise ValueError(
+                "When `picks` is a tuple of connection indices, the two arrays must "
+                f"have the same length, got {len(picks[0])} and {len(picks[1])}."
+            )
+        picks_is_multivar = _check_if_multivariate_indices(picks)
+        if is_multivar != picks_is_multivar:
+            raise ValueError(
+                "Inconsistent `picks` indices format for the connectivity data. "
+                "Connectivity data is "
+                f"{'multivariate' if is_multivar else 'bivariate'}, but got "
+                f"{'multivariate' if picks_is_multivar else 'bivariate'} picks."
+            )
+        if exclude != "bads":
+            warn(
+                "The `exclude` parameter is ignored when `picks` are connection "
+                "indices."
+            )
+        if selection != "both" and warn_selection_with_picks_indices:
+            warn(
+                "The `selection` parameter is ignored when `picks` are connection "
+                "indices."
+            )
+        if is_multivar:
+            # Remap multivariate indices and picks from channels to the same unique
+            # nodes (sets of channels), so they can be compared like bivariate indices
+            n_cons = len(indices[0])
+            _, node_indices = _get_unique_multivariate_nodes_and_indices(
+                ([*indices[0], *picks[0]], [*indices[1], *picks[1]])
+            )
+            indices = tuple(idcs[:n_cons] for idcs in node_indices)
+            pick_indices = tuple(idcs[n_cons:] for idcs in node_indices)
+        else:
+            pick_indices = picks
+        con_picks = []
+        for pick_idx, (seed, target) in enumerate(zip(*pick_indices)):
+            con_idx = np.where((indices[0] == seed) & (indices[1] == target))[0]
+            if len(con_idx) == 0:
+                if seed == target:
+                    append_msg = (
+                        " (note that self-connections may be dropped from the dense "
+                        "matrix representation if they are uninformative)"
+                    )
+                else:
+                    append_msg = ""
+                raise ValueError(
+                    "The following connection indices in `picks` was not found in "
+                    f"the indices of the connectivity object{append_msg}:\n"
+                    f"({picks[0][pick_idx]}, {picks[1][pick_idx]})"
+                )
+            con_picks.append(con_idx[0])
+        duplicate_cons_mask = duplicate_cons_mask.copy()  # don't modify caller's mask
+        duplicate_cons_mask[con_picks] = False
+    else:  # assume picks are channel names/types/indices
+        logger.info("Treating `picks` as channel characteristics.")
+        ch_picks = _picks_to_idx(info=ch_info, picks=picks, none="all", exclude=exclude)
+        con_picks = []
+        for con_idx, (seed, target) in enumerate(zip(*indices)):
+            if not is_multivar:
+                seed, target = [seed], [target]
+            if selection == "both":
+                con_nodes = np.concatenate([seed, target])
+            elif selection == "seeds":
+                con_nodes = seed
+            else:  # selection == "targets"
+                con_nodes = target
+            if picks is not None:
+                con_nodes = [node for node in con_nodes if node in ch_picks]
+            if np.any([ch in ch_picks for ch in con_nodes]):
+                con_picks.append(con_idx)
+
+    return con_picks, duplicate_cons_mask
 
 
 def _add_comps_as_connections(data, con_info, node_indices, comps_axis):
