@@ -283,11 +283,20 @@ method : ``'mean'`` | ``'median'`` | callable
 docdict["combine_method_epochs"] = combine_method_base.format(
     "epochs", "``(n_epochs, ...)``", "epoch"
 )
-docdict["combine_method_freqs"] = combine_method_base.format(
-    "frequencies", "``(..., n_freqs, ...)``", "frequency"
+combine_spatial_note = """
+    The same selection and reduction apply to spatial patterns and filters, if present.
+    For these arrays, a callable operates on each seed or target channel separately,
+    with the same axes and connection order as the connectivity data. It must
+    reduce bins independently for each connection. Entries for missing channels
+    remain NaN.
+"""
+docdict["combine_method_freqs"] = (
+    combine_method_base.format("frequencies", "``(..., n_freqs, ...)``", "frequency")
+    + combine_spatial_note
 )
-docdict["combine_method_times"] = combine_method_base.format(
-    "times", "``(..., n_times)``", "time"
+docdict["combine_method_times"] = (
+    combine_method_base.format("times", "``(..., n_times)``", "time")
+    + combine_spatial_note
 )
 
 docdict["combine_fmin_fmax"] = """

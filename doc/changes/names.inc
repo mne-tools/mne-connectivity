@@ -3,6 +3,7 @@
 .. _Alexander Kroner: https://github.com/alexanderkroner
 .. _Britta Westner: https://github.com/britta-wstnr
 .. _Daniel McCloy: https://dan.mccloy.info
+.. _Daria Agafonova: https://github.com/viranovskaya
 .. _Don Yin: https://github.com/Don-Yin
 .. _Eric Larson: https://github.com/larsoner
 .. _Eva B: https://github.com/evadiva3
