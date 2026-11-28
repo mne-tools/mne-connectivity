@@ -126,7 +126,7 @@ pretrial_con = np.abs(pretrial_con.get_data()).mean(
 # Generate pre-trial surrogate data
 n_shuffles = 25  # very few shuffles for speed; recommended is ≥ 1,000
 pretrial_surrogates = make_surrogate_resting_data(
-    pretrial_coeffs, n_shuffles=n_shuffles, rng_seed=42
+    pretrial_coeffs, n_shuffles=n_shuffles, rng=42
 )
 
 # Compute connectivity for pre-trial surrogate data
@@ -268,7 +268,7 @@ poststim_con = np.abs(poststim_con.get_data()).mean(
 
 # Generate post-stimulus surrogate data
 poststim_surrogates = make_surrogate_evoked_data(
-    poststim_coeffs, n_shuffles=n_shuffles, rng_seed=42
+    poststim_coeffs, n_shuffles=n_shuffles, rng=42
 )
 
 # Compute connectivity for post-stimulus surrogate data
@@ -322,7 +322,7 @@ print(f"p = {p_val:.2f}")
 
 # Generate surrogates from evoked data using wrong function
 bad_poststim_surrogates = make_surrogate_resting_data(
-    poststim_coeffs, n_shuffles=n_shuffles, rng_seed=44
+    poststim_coeffs, n_shuffles=n_shuffles, rng=44
 )
 
 # Compute connectivity for bad evoked surrogate data
