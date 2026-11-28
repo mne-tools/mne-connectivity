@@ -49,7 +49,7 @@ def test_roundtrip_envelope_correlation(tmp_path):
     data = rng.standard_normal(size=(n_epochs, n_signals, n_times))
     data_hilbert = hilbert(data, axis=-1)
     corr = envelope_correlation(data_hilbert)
-    tmp_file = tmp_path / "temp_file.nc"
+    tmp_file = tmp_path / "temp_file.h5"
     corr.save(tmp_file)
 
     read_corr = read_connectivity(tmp_file)
